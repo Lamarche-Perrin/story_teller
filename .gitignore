@@ -17,6 +17,7 @@ gmon.out
 src/*
 !src/*.cpp
 !src/*.hpp
+!src/*.h
 
 # Input files
 input/*
