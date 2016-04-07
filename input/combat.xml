@@ -1,0 +1,222 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<NARRATION START="introduction">
+  
+  <!-- SITUATION INITIALE -->
+
+  <SITUATION ID="introduction">
+	<CONTENT>
+	  <VARIABLE TYPE="binary" ID="PJ_possede_arc" INIT_VALUE="true"/>
+	  <VARIABLE TYPE="binary" ID="PJ_possede_epee" INIT_VALUE="true"/>
+	  <VARIABLE TYPE="binary" ID="PNJ_possede_arc" INIT_VALUE="false"/>
+	  <VARIABLE TYPE="binary" ID="PNJ_possede_epee" INIT_VALUE="true"/>
+	  <VARIABLE TYPE="counter" ID="PJ_PV" INIT_VALUE="20"/>
+	  <VARIABLE TYPE="counter" ID="PNJ_PV" INIT_VALUE="10"/>
+	  <PRINT>En arrivant dans une clairière, vous apercevez un orc à quelques mètres. Il vous dévisage étonné.</PRINT>
+	</CONTENT>
+  </SITUATION>
+
+  <TRANSITION FROM="introduction" TO="distance_init_PJ"/>
+
+  <!-- SITUATIONS DE BASE -->
+
+  <SITUATION ID="distance_init_PJ"/>
+
+  <TRANSITION FROM="distance_init_PJ" TO="cac_init_PNJ">
+	<CHOICE>Se rapprocher</CHOICE>
+	<CONTENT>
+	  <PRINT>Vous vous approchez prudemment.</PRINT>
+	</CONTENT>
+  </TRANSITION>
+
+  <TRANSITION FROM="distance_init_PJ" TO="match_nul">
+	<CHOICE>Fuir</CHOICE>
+	<CONTENT>
+	  <PRINT>Vous prenez vos jambes à votre cou.</PRINT>
+	</CONTENT>
+  </TRANSITION>
+
+  <TRANSITION FROM="distance_init_PJ" TO="distance_init_PNJ">
+	<CHOICE>Attendre</CHOICE>
+	<CONTENT>
+	  <PRINT>Vous dévisagez l'orc, impassible.</PRINT>
+	</CONTENT>
+  </TRANSITION>
+
+  <TRANSITION FROM="distance_init_PJ" TO="PJ_tire">
+	<CONDITION><TEST VARIABLE="PJ_possede_arc" COMP="eq" VALUE="true"/></CONDITION>
+	<CHOICE>Décocher une flèche</CHOICE>
+	<CONTENT>
+	  <PRINT>Vous dégainez votre arc et décochez une flèche.</PRINT>
+	</CONTENT>
+  </TRANSITION>
+
+
+  <SITUATION ID="distance_init_PNJ"/>
+
+  <TRANSITION FROM="distance_init_PNJ" TO="cac_init_PJ">
+	<PROBABILITY>10</PROBABILITY>
+	<CONTENT>
+	  <PRINT>L'orc fonce vers vous.</PRINT>
+	</CONTENT>
+  </TRANSITION>
+
+  <TRANSITION FROM="distance_init_PNJ" TO="match_nul">
+	<PROBABILITY>5</PROBABILITY>
+	<CONTENT>
+	  <PRINT>L'orc déguerpit.</PRINT>
+	</CONTENT>
+  </TRANSITION>
+
+  <TRANSITION FROM="distance_init_PNJ" TO="distance_init_PJ">
+	<PROBABILITY>20</PROBABILITY>
+	<CONTENT>
+	  <PRINT>L'orc vous regarde, interloqué.</PRINT>
+	</CONTENT>
+  </TRANSITION>
+
+  <TRANSITION FROM="distance_init_PNJ" TO="PNJ_tire">
+	<CONDITION><TEST VARIABLE="PNJ_possede_arc" COMP="eq" VALUE="true"/></CONDITION>
+	<PROBABILITY>10</PROBABILITY>
+	<CONTENT>
+	  <PRINT>L'orc dégaine une flèche et tend la corde de son arc.</PRINT>
+	</CONTENT>
+  </TRANSITION>
+
+
+  <SITUATION ID="cac_init_PJ"/>
+
+  <TRANSITION FROM="cac_init_PJ" TO="distance_init_PNJ">
+	<CHOICE>Fuir</CHOICE>
+	<CONTENT>
+	  <PRINT>Vous tournez les talons et courrez.</PRINT>
+	</CONTENT>
+  </TRANSITION>
+
+  <TRANSITION FROM="cac_init_PJ" TO="cac_init_PNJ">
+	<CHOICE>Attendre</CHOICE>
+	<CONTENT>
+	  <PRINT>Vous faites face à l'orc, patiemment.</PRINT>
+	</CONTENT>
+  </TRANSITION>
+
+  <TRANSITION FROM="cac_init_PJ" TO="PJ_frappe">
+	<CONDITION><TEST VARIABLE="PJ_possede_epee" COMP="eq" VALUE="true"/></CONDITION>
+	<CHOICE>Donner un coup d'épée</CHOICE>
+	<CONTENT>
+	  <PRINT>En un éclair, vous avez brandi votre épée.</PRINT>
+	</CONTENT>
+  </TRANSITION>
+
+
+  <SITUATION ID="cac_init_PNJ"/>
+
+  <TRANSITION FROM="cac_init_PNJ" TO="distance_init_PJ">
+	<PROBABILITY>5</PROBABILITY>
+	<CONTENT>
+	  <PRINT>L'orc s'éloigne à grands pas.</PRINT>
+	</CONTENT>
+  </TRANSITION>
+
+  <TRANSITION FROM="cac_init_PNJ" TO="distance_init_PJ">
+	<PROBABILITY>5</PROBABILITY>
+	<CONTENT>
+	  <PRINT>L'orc vous dévisage toujours, prêt à agir.</PRINT>
+	</CONTENT>
+  </TRANSITION>
+
+  <TRANSITION FROM="cac_init_PNJ" TO="PNJ_frappe">
+	<CONDITION><TEST VARIABLE="PNJ_possede_epee" COMP="eq" VALUE="true"/></CONDITION>
+	<PROBABILITY>30</PROBABILITY>
+	<CONTENT>
+	  <PRINT>L'orc soulève sa masse d'arme et l'abat violemment.</PRINT>
+	</CONTENT>
+  </TRANSITION>
+
+
+  <!-- RÉSULTAT DE COMBAT -->
+
+  <SITUATION ID="PJ_tire">
+	<CONTENT>
+	  <SUB VARIABLE="PNJ_PV" VALUE="3"/>
+	  <PRINT>La flèche atteint l'orc dans la poitrine.</PRINT>
+	</CONTENT>
+  </SITUATION>
+
+  <TRANSITION FROM="PJ_tire" TO="distance_init_PNJ"/>
+
+  <TRANSITION FROM="PJ_tire" TO="victoire">
+	<PRIORITY>1</PRIORITY>
+	<CONDITION><TEST VARIABLE="PNJ_PV" COMP="leq" VALUE="0"/></CONDITION>
+  </TRANSITION>
+
+
+  <SITUATION ID="PNJ_tire">
+	<CONTENT>
+	  <SUB VARIABLE="PJ_PV" VALUE="3"/>
+	  <PRINT>La flèche se plante dans votre jambe droite.</PRINT>
+	</CONTENT>
+  </SITUATION>
+
+  <TRANSITION FROM="PNJ_tire" TO="distance_init_PJ"/>
+
+  <TRANSITION FROM="PNJ_tire" TO="defaite">
+	<PRIORITY>1</PRIORITY>
+	<CONDITION><TEST VARIABLE="PJ_PV" COMP="leq" VALUE="0"/></CONDITION>
+  </TRANSITION>
+
+
+  <SITUATION ID="PJ_frappe">
+	<CONTENT>
+	  <SUB VARIABLE="PNJ_PV" VALUE="4"/>
+	  <PRINT>L'orc pare le coup avec son bras, hurlant de douleur.</PRINT>
+	</CONTENT>
+  </SITUATION>
+
+  <TRANSITION FROM="PJ_frappe" TO="cac_init_PNJ"/>
+
+  <TRANSITION FROM="PJ_frappe" TO="victoire">
+	<PRIORITY>1</PRIORITY>
+	<CONDITION><TEST VARIABLE="PNJ_PV" COMP="leq" VALUE="0"/></CONDITION>
+  </TRANSITION>
+
+
+  <SITUATION ID="PNJ_frappe">
+	<CONTENT>
+	  <SUB VARIABLE="PJ_PV" VALUE="5"/>
+	  <PRINT>Vous recevez un coup étourdissant, vaguement amorti par votre casque.</PRINT>
+	</CONTENT>
+  </SITUATION>
+
+  <TRANSITION FROM="PNJ_frappe" TO="cac_init_PJ"/>
+
+  <TRANSITION FROM="PNJ_frappe" TO="defaite">
+	<PRIORITY>1</PRIORITY>
+	<CONDITION><TEST VARIABLE="PJ_PV" COMP="leq" VALUE="0"/></CONDITION>
+  </TRANSITION>
+
+
+  <!-- FINS POSSIBLES -->
+
+  <SITUATION ID="match_nul">
+	<CONTENT>
+	  <PRINT>L'orc a disparu. Vous pouvez continuer votre aventure.</PRINT>
+	  <END/>
+	</CONTENT>
+  </SITUATION>
+
+  <SITUATION ID="victoire">
+	<CONTENT>
+	  <PRINT>Vous avez terrassé l'orc. Vous pouvez continuer votre aventure.</PRINT>
+	  <END/>
+	</CONTENT>
+  </SITUATION>
+
+  <SITUATION ID="defaite">
+	<CONTENT>
+	  <PRINT>L'orc a eu raison de vous. C'est la fin de votre aventure.</PRINT>
+	  <END/>
+	</CONTENT>
+  </SITUATION>
+
+</NARRATION>

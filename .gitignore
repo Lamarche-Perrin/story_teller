@@ -21,7 +21,7 @@ src/*
 
 # Input files
 input/*
-!input/GEOMEDIA/*.xml
+!input/*.xml
 
 #Binary files
 bin/*
