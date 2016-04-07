@@ -1,0 +1,28 @@
+# executable and header files
+story_reader
+header
+add_header
+gmon.out
+
+# C++ and Dev-C++
+*.o
+*.layout
+
+# Temp files
+*~
+\#*\#
+*.backup
+
+# Source files
+src/*
+!src/*.cpp
+!src/*.hpp
+
+# Input files
+input/*
+!input/GEOMEDIA/*.xml
+
+#Binary files
+bin/*
+
+
