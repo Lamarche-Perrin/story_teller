@@ -1,0 +1,31 @@
+<NARRATION START="hello">
+
+  <SITUATION ID="hello">
+	<CONTENT>
+	  <VARIABLE ID="var" TYPE="binary" INIT_VALUE="false"/>
+	  <PRINT>Hello...</PRINT>
+	</CONTENT>
+  </SITUATION>
+
+  <TRANSITION FROM="hello" TO="world"/>
+
+  <TRANSITION FROM="hello" TO="universe">
+	<CONDITION><TEST VARIABLE="var" COMP="eq" VALUE="true"/></CONDITION>
+	<PRIORITY>1</PRIORITY>
+  </TRANSITION>
+
+  <SITUATION ID="world">
+	<CONTENT>
+	  <PRINT>...world!</PRINT>
+	  <END/>
+	</CONTENT>
+  </SITUATION>
+
+  <SITUATION ID="universe">
+	<CONTENT>
+	  <PRINT>...universe!</PRINT>
+	  <END/>
+	</CONTENT>
+  </SITUATION>
+
+</NARRATION>

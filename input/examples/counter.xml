@@ -1,0 +1,33 @@
+<NARRATION START="hello">
+
+  <SITUATION ID="hello">
+	<CONTENT>
+	  <VARIABLE ID="var" TYPE="counter" INIT_VALUE="3"/>
+	  <PRINT>Hello...</PRINT>
+	</CONTENT>
+  </SITUATION>
+
+  <TRANSITION FROM="hello" TO="wait"/>
+
+  <SITUATION ID="wait"/>
+
+  <TRANSITION FROM="wait" TO="wait">
+	<CONTENT>
+	  <SUB VARIABLE="var" VALUE="1"/>
+	  <PRINT>(wait)</PRINT>
+	</CONTENT>
+  </TRANSITION>
+
+  <TRANSITION FROM="wait" TO="world">
+	<CONDITION><TEST VARIABLE="var" COMP="eq" VALUE="0"/></CONDITION>
+	<PRIORITY>1</PRIORITY>
+  </TRANSITION>
+
+  <SITUATION ID="world">
+	<CONTENT>
+	  <PRINT>...world!</PRINT>
+	  <END/>
+	</CONTENT>
+  </SITUATION>
+
+</NARRATION>

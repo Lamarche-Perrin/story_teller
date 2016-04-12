@@ -1,0 +1,31 @@
+<NARRATION START="hello">
+
+  <SITUATION ID="hello">
+	<CONTENT>
+	  <PRINT>Hello...</PRINT>
+	</CONTENT>
+  </SITUATION>
+
+  <TRANSITION FROM="hello" TO="world">
+	<CHOICE>World?</CHOICE>
+  </TRANSITION>
+
+  <TRANSITION FROM="hello" TO="universe">
+	<CHOICE>Universe?</CHOICE>
+  </TRANSITION>
+
+  <SITUATION ID="world">
+	<CONTENT>
+	  <PRINT>...world!</PRINT>
+	  <END/>
+	</CONTENT>
+  </SITUATION>
+
+  <SITUATION ID="universe">
+	<CONTENT>
+	  <PRINT>...universe!</PRINT>
+	  <END/>
+	</CONTENT>
+  </SITUATION>
+
+</NARRATION>

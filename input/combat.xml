@@ -18,6 +18,7 @@
 
   <TRANSITION FROM="introduction" TO="distance_init_PJ"/>
 
+
   <!-- SITUATIONS DE BASE -->
 
   <SITUATION ID="distance_init_PJ"/>

@@ -1,0 +1,286 @@
+<html>
+
+  <head>
+    <title>Examples d'utilisation du langage narratif</title>
+    <meta content="text/html" charset="UTF-8">
+    <style>
+	  .box { width:600px; padding:10px; border:2px solid yellowgreen; } 
+	</style>
+  </head>
+
+  <body>
+
+	<h1>Les briques de base</h1>
+
+	<hr>
+
+	<h2>Hello world!</h2>
+
+	Un exemple de narration minimale&nbsp;: une unique situation.
+
+	<h3>Code</h3>
+	<xmp class="box">
+	  <NARRATION START="hello">
+
+		<SITUATION ID="hello">
+		  <CONTENT>
+			<PRINT>Hello world!</PRINT>
+			<END/>
+		  </CONTENT>
+		</SITUATION>
+
+	  </NARRATION>
+	</xmp>
+
+	<h3>Remarques</h3>
+	<ul>
+	  <li>R1</li>
+	  <li>R2</li>
+	</ul>
+
+
+
+	<hr>
+
+	<h2>Transitions</h2>
+
+	Une transition entre deux situations.
+
+	<h3>Code</h3>
+	<xmp class="box">
+	  <NARRATION START="hello">
+
+		<SITUATION ID="hello">
+		  <CONTENT>
+			<PRINT>Hello...</PRINT>
+		  </CONTENT>
+		</SITUATION>
+
+		<TRANSITION FROM="hello" TO="world">
+		  <CONTENT>
+			<PRINT>(Wait for it)</PRINT>
+		  </CONTENT>
+		</TRANSITION>
+
+		<SITUATION ID="world">
+		  <CONTENT>
+			<PRINT>...world!</PRINT>
+			<END/>
+		  </CONTENT>
+		</SITUATION>
+
+	  </NARRATION>
+	</xmp>
+
+	<h3>Remarques</h3>
+	<ul>
+	  <li>R1</li>
+	  <li>R2</li>
+	</ul>
+
+
+
+	<hr>
+
+	<h2>Choix</h2>
+
+	Un choix pouvant mener à deux situations différentes.
+
+	<h3>Code</h3>
+	<xmp class="box">
+	  <NARRATION START="hello">
+
+		<SITUATION ID="hello">
+		  <CONTENT>
+			<PRINT>Hello...</PRINT>
+		  </CONTENT>
+		</SITUATION>
+
+		<TRANSITION FROM="hello" TO="world">
+		  <CHOICE>World?</CHOICE>
+		</TRANSITION>
+
+		<TRANSITION FROM="hello" TO="universe">
+		  <CHOICE>Universe?</CHOICE>
+		</TRANSITION>
+
+		<SITUATION ID="world">
+		  <CONTENT>
+			<PRINT>...world!</PRINT>
+			<END/>
+		  </CONTENT>
+		</SITUATION>
+
+		<SITUATION ID="universe">
+		  <CONTENT>
+			<PRINT>...universe!</PRINT>
+			<END/>
+		  </CONTENT>
+		</SITUATION>
+
+	  </NARRATION>
+	</xmp>
+
+	<h3>Remarques</h3>
+	<ul>
+	  <li>R1</li>
+	  <li>R2</li>
+	</ul>
+
+
+
+	<hr>
+
+	<h2>Probabilités</h2>
+
+	Deux situations pouvant survenir de manière aléatoire.
+
+	<h3>Code</h3>
+	<xmp class="box">
+	  <NARRATION START="hello">
+
+		<SITUATION ID="hello">
+		  <CONTENT>
+			<PRINT>Hello...</PRINT>
+		  </CONTENT>
+		</SITUATION>
+
+		<TRANSITION FROM="hello" TO="world">
+		  <PROBABILITY>200</PROBABILITY>
+		</TRANSITION>
+
+		<TRANSITION FROM="hello" TO="universe">
+		  <PROBABILITY>100</PROBABILITY>
+		</TRANSITION>
+
+		<SITUATION ID="world">
+		  <CONTENT>
+			<PRINT>...world!</PRINT>
+			<END/>
+		  </CONTENT>
+		</SITUATION>
+
+		<SITUATION ID="universe">
+		  <CONTENT>
+			<PRINT>...universe!</PRINT>
+			<END/>
+		  </CONTENT>
+		</SITUATION>
+
+	  </NARRATION>
+	</xmp>
+
+	<h3>Remarques</h3>
+	<ul>
+	  <li>R1</li>
+	  <li>R2</li>
+	</ul>
+
+
+
+	<hr>
+
+	<h2>Variables binaires, conditions et priorités</h2>
+
+	Un variable définie dans la première situation, et qui a un impact sur la trame narrative empruntée.
+
+	<h3>Code</h3>
+	<xmp class="box">
+	  <NARRATION START="hello">
+
+		<SITUATION ID="hello">
+		  <CONTENT>
+			<VARIABLE ID="var" TYPE="binary" INIT_VALUE="false"/>
+			<PRINT>Hello...</PRINT>
+		  </CONTENT>
+		</SITUATION>
+
+		<TRANSITION FROM="hello" TO="world"/>
+
+		<TRANSITION FROM="hello" TO="universe">
+		  <PRIORITY>1</PRIORITY>
+		  <CONDITION>
+			<TEST VARIABLE="var" COMP="eq" VALUE="true"/>
+		  </CONDITION>
+		</TRANSITION>
+
+		<SITUATION ID="world">
+		  <CONTENT>
+			<PRINT>...world!</PRINT>
+			<END/>
+		  </CONTENT>
+		</SITUATION>
+
+		<SITUATION ID="universe">
+		  <CONTENT>
+			<PRINT>...universe!</PRINT>
+			<END/>
+		  </CONTENT>
+		</SITUATION>
+
+	  </NARRATION>
+	</xmp>
+
+	<h3>Remarques</h3>
+	<ul>
+	  <li>R1</li>
+	  <li>R2</li>
+	</ul>
+
+
+
+
+	<hr>
+
+	<h2>Compteurs</h2>
+
+	Un compteur qui peut être incrémenté et avoir un impact sur la narration.
+
+	<h3>Code</h3>
+	<xmp class="box">
+	  <NARRATION START="hello">
+
+		<SITUATION ID="hello">
+		  <CONTENT>
+			<VARIABLE ID="var" TYPE="counter" INIT_VALUE="3"/>
+			<PRINT>Hello...</PRINT>
+		  </CONTENT>
+		</SITUATION>
+
+		<TRANSITION FROM="hello" TO="wait"/>
+
+		<SITUATION ID="wait"/>
+
+		<TRANSITION FROM="wait" TO="wait">
+		  <CONTENT>
+			<SUB VARIABLE="var" VALUE="1"/>
+			<PRINT>(wait)</PRINT>
+		  </CONTENT>
+		</TRANSITION>
+
+		<TRANSITION FROM="wait" TO="world">
+		  <PRIORITY>1</PRIORITY>
+		  <CONDITION>
+			<TEST VARIABLE="var" COMP="eq" VALUE="0"/>
+		  </CONDITION>
+		</TRANSITION>
+
+		<SITUATION ID="world">
+		  <CONTENT>
+			<PRINT>...world!</PRINT>
+			<END/>
+		  </CONTENT>
+		</SITUATION>
+
+	  </NARRATION>
+	</xmp>
+
+	<h3>Remarques</h3>
+	<ul>
+	  <li>R1</li>
+	  <li>R2</li>
+	</ul>
+
+	<hr>
+
+</html>

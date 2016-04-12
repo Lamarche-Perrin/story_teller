@@ -22,7 +22,7 @@
 
 #include <cstdlib>
 #include <iostream>
-
+#include <sys/time.h>
 
 #include <list>
 #include <set>
@@ -50,10 +50,13 @@ std::map<string,int> counters;
 int main (int argc, char *argv[])
 {
 	srand (time(NULL));
-	const char *filename = "input/combat.xml";
+
+	string filename = "";
+    if (argc > 1) { filename = argv[1]; }
+	else { std::cerr << "Error: Input file not specified" << std::endl; }
 	
 	// OPEN FILE
-	TiXmlDocument document (filename);
+	TiXmlDocument document (filename.c_str());
 	if (!document.LoadFile()) { std::cerr << "Error: Failed to load file " << filename << std::endl; }
 
 	// START NARRATION

@@ -20,8 +20,8 @@ src/*
 !src/*.h
 
 # Input files
-input/*
-!input/*.xml
+#input/*
+#!input/*.xml
 
 #Binary files
 bin/*
