@@ -81,7 +81,7 @@
 	<h3>Explications</h3>
 	<ul>
 	  <li>
-		Les balises <code>TRANSITION</code> permettent de créer des chemins narratifs entre des situations.
+		La balise <code>TRANSITION</code> permet de créer des chemins narratifs entre des situations.
 		L'attribut <code>FROM</code> indique l'<code>ID</code> de la <code>SITUATION</code> de départ et l'attribut <code>TO</code> indique l'<code>ID</code> de la <code>SITUATION</code> d'arrivée.
 	  </li>
 	  <li>
@@ -136,7 +136,7 @@
 	<ul>
 	  <li>
 		Une balise <code>CHOICE</code> associée à une <code>TRANSITION</code> indique que le joueur doit faire un choix.
-		Dans ce cas, le <code>CHOICE</code> de toutes les <code>TRANSITION</code> partant de la <code>SITUATION</code> actuelle s'afficheront, et la transition effectivement exécutée dépendra de la réponse fournie par le joueur.
+		Dans ce cas, le <code>CHOICE</code> de toutes les <code>TRANSITIONS</code> partant de la <code>SITUATION</code> actuelle s'afficheront, et la transition effectivement exécutée dépendra de la réponse fournie par le joueur.
 	  </li>
 	</ul>
 
@@ -186,7 +186,7 @@
 	<h3>Explications</h3>
 	<ul>
 	  <li>
-		S'il y a plusieurs <code>TRANSITION</code> (sans <code>CHOICE</code>) partant de la <code>SITUATION</code> actuelle, celle qui sera exécutée est choisie aléatoirement.
+		S'il y a plusieurs <code>TRANSITIONS</code> (sans <code>CHOICE</code>) partant de la <code>SITUATION</code> actuelle, celle qui sera exécutée est choisie aléatoirement.
 		La balise <code>PROBABILITY</code> associée à une <code>TRANSITION</code> indique alors les chances que celle-ci soit exécutée.
 	  </li>
 	  <li>
@@ -202,7 +202,91 @@
 
 	<hr>
 
-	<h2>Variables binaires, conditions et priorités</h2>
+	<h2>Priorités</h2>
+
+	Plusieurs transitions en compétition, avec différents niveaux de priorité.
+
+	<h3>Code</h3>
+	<xmp class="box">
+	  <NARRATION START="hello">
+
+		<SITUATION ID="hello">
+		  <CONTENT>
+			<PRINT>Hello...</PRINT>
+		  </CONTENT>
+		</SITUATION>
+
+		<TRANSITION FROM="hello" TO="world">
+		  <CHOICE>World?</CHOICE>
+		  <PRIORITY>2</PRIORITY>
+		</TRANSITION>
+
+		<TRANSITION FROM="hello" TO="universe">
+		  <CHOICE>Universe?</CHOICE>
+		  <PRIORITY>2</PRIORITY>
+		</TRANSITION>
+
+		<TRANSITION FROM="hello" TO="world">
+		  <PROBABILITY>200</PROBABILITY>
+		  <PRIORITY>2</PRIORITY>
+		</TRANSITION>
+
+		<TRANSITION FROM="hello" TO="universe">
+		  <PRIORITY>2</PRIORITY>
+		</TRANSITION>
+
+		<TRANSITION FROM="hello" TO="error">
+		  <PRIORITY>1</PRIORITY>
+		</TRANSITION>
+
+		<TRANSITION FROM="hello" TO="error"/>
+
+		<SITUATION ID="world">
+		  <CONTENT>
+			<PRINT>...world!</PRINT>
+			<END/>
+		  </CONTENT>
+		</SITUATION>
+
+		<SITUATION ID="universe">
+		  <CONTENT>
+			<PRINT>...universe!</PRINT>
+			<END/>
+		  </CONTENT>
+		</SITUATION>
+
+		<SITUATION ID="error">
+		  <CONTENT>
+			<PRINT>Will never happen!</PRINT>
+			<END/>
+		  </CONTENT>
+		</SITUATION>
+
+	  </NARRATION>
+	</xmp>
+
+	<h3>Explications</h3>
+	<ul>
+	  <li>
+		La balise <code>PRIORITY</code> permet de donner un ordre de préférence aux <code>TRANSITIONS</code>&nbsp;:
+		celles avec une plus forte valeur seront sélectionnées en priorité.
+		Les autres pourront donc être sélectionnées seulement si les premières ne remplissent pas des conditions spécifiées par ailleurs (cf. exemple suivant).	
+	  </li>
+	  <li>
+		Une <code>TRANSITION</code> sans balise <code>PRIORITY</code> explicite est toujours considérée comme ayant une <code>PRIORITY</code> de <code>0</code>.
+		Dans l'exemple ci-dessus, seules les <code>TRANSITIONS</code> avec une <code>PRIORITY</code> de <code>2</code> peuvent donc être sélectionnées.
+	  </li>
+	  <li>
+		Lorsque plusieurs <code>TRANSITIONS</code> ont le même niveau de <code>PRIORITY</code>, les <code>TRANSITIONS</code> avec <code>CHOICE</code> sont affichées en premiers, ainsi qu'une option "Ne rien faire" dans le cas où il y a également des <code>TRANSITIONS</code> sans <code>CHOICE</code>.
+		Si cette option est sélectionnée, on choisit alors aléatoirement une <code>TRANSITION</code> parmi celles sans <code>CHOICE</code>.
+	  </li>
+	</ul>
+
+
+
+	<hr>
+
+	<h2>Variables binaires et conditions</h2>
 
 	Un variable définie dans la première situation, et qui a un impact sur la trame narrative empruntée.
 
@@ -245,8 +329,21 @@
 
 	<h3>Explications</h3>
 	<ul>
-	  <li>R1</li>
-	  <li>R2</li>
+	  <li>
+		La balise <code>VARIABLE</code> au sein d'un <code>CONTENT</code> permet de définir une nouvelle variable en spécifiant son <code>ID</code>, son <code>TYPE</code> (ici&nbsp;: <code>binary</code>) et sa valeur initiale <code>INIT_VALUE</code> (dans le cas d'un <code>binary</code>&nbsp;: <code>true</code> ou <code>false</code>).
+	  </li>
+	  <li>
+		La balise <code>TEST</code> permet de tester la valeur de la <code>VARIABLE</code> dont l'<code>ID</code> est spécifié en attribut.
+		<code>COMP</code> est l'opérateur de comparaison (dans le cas d'un <code>TYPE binary</code>&nbsp;: <code>COMP="eq"</code> pour "equal" ou <code>COMP="neq"</code> pour "not equal").
+		<code>VALUE</code> est la valeur de comparaison.
+	  </li>
+	  <li>
+		La balise <code>CONDITION</code> associée à une <code>TRANSITION</code> permet de déterminer si celle-ci est accessible ou non.
+		Ici, si la balise <code>TEST</code> renvoie <code>false</code>, alors la <code>transition</code> n'est pas accessible, et donc jamais prise en compte dans la narration.
+	  </li>
+	  <li>
+		La balise <code>PRIORITY</code> permet ici d'insérer une <code>TRANSITION</code> conditionnelle qui est toujours empruntée si la <code>CONDITION</code> est vérifiée, et qui laisse la main à une seconde <code>TRANSITION</code> si la <code>CONDITION</code> n'est pas vérifiée.
+	  </li>
 	</ul>
 
 
@@ -254,7 +351,7 @@
 
 	<hr>
 
-	<h2>Compteurs</h2>
+	<h2>Compteurs, conditions et priorités</h2>
 
 	Un compteur qui peut être incrémenté et avoir un impact sur la narration.
 
@@ -299,8 +396,17 @@
 
 	<h3>Explications</h3>
 	<ul>
-	  <li>R1</li>
-	  <li>R2</li>
+	  <li>
+		On peut également définir des <code>VARIABLES</code> de <code>TYPE</code> <code>counter</code> avec un <code>ID</code> et une valeur initiale <code>INIT_VALUE</code> (nombre entier).
+	  </li>
+	  <li>
+		La balise <code>SUB</code> permet de soustraire la <code>VALEUR</CODE> spécifiée (nombre entier) à la <code>VARIABLE</code> spécifiée (de <code>TYPE</code> <code>counteur</code>).
+		Les balises <code>ADD</code>, <code>MUL</code> et <code>DIV</code> permettent d'additionner, de multiplier et de diviser la <code>VARIABLE</code> (de manière similaire).
+	  </li>
+	  <li>
+		Dans le cas d'un <code>counter</code>, l'attribut <code>COMP</code> de la balise <code>TEST</code> peut prendre les valeurs suivantes&nbsp;: <code>COMP="eq"</code> pour "equal", <code>COMP="neq"</code> pour "not equal", <code>COMP="l"</code> pour "less", <code>COMP="g"</code> pour "greater", <code>COMP="leq"</code> pour "less or equal", ou <code>COMP="geq"</code> pour "greater or equal".
+		<code>VALUE</code> est toujours la valeur de comparaison (nombre entier).
+	  </li>
 	</ul>
 
 	<hr>

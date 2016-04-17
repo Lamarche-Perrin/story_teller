@@ -35,7 +35,7 @@ using std::string;
 
 
 const TiXmlElement *getElement (const TiXmlElement *root, string value, string attribute, string id);
-void executeContent (const TiXmlElement *content);
+bool executeContent (const TiXmlElement *content);
 
 void error (const TiXmlElement *element, string text);
 bool testValue (const TiXmlElement *element, string value);
@@ -70,11 +70,12 @@ int main (int argc, char *argv[])
 	while (!end)
 	{
 		string situationId = situation->Attribute("ID");
+		bool printedText = false;
 		//std::cout << situationId << std::endl;
 
 		// EXECUTE SITUATION
 		const TiXmlNode *nContent = situation->FirstChild("CONTENT");
-		if (nContent != NULL) { executeContent(nContent->ToElement()); }
+		if (nContent != NULL) { printedText = executeContent(nContent->ToElement()); }
 		if (end) { continue; }
 		
 		// GET TRANSITIONS
@@ -126,6 +127,8 @@ int main (int argc, char *argv[])
 
 						if (comp == "eq") { verified = (counters[variable] == v); }
 						else if (comp == "neq") { verified = (counters[variable] >= v); }
+						else if (comp == "l") { verified = (counters[variable] < v); }
+						else if (comp == "g") { verified = (counters[variable] > v); }
 						else if (comp == "leq") { verified = (counters[variable] <= v); }
 						else if (comp == "geq") { verified = (counters[variable] != v); }
 						else { error (test, "COMP unknown"); }						
@@ -180,8 +183,8 @@ int main (int argc, char *argv[])
 				const TiXmlNode *choice = transition->FirstChild("CHOICE");
 				if (choice != NULL)
 				{
-					std::cout << "(" << choiceNum << ") " << choice->ToElement()->GetText() << " ";
-					choices.insert(std::pair<int,const TiXmlElement *>(choiceNum,transition));
+					std::cout << "(" << (choiceNum+1) << ") " << choice->ToElement()->GetText() << " ";
+					choices.insert(std::pair<int,const TiXmlElement *>(choiceNum+1,transition));
 					choiceNum++;
 				}
 
@@ -199,17 +202,26 @@ int main (int argc, char *argv[])
 				}
 			}
 
+			if (choiceNum > 0 && probabilityNum > 0)
+			{
+				std::cout << "(0) Ne rien faire ";
+				choices.insert(std::pair<int,const TiXmlElement *>(0,NULL));
+			}
+
 			// SELECT TRANSITION
+			bool pass = false;
 			if (choiceNum > 0)
 			{
-				std::cout << "CHOIX = ";
+				//std::cout << "CHOIX = ";
 				int num;
 				std::cin >> num;
 				std::cout << std::endl;
 				transition = choices[num];
+				if (transition == NULL) { pass = true; }
 			}
 
-			else {
+			if (choiceNum == 0 || pass) {
+				if (!pass && printedText) { while (std::cin.get() != '\n'); }
 				int r = rand() % probSum + 1;
 				int num = 0;
 
@@ -219,9 +231,11 @@ int main (int argc, char *argv[])
 
 
 			// EXECUTE TRANSITION
+			printedText = false;
 			const TiXmlNode *nContent = transition->FirstChild("CONTENT");
-			if (nContent != NULL) { executeContent(nContent->ToElement()); }
+			if (nContent != NULL) { printedText = executeContent(nContent->ToElement()); }
 			if (end) { continue; }
+			if (printedText) { while (std::cin.get() != '\n'); }
 
 			testAttribute(transition,"TO");
 			situation = getElement(narration, "SITUATION", "ID", transition->Attribute("TO"));
@@ -247,7 +261,7 @@ const TiXmlElement *getElement (const TiXmlElement *element, string value, strin
 }
 
 
-void executeContent (const TiXmlElement *content)
+bool executeContent (const TiXmlElement *content)
 {
 	bool printedText = false;
 	for (const TiXmlNode *node = content->FirstChild(); node; node = node->NextSibling())
@@ -338,7 +352,7 @@ void executeContent (const TiXmlElement *content)
 		else { error (element, "unknown element"); }
 	}
 
-	if (printedText) { while (std::cin.get() != '\n'); }
+	return printedText;
 }
 
 

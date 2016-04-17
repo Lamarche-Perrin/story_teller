@@ -1,0 +1,55 @@
+<NARRATION START="hello">
+
+  <SITUATION ID="hello">
+	<CONTENT>
+	  <PRINT>Hello...</PRINT>
+	</CONTENT>
+  </SITUATION>
+
+  <TRANSITION FROM="hello" TO="world">
+	<CHOICE>World?</CHOICE>
+	<PRIORITY>2</PRIORITY>
+  </TRANSITION>
+
+  <TRANSITION FROM="hello" TO="universe">
+	<CHOICE>Universe?</CHOICE>
+	<PRIORITY>2</PRIORITY>
+  </TRANSITION>
+
+  <TRANSITION FROM="hello" TO="world">
+	<PROBABILITY>200</PROBABILITY>
+	<PRIORITY>2</PRIORITY>
+  </TRANSITION>
+
+  <TRANSITION FROM="hello" TO="universe">
+	<PRIORITY>2</PRIORITY>
+  </TRANSITION>
+
+  <TRANSITION FROM="hello" TO="error">
+	<PRIORITY>1</PRIORITY>
+  </TRANSITION>
+
+  <TRANSITION FROM="hello" TO="error"/>
+
+  <SITUATION ID="world">
+	<CONTENT>
+	  <PRINT>...world!</PRINT>
+	  <END/>
+	</CONTENT>
+  </SITUATION>
+
+  <SITUATION ID="universe">
+	<CONTENT>
+	  <PRINT>...universe!</PRINT>
+	  <END/>
+	</CONTENT>
+  </SITUATION>
+
+  <SITUATION ID="error">
+	<CONTENT>
+	  <PRINT>Will never happen!</PRINT>
+	  <END/>
+	</CONTENT>
+  </SITUATION>
+
+</NARRATION>
