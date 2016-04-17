@@ -119,7 +119,7 @@
 	</CONTENT>
   </TRANSITION>
 
-  <TRANSITION FROM="cac_init_PNJ" TO="distance_init_PJ">
+  <TRANSITION FROM="cac_init_PNJ" TO="cac_init_PJ">
 	<PROBABILITY>5</PROBABILITY>
 	<CONTENT>
 	  <PRINT>L'orc vous dévisage toujours, prêt à agir.</PRINT>

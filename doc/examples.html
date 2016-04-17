@@ -16,7 +16,7 @@
 
 	<h2>Hello world!</h2>
 
-	Un exemple de narration minimale&nbsp;: une unique situation.
+	Exemple de narration minimale&nbsp;: une unique situation.
 
 	<h3>Code</h3>
 	<xmp class="box">
@@ -32,10 +32,16 @@
 	  </NARRATION>
 	</xmp>
 
-	<h3>Remarques</h3>
+	<h3>Explications</h3>
 	<ul>
-	  <li>R1</li>
-	  <li>R2</li>
+	  <li>
+		Toutes les briques doivent être incluses dans une unique balise <code>NARRATION</code>.
+		L'attribut <code>START</code> de la <code>NARRATION</code> indique la première <code>SITUATION</code> à exécuter en précisant son attribut <code>ID</code>.
+	  </li>
+	  <li>
+		La balise <code>CONTENT</code> au sein d'une <code>SITUATION</code> indique son contenu, c'est-à-dire les événements à exécuter.
+		En particulier, la balise <code>PRINT</code> permet d'afficher du texte et la balise <code>END</code> permet d'indiquer que l'histoire est terminée.
+	  </li>
 	</ul>
 
 
@@ -44,7 +50,7 @@
 
 	<h2>Transitions</h2>
 
-	Une transition entre deux situations.
+	Deux situations et une transition permettant de les relier.
 
 	<h3>Code</h3>
 	<xmp class="box">
@@ -72,10 +78,15 @@
 	  </NARRATION>
 	</xmp>
 
-	<h3>Remarques</h3>
+	<h3>Explications</h3>
 	<ul>
-	  <li>R1</li>
-	  <li>R2</li>
+	  <li>
+		Les balises <code>TRANSITION</code> permettent de créer des chemins narratifs entre des situations.
+		L'attribut <code>FROM</code> indique l'<code>ID</code> de la <code>SITUATION</code> de départ et l'attribut <code>TO</code> indique l'<code>ID</code> de la <code>SITUATION</code> d'arrivée.
+	  </li>
+	  <li>
+		Une <code>TRANSITION</code> peut également avoir un <code>CONTENT</code> qui est exécuté lorsqu'elle est empruntée.
+	  </li>
 	</ul>
 
 
@@ -84,7 +95,7 @@
 
 	<h2>Choix</h2>
 
-	Un choix pouvant mener à deux situations différentes.
+	Un choix permettant au joueur de choisir une transition parmi plusieurs, et d'ainsi influencer la narration.
 
 	<h3>Code</h3>
 	<xmp class="box">
@@ -121,10 +132,12 @@
 	  </NARRATION>
 	</xmp>
 
-	<h3>Remarques</h3>
+	<h3>Explications</h3>
 	<ul>
-	  <li>R1</li>
-	  <li>R2</li>
+	  <li>
+		Une balise <code>CHOICE</code> associée à une <code>TRANSITION</code> indique que le joueur doit faire un choix.
+		Dans ce cas, le <code>CHOICE</code> de toutes les <code>TRANSITION</code> partant de la <code>SITUATION</code> actuelle s'afficheront, et la transition effectivement exécutée dépendra de la réponse fournie par le joueur.
+	  </li>
 	</ul>
 
 
@@ -133,7 +146,7 @@
 
 	<h2>Probabilités</h2>
 
-	Deux situations pouvant survenir de manière aléatoire.
+	Deux transitions, l'une d'entre elles est choisie de manière aléatoire.
 
 	<h3>Code</h3>
 	<xmp class="box">
@@ -170,10 +183,19 @@
 	  </NARRATION>
 	</xmp>
 
-	<h3>Remarques</h3>
+	<h3>Explications</h3>
 	<ul>
-	  <li>R1</li>
-	  <li>R2</li>
+	  <li>
+		S'il y a plusieurs <code>TRANSITION</code> (sans <code>CHOICE</code>) partant de la <code>SITUATION</code> actuelle, celle qui sera exécutée est choisie aléatoirement.
+		La balise <code>PROBABILITY</code> associée à une <code>TRANSITION</code> indique alors les chances que celle-ci soit exécutée.
+	  </li>
+	  <li>
+		Ici, la première <code>TRANSITION</code> a <code>200</code> chances d'être exécutée et la seconde <code>100</code>.
+		La première sera donc exécutée deux fois plus souvent que la seconde.
+	  </li>
+	  <li>
+		Une <code>TRANSITTION</code> sans <code>PROBABILITY</code> explicite a toujours une <code>PROBABILITY</code> de <code>100</code>.
+	  </li>
 	</ul>
 
 
@@ -221,7 +243,7 @@
 	  </NARRATION>
 	</xmp>
 
-	<h3>Remarques</h3>
+	<h3>Explications</h3>
 	<ul>
 	  <li>R1</li>
 	  <li>R2</li>
@@ -275,7 +297,7 @@
 	  </NARRATION>
 	</xmp>
 
-	<h3>Remarques</h3>
+	<h3>Explications</h3>
 	<ul>
 	  <li>R1</li>
 	  <li>R2</li>

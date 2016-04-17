@@ -249,13 +249,14 @@ const TiXmlElement *getElement (const TiXmlElement *element, string value, strin
 
 void executeContent (const TiXmlElement *content)
 {
+	bool printedText = false;
 	for (const TiXmlNode *node = content->FirstChild(); node; node = node->NextSibling())
 	{
 		const TiXmlElement *element = node->ToElement();
 		TiXmlString value = element->ValueTStr();
 		
 		// PRINT TEXT
-		if (value == "PRINT") { std::cout << element->GetText() << std::endl; }
+		if (value == "PRINT") { std::cout << element->GetText() << std::endl; printedText = true; }
 
 		// START OR END NEW NARRATION
 		else if (value == "END") { std::cout << "--- FIN DE L'AVENTURE ---" << std::endl; end = true; }
@@ -336,6 +337,8 @@ void executeContent (const TiXmlElement *content)
 
 		else { error (element, "unknown element"); }
 	}
+
+	if (printedText) { while (std::cin.get() != '\n'); }
 }
 
 
