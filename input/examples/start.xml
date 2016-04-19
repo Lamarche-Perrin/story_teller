@@ -1,0 +1,19 @@
+<NARRATION START="hello">
+
+  <SITUATION ID="hello">
+	<CONTENT>
+	  <PRINT>Hello...</PRINT>
+	  <START ID="interlude"/>
+	  <PRINT>...world!</PRINT>
+	  <END/>
+	</CONTENT>
+  </SITUATION>
+
+  <SITUATION ID="interlude">
+	<CONTENT>
+	  <PRINT>(Interlude)</PRINT>
+	  <END/>
+	</CONTENT>
+  </SITUATION>
+
+</NARRATION>

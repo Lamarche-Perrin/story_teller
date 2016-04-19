@@ -1,0 +1,71 @@
+<NARRATION START="hello">
+
+  <SITUATION ID="hello">
+	<CONTENT>
+	  <START ID="hello.aux"/>
+	</CONTENT>
+  </SITUATION>
+
+  <SITUATION ID="hello.aux"/>
+
+  <TRANSITION FROM="hello.aux" TO="hello.aux.first">
+	<PROBABILITY>100</PROBABILITY>
+  </TRANSITION>
+
+  <TRANSITION FROM="hello.aux" TO="hello.aux.second">
+	<PROBABILITY>100</PROBABILITY>
+  </TRANSITION>
+
+  <SITUATION ID="hello.aux.first">
+	<CONTENT>
+	  <PRINT>Hello...</PRINT>
+	  <END/>
+	</CONTENT>
+  </SITUATION>
+
+  <SITUATION ID="hello.aux.second">
+	<CONTENT>
+	  <PRINT>Good morning...</PRINT>
+	  <END/>
+	</CONTENT>
+  </SITUATION>
+
+  <TRANSITION FROM="hello" TO="world"/>
+
+  <SITUATION ID="world">
+	<CONTENT>
+	  <START ID="world.aux"/>
+	</CONTENT>
+  </SITUATION>
+
+  <SITUATION ID="world.aux"/>
+
+  <TRANSITION FROM="world.aux" TO="world.aux.first">
+	<PROBABILITY>200</PROBABILITY>
+  </TRANSITION>
+
+  <TRANSITION FROM="world.aux" TO="world.aux.second">
+	<PROBABILITY>100</PROBABILITY>
+  </TRANSITION>
+
+  <SITUATION ID="world.aux.first">
+	<CONTENT>
+	  <PRINT>...world!</PRINT>
+	  <END/>
+	</CONTENT>
+  </SITUATION>
+
+  <SITUATION ID="world.aux.second">
+	<CONTENT>
+	  <PRINT>...universe!</PRINT>
+	  <END/>
+	</CONTENT>
+  </SITUATION>
+
+  <TRANSITION FROM="world" TO="end"/>
+
+  <SITUATION ID="end">
+	<CONTENT><END/></CONTENT>
+  </SITUATION>
+
+</NARRATION>

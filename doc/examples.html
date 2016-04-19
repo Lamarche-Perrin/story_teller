@@ -10,15 +10,28 @@
 
   <body>
 
-	<h1>Les briques de base</h1>
+	<h1 id="top">Les briques de base</h1>
+
+	<ul>
+	  <li><a href="#situation">Situations</a></li>
+	  <li><a href="#transition">Transitions</a></li>
+	  <li><a href="#start">Narrations imbriquées</a></li>
+	  <li><a href="#wait">Pauses</a></li>
+	  <li><a href="#choice">Choix</a></li>
+	  <li><a href="#probability">Probabilités</a></li>
+	  <li><a href="#priority">Priorités</a></li>
+	  <li><a href="#binary">Variables binaires et conditions</a></li>
+	  <li><a href="#counter">Compteurs et conditions</a></li>
+	</ul>
+
 
 	<hr>
 
-	<h2>Hello world!</h2>
+	<h2 id="situation">Situations</h2>
 
 	Exemple de narration minimale&nbsp;: une unique situation.
 
-	<h3>Code</h3>
+	<h3>Code (<code>input/examples/situation.xml</code>)</h3>
 	<xmp class="box">
 	  <NARRATION START="hello">
 
@@ -44,15 +57,17 @@
 	  </li>
 	</ul>
 
+	<a href="#top">Retour</a>
+
 
 
 	<hr>
 
-	<h2>Transitions</h2>
+	<h2 id="transition">Transitions</h2>
 
 	Deux situations et une transition permettant de les relier.
 
-	<h3>Code</h3>
+	<h3>Code (<code>input/examples/transition.xml</code>)</h3>
 	<xmp class="box">
 	  <NARRATION START="hello">
 
@@ -89,15 +104,91 @@
 	  </li>
 	</ul>
 
+	<a href="#top">Retour</a>
 
 
 	<hr>
 
-	<h2>Choix</h2>
+	<h2 id="start">Narrations imbriquées</h2>
+
+	Une narration dans une narration.
+
+	<h3>Code (<code>input/examples/start.xml</code>)</h3>
+	<xmp class="box">
+	  <NARRATION START="hello">
+
+		<SITUATION ID="hello">
+		  <CONTENT>
+			<PRINT>Hello...</PRINT>
+			<START ID="interlude"/>
+			<PRINT>...world!</PRINT>
+			<END/>
+		  </CONTENT>
+		</SITUATION>
+
+		<SITUATION ID="interlude">
+		  <CONTENT>
+			<PRINT>(Interlude)</PRINT>
+			<END/>
+		  </CONTENT>
+		</SITUATION>
+
+	  </NARRATION>
+	</xmp>
+
+	<h3>Explications</h3>
+	<ul>
+	  <li>
+		La balise <code>START</code> dans un <code>CONTENT</code> permet de démarrer une nouvelle narration.
+		Lorsque celle-ci se termine (balise <code>END</code>), la narration précédente reprend là où on l'avait laissée.
+	  </li>
+	</ul>
+
+	<a href="#top">Retour</a>
+
+
+
+	<hr>
+
+	<h2 id="wait">Pauses</h2>
+
+	Une situation avec une pause.
+
+	<h3>Code (<code>input/examples/wait.xml</code>)</h3>
+	<xmp class="box">
+	  <NARRATION START="hello">
+
+		<SITUATION ID="hello">
+		  <CONTENT>
+			<PRINT>Hello...</PRINT>
+			<WAIT/>
+			<PRINT>...world!</PRINT>
+			<END/>
+		  </CONTENT>
+		</SITUATION>
+
+	  </NARRATION>
+	</xmp>
+
+	<h3>Explications</h3>
+	<ul>
+	  <li>
+		La balise <code>WAIT</code> dans un <code>CONTENT</code> permet d'introduire une pause dans la narration.
+		Le joueur doit alors presser "Entrée" pour continuer.
+	  </li>
+	</ul>
+
+	<a href="#top">Retour</a>
+
+
+
+	<hr>
+
+	<h2 id="choice">Choix</h2>
 
 	Un choix permettant au joueur de choisir une transition parmi plusieurs, et d'ainsi influencer la narration.
 
-	<h3>Code</h3>
+	<h3>Code (<code>input/examples/choice.xml</code>)</h3>
 	<xmp class="box">
 	  <NARRATION START="hello">
 
@@ -140,15 +231,17 @@
 	  </li>
 	</ul>
 
+	<a href="#top">Retour</a>
+
 
 
 	<hr>
 
-	<h2>Probabilités</h2>
+	<h2 id="probability">Probabilités</h2>
 
 	Deux transitions, l'une d'entre elles est choisie de manière aléatoire.
 
-	<h3>Code</h3>
+	<h3>Code (<code>input/examples/probability.xml</code>)</h3>
 	<xmp class="box">
 	  <NARRATION START="hello">
 
@@ -198,15 +291,17 @@
 	  </li>
 	</ul>
 
+	<a href="#top">Retour</a>
+
 
 
 	<hr>
 
-	<h2>Priorités</h2>
+	<h2 id="priority">Priorités</h2>
 
 	Plusieurs transitions en compétition, avec différents niveaux de priorité.
 
-	<h3>Code</h3>
+	<h3>Code (<code>input/examples/priority.xml</code>)</h3>
 	<xmp class="box">
 	  <NARRATION START="hello">
 
@@ -282,15 +377,17 @@
 	  </li>
 	</ul>
 
+	<a href="#top">Retour</a>
+
 
 
 	<hr>
 
-	<h2>Variables binaires et conditions</h2>
+	<h2 id="binary">Variables binaires et conditions</h2>
 
 	Un variable définie dans la première situation, et qui a un impact sur la trame narrative empruntée.
 
-	<h3>Code</h3>
+	<h3>Code (<code>input/examples/binary.xml</code>)</h3>
 	<xmp class="box">
 	  <NARRATION START="hello">
 
@@ -346,16 +443,17 @@
 	  </li>
 	</ul>
 
+	<a href="#top">Retour</a>
 
 
 
 	<hr>
 
-	<h2>Compteurs, conditions et priorités</h2>
+	<h2 id="counter">Compteurs et conditions</h2>
 
 	Un compteur qui peut être incrémenté et avoir un impact sur la narration.
 
-	<h3>Code</h3>
+	<h3>Code (<code>input/examples/counter.xml</code>)</h3>
 	<xmp class="box">
 	  <NARRATION START="hello">
 
@@ -408,6 +506,9 @@
 		<code>VALUE</code> est toujours la valeur de comparaison (nombre entier).
 	  </li>
 	</ul>
+
+	<a href="#top">Retour</a>
+
 
 	<hr>
 

@@ -35,14 +35,21 @@ using std::string;
 
 
 const TiXmlElement *getElement (const TiXmlElement *root, string value, string attribute, string id);
-bool executeContent (const TiXmlElement *content);
+void executeContent (const TiXmlElement *content);
+void executeNarration (const TiXmlElement *situation);
 
 void error (const TiXmlElement *element, string text);
 bool testValue (const TiXmlElement *element, string value);
 bool testAttribute (const TiXmlElement *element, string attribute);
 bool testChild (const TiXmlElement *element, string child);
 
+bool start = true;
+bool wait = false;
 bool end = false;
+bool verbose = false;
+
+const TiXmlElement *narration;
+
 std::map<string,string> types;
 std::map<string,bool> binaries;
 std::map<string,int> counters;
@@ -60,22 +67,37 @@ int main (int argc, char *argv[])
 	if (!document.LoadFile()) { std::cerr << "Error: Failed to load file " << filename << std::endl; }
 
 	// START NARRATION
-	const TiXmlElement *narration = document.RootElement ();
+	narration = document.RootElement ();
 	testValue(narration,"NARRATION");
 	testAttribute(narration,"START");
 	const TiXmlElement *situation = getElement(narration, "SITUATION", "ID", narration->Attribute("START"));
 	
 	std::cout << "--- L'AVENTURE COMMENCE ---" << std::endl;
+	while (std::cin.get() != '\n');
+	
+	executeNarration (situation);
+
+	if (end) {
+		while (std::cin.get() != '\n');
+		std::cout << "--- FIN DE L'AVENTURE ---" << std::endl;
+	}
+	
+	return EXIT_SUCCESS;
+}
+
+
+void executeNarration (const TiXmlElement *situation)
+{
+	end = false;
 
 	while (!end)
 	{
 		string situationId = situation->Attribute("ID");
-		bool printedText = false;
-		//std::cout << situationId << std::endl;
+		if (verbose) { std::cout << situationId << std::endl; }
 
 		// EXECUTE SITUATION
 		const TiXmlNode *nContent = situation->FirstChild("CONTENT");
-		if (nContent != NULL) { printedText = executeContent(nContent->ToElement()); }
+		if (nContent != NULL) { executeContent(nContent->ToElement()); }
 		if (end) { continue; }
 		
 		// GET TRANSITIONS
@@ -221,7 +243,7 @@ int main (int argc, char *argv[])
 			}
 
 			if (choiceNum == 0 || pass) {
-				if (!pass && printedText) { while (std::cin.get() != '\n'); }
+				//if (!pass) { while (std::cin.get() != '\n'); }
 				int r = rand() % probSum + 1;
 				int num = 0;
 
@@ -231,11 +253,9 @@ int main (int argc, char *argv[])
 
 
 			// EXECUTE TRANSITION
-			printedText = false;
 			const TiXmlNode *nContent = transition->FirstChild("CONTENT");
-			if (nContent != NULL) { printedText = executeContent(nContent->ToElement()); }
+			if (nContent != NULL) { executeContent(nContent->ToElement()); }
 			if (end) { continue; }
-			if (printedText) { while (std::cin.get() != '\n'); }
 
 			testAttribute(transition,"TO");
 			situation = getElement(narration, "SITUATION", "ID", transition->Attribute("TO"));
@@ -243,11 +263,9 @@ int main (int argc, char *argv[])
 		
 		else { error (situation, "No transition available"); }
 	}
-
-	return EXIT_SUCCESS;
 }
 
-
+		
 const TiXmlElement *getElement (const TiXmlElement *element, string value, string attribute, string id)
 {
 	const TiXmlNode *node;
@@ -261,19 +279,41 @@ const TiXmlElement *getElement (const TiXmlElement *element, string value, strin
 }
 
 
-bool executeContent (const TiXmlElement *content)
+void executeContent (const TiXmlElement *content)
 {
-	bool printedText = false;
+	bool alreadyWaited = start;
+	
 	for (const TiXmlNode *node = content->FirstChild(); node; node = node->NextSibling())
 	{
 		const TiXmlElement *element = node->ToElement();
 		TiXmlString value = element->ValueTStr();
 		
 		// PRINT TEXT
-		if (value == "PRINT") { std::cout << element->GetText() << std::endl; printedText = true; }
+		if (value == "PRINT")
+		{
+			if (!alreadyWaited) { while (std::cin.get() != '\n'); }
+			std::cout << element->GetText() << std::endl;
+			alreadyWaited = true;
+			wait = true;
+			start = false;
+		}
+		
+		// START NEW NARRATION
+		else if (value == "START")
+		{
+			wait = false;
+			testAttribute(element,"ID");
+			const TiXmlElement *newSituation = getElement (narration, "SITUATION", "ID", element->Attribute("ID"));
+			executeNarration (newSituation);
+			if (wait) { alreadyWaited = start; }
+			end = false;
+		}
 
-		// START OR END NEW NARRATION
-		else if (value == "END") { std::cout << "--- FIN DE L'AVENTURE ---" << std::endl; end = true; }
+		// END NEW NARRATION
+		else if (value == "END") { end = true; }
+
+		// WAIT
+		else if (value == "WAIT") { while (std::cin.get() != '\n'); }
 
 		// CREATE VARIABLES
 		else if (value == "VARIABLE")
@@ -351,8 +391,6 @@ bool executeContent (const TiXmlElement *content)
 
 		else { error (element, "unknown element"); }
 	}
-
-	return printedText;
 }
 
 
