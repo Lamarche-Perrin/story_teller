@@ -22,6 +22,7 @@
 
 #include <cstdlib>
 #include <iostream>
+#include <limits>
 #include <sys/time.h>
 
 #include <list>
@@ -78,7 +79,7 @@ int main (int argc, char *argv[])
 	executeNarration (situation);
 
 	if (end) {
-		while (std::cin.get() != '\n');
+		//while (std::cin.get() != '\n');
 		std::cout << "--- FIN DE L'AVENTURE ---" << std::endl;
 	}
 	
@@ -240,6 +241,7 @@ void executeNarration (const TiXmlElement *situation)
 				std::cout << std::endl;
 				transition = choices[num];
 				if (transition == NULL) { pass = true; }
+				std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 			}
 
 			if (choiceNum == 0 || pass) {
@@ -281,21 +283,23 @@ const TiXmlElement *getElement (const TiXmlElement *element, string value, strin
 
 void executeContent (const TiXmlElement *content)
 {
-	bool alreadyWaited = start;
+	//bool alreadyWaited = start;
 	
 	for (const TiXmlNode *node = content->FirstChild(); node; node = node->NextSibling())
 	{
 		const TiXmlElement *element = node->ToElement();
 		TiXmlString value = element->ValueTStr();
-		
+
+		//std::cout << value.c_str() << std::endl;
 		// PRINT TEXT
 		if (value == "PRINT")
 		{
-			if (!alreadyWaited) { while (std::cin.get() != '\n'); }
+			//if (!alreadyWaited) { while (std::cin.get() != '\n'); }
 			std::cout << element->GetText() << std::endl;
-			alreadyWaited = true;
+			//alreadyWaited = true;
 			wait = true;
 			start = false;
+			while (std::cin.get() != '\n');
 		}
 		
 		// START NEW NARRATION
@@ -305,7 +309,7 @@ void executeContent (const TiXmlElement *content)
 			testAttribute(element,"ID");
 			const TiXmlElement *newSituation = getElement (narration, "SITUATION", "ID", element->Attribute("ID"));
 			executeNarration (newSituation);
-			if (wait) { alreadyWaited = start; }
+			//if (wait) { alreadyWaited = start; }
 			end = false;
 		}
 

@@ -1,0 +1,885 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<NARRATION START="pre_introduction_1">
+  
+  <!-- SITUATION INITIALE -->
+  
+  <SITUATION ID="pre_introduction_1">
+	<CONTENT>
+	  <PRINT>--"Ahhhhh..."</PRINT>
+	  <WAIT/>	
+	</CONTENT>
+  </SITUATION>
+  
+  <TRANSITION FROM="pre_introduction_1" TO="pre_introduction_2"/>
+  
+  <SITUATION ID="pre_introduction_2">
+	<CONTENT>
+	  <PRINT>Baillements</PRINT>
+	  <WAIT/>	
+	</CONTENT>
+  </SITUATION>
+  
+  <TRANSITION FROM="pre_introduction_2" TO="pre_introduction_3"/>
+  
+  <SITUATION ID="pre_introduction_3">
+	<CONTENT>
+	  <PRINT>--"Ahhhhh... Mmhhh... Hein? Ou est-ce que je suis?"</PRINT>
+	  <WAIT/>	
+	</CONTENT>
+  </SITUATION>
+  
+  <TRANSITION FROM="pre_introduction_3" TO="introduction"/>
+  
+
+  <SITUATION ID="introduction">
+	<CONTENT>
+	  <PRINT>Vous ouvrez lentement les yeux. Le reveil est difficile. Vous etes engourdis,  tout semble comme tourner autour de vous. Mal a l'aise, nauseeux, vous vous redressez peniblement. Vous vous frottez longuement les paupieres. Vous etes assis sur le bord d'un lit, au milieu d'une petite salle decrepie..</PRINT>
+	  <WAIT/>	
+	</CONTENT>
+  </SITUATION>
+
+  <TRANSITION FROM="introduction" TO="introduction_2"/>
+  
+  <!---->
+  
+  <SITUATION ID="introduction_2">
+	<CONTENT>
+	  <PRINT>Au fond de la salle, en face de vous, vous apercevez une porte. Sur votre droite, au dessus d'un lambris de bois vieillissant, une fenetre depuis laquelle des ombres semblent defiler, inlassablement. Enfin, dans le coin entre la fenetre et la porte se dresse un cabinet de travail en bois d'acajou.</PRINT>
+	  <WAIT/>	
+	</CONTENT>
+  </SITUATION>
+
+  <TRANSITION FROM="introduction_2" TO="introduction_choix"/>
+
+  <!-- SITUATIONS DE BASE -->
+
+  <SITUATION ID="introduction_choix"/>
+
+  <TRANSITION FROM="introduction_choix" TO="porte">
+	<CHOICE>Se deplacer vers la porte</CHOICE>
+	<CONTENT>
+	  <PRINT>Vous vous deplacez vers la porte.</PRINT>
+	</CONTENT>
+  </TRANSITION>
+
+  <TRANSITION FROM="introduction_choix" TO="fenetre">
+	<CHOICE>Aller voir a la fenetre</CHOICE>
+	<CONTENT>
+	  <PRINT>Vous marchez jusqu'a la fenetre.</PRINT>
+	</CONTENT>
+  </TRANSITION>
+
+  <TRANSITION FROM="introduction_choix" TO="cabinet">
+	<CHOICE>Se diriger vers le cabinet de travail</CHOICE>
+	<CONTENT>
+	  <PRINT>Vous vous dirigez jusqu'au cabinet de travail.</PRINT>
+	</CONTENT>
+  </TRANSITION>
+
+  <!-- SITUATIONS DE LA SALLE -->
+  
+  <SITUATION ID="porte">
+	<CONTENT>
+	  <PRINT>Vous vous approchez de la porte. Contrairement a l'aspect general de la piece, vieillot et ruineux, la porte vous semble recente et de bonne facture. Un metal solide, probablement de l'acier pensez-vous. En approchant votre main de la poignee vous ne sentez aucune sensation particuliere : le froid du metal auquel vous vous seriez attendu n'est pas au rendez-vous. Vous sentez simplement que la poignee est agrippee, la, dans votre main.</PRINT>
+	  <WAIT/>
+	</CONTENT>
+  </SITUATION>
+
+  <TRANSITION FROM="porte" TO="porte_choix"/> 
+  
+  <SITUATION ID="porte_choix"/>
+
+  <TRANSITION FROM="porte_choix" TO="ouvrir">
+	<CHOICE>Ouvrir la porte</CHOICE>
+	<CONTENT>
+	  <PRINT>Vous tournez doucement la poignee et ouvrez la porte.</PRINT>
+	</CONTENT>
+  </TRANSITION>
+
+  <TRANSITION FROM="porte_choix" TO="introduction_2">
+	<CHOICE>Revenir au centre de la piece</CHOICE>
+	<CONTENT>
+	  <PRINT>Vous lachez la poignee et vous revenez vers le centre de la piece, vers le lit.</PRINT>
+	</CONTENT>
+  </TRANSITION>
+  
+  <SITUATION ID="ouvrir">
+	<CONTENT>
+	  <PRINT>La porte grince et s'ouvre sur une ruelle de banlieue pavillonnaire. Cet endroit vous est famillier. Vous ne savez pas exactement ou vous vous trouvez, mais vous etes deja venu ici.</PRINT>
+	  <WAIT/>
+	</CONTENT>
+  </SITUATION>
+  
+  <TRANSITION FROM="ouvrir" TO="ouvrir_choix"/> 
+
+  <SITUATION ID="ouvrir_choix"/>
+
+  <TRANSITION FROM="ouvrir_choix" TO="avancer">
+	<CHOICE>S'avancer</CHOICE>
+	<CONTENT>
+	  <PRINT>Vous faites un pas en avant.</PRINT>
+	</CONTENT>
+  </TRANSITION>
+  
+  <TRANSITION FROM="ouvrir_choix" TO="attendre">
+	<CHOICE>Attendre</CHOICE>
+	<CONTENT>
+	  <PRINT>Vous vous accoudez au bord de la porte et attendez.</PRINT>
+	</CONTENT>
+  </TRANSITION>
+
+  <TRANSITION FROM="ouvrir_choix" TO="introduction_2">
+	<CHOICE>Fermer la porte et revenir vers le lit</CHOICE>
+	<CONTENT>
+	  <PRINT>Vous fermez la porte et revenez vers le centre de la piece.</PRINT>
+	</CONTENT>
+  </TRANSITION>
+  
+  <SITUATION ID="avancer">
+	<CONTENT>
+	  <PRINT>Vous essayer de franchir le seuil de la porte, mais vous vous sentez comme englue dans une matiere invisible mais tres dense qui vous empeche d'avancer. Vous essayez de vous accrocher avec les bras sur l'encadrure de la porte en poussant de toute vos forces pour vous extirper de la piece, mais rien a faire, l'exterieur vous resiste. Apres plusieurs tentatives infructueuses, epuise, vous considerez de nouveau la porte infranchissable, irrite.</PRINT>
+	  <WAIT/>	
+	</CONTENT>
+  </SITUATION>
+  
+  <TRANSITION FROM="avancer" TO="ouvrir_choix"/> 
+  
+  <SITUATION ID="attendre">
+	<CONTENT>
+	  <PRINT>Vous attendez une minute, rien ne se passe. Au bout de 5 minutes, une femme passe lentement dans la rue en poussant un landau. Vous n’apercevez pas de bebe a l'interieur : il vous semble meme etre vide, ou completement noir. Vous helez la femme, mais elle vous ignore, tout en s'eloignant progressivement..</PRINT>
+	  <WAIT/>	
+	</CONTENT>
+  </SITUATION>
+
+  <TRANSITION FROM="attendre" TO="attendre_choix"/> 
+
+  <SITUATION ID="attendre_choix"/>
+
+  <TRANSITION FROM="attendre_choix" TO="avancer">
+	<CHOICE>S'avancer</CHOICE>
+	<CONTENT>
+	  <PRINT>Vous faites un pas en avant.</PRINT>
+	</CONTENT>
+  </TRANSITION>
+  
+  <TRANSITION FROM="attendre_choix" TO="attendre2">
+	<CHOICE>Attendre encore</CHOICE>
+	<CONTENT>
+	  <PRINT>Vous attendez encore cinq minutes.</PRINT>
+	</CONTENT>
+  </TRANSITION>
+
+  <TRANSITION FROM="attendre_choix" TO="introduction_2">
+	<CHOICE>Fermer la porte et revenir vers le lit</CHOICE>
+	<CONTENT>
+	  <PRINT>Vous fermez la porte et revenez vers le centre de la piece.</PRINT>
+	</CONTENT>
+  </TRANSITION>
+  
+  <SITUATION ID="attendre2">
+	<CONTENT>
+	  <PRINT>Vous voyez un des voisins sortir de sa maison en jogging. Sous son porche, il met de la musique sur son MP3, porte son casque a ses oreilles, et commence a courir. Il passe dans la rue devant votre porte. Vous le saluez, mais il ne semble pas vous apercevoir. Vous lui criez dessus pour qu'il se retourne, mais rien ne semble l'ebranler.</PRINT>
+	  <WAIT/>
+	</CONTENT>
+  </SITUATION>
+
+  <TRANSITION FROM="attendre2" TO="ouvrir_choix"/> 
+  
+  
+  <SITUATION ID="fenetre">
+	<CONTENT>
+	  <PRINT>En vous approchant de la fenetre, vous remarquez que vous etes dans un immeuble. En face de vous, une ribambelle de gratte-ciels vous barrent la vue. Vous comprenez que les silhouettes que vous aperceviez depuis votre lit n'etaient rien d'autres que vos voisins mitoyens qui s'affairaient dans l'immeuble d'en face. En bas, vous n'apercevez pas la rue, vous en deduisez que vous devez etre tres haut, plus d'une centaine d'etages, pour sur.</PRINT>
+	  <WAIT/>
+	</CONTENT>
+  </SITUATION>
+
+  <TRANSITION FROM="fenetre" TO="fenetre_choix"/> 
+  
+  
+  <SITUATION ID="fenetre_choix"/>
+
+  
+  <TRANSITION FROM="fenetre_choix" TO="attendre_fenetre">
+	<CHOICE>Attendre et observer</CHOICE>
+	<CONTENT>
+	  <PRINT>Vous regardez ce qui se passe a l'exterieur d'un peu plus pres.</PRINT>
+	</CONTENT>
+  </TRANSITION>
+
+  <TRANSITION FROM="fenetre_choix" TO="introduction_2">
+	<CHOICE>Revenir au centre de la piece.</CHOICE>
+	<CONTENT>
+	  <PRINT>Vous vous ecartez de le fenetre, et vous revenez vers le centre de la piece.</PRINT>
+	</CONTENT>
+  </TRANSITION>  
+  
+  <SITUATION ID="attendre_fenetre">
+	<CONTENT>
+	  <PRINT>vous observez avec plus d'attention vos voisins d'en face. Plusieurs rideaux sont tires, et des volets fermes. Le soleil donne sur ce versant de l'immeuble. Quelques etages plus bas, vous voyez une famille assise devant la tele. Sur le meme niveau, quelques fenetres a droites, un homme en calecon tire un rideau. Au dessus de vous, vous apercevez aussi un homme en costard en train de se parler a lui-meme dans une glace (il est probablement dans sa salle de bain pensez-vous).</PRINT>
+	  <WAIT/>
+	</CONTENT>
+  </SITUATION>
+
+  <TRANSITION FROM="attendre_fenetre" TO="fenetre_choix2"/> 
+  
+  <SITUATION ID="fenetre_choix2"/>
+  
+  <TRANSITION FROM="fenetre_choix2" TO="attendre_fenetre2">
+	<CHOICE>Attendre et observer encore un peu.</CHOICE>
+	<CONTENT>
+	  <PRINT>Vous continuer a regardez ce qui se passe par la fenetre.</PRINT>
+	</CONTENT>
+  </TRANSITION>
+
+  <TRANSITION FROM="fenetre_choix2" TO="introduction_2">
+	<CHOICE>Revenir vers le lit.</CHOICE>
+	<CONTENT>
+	  <PRINT>Vous vous ecartez de le fenetre, et vous revenez vers le centre de la piece.</PRINT>
+	</CONTENT>  
+  </TRANSITION>
+  
+  <SITUATION ID="attendre_fenetre2">
+	<CONTENT>
+	  <PRINT>La scene est d'une inconsolable banalite. Rien ne bouge, rien ne change : le soleil reste a la meme place, la famille en bas continue de regarder la tele, l'homme au costard continue de se parler a lui-meme, et le type en calcon vient ouvrir et refermer constamment son rideau. C'est ennuyeux. Vous decidez de revenir vers le lit..</PRINT>
+	  <WAIT/>	
+	</CONTENT>
+  </SITUATION>
+
+  <TRANSITION FROM="attendre_fenetre2" TO="introduction_2"/> 
+
+
+  <SITUATION ID="cabinet">
+	<CONTENT>
+	  <PRINT>Le cabinet de travail est tres simple et rustique. Du vieux bois vermoulu. Sur un des coins, vous remarquez des inscriptions que vous n'arrivez pas a dechiffrer. Au milieu trone un telecom flambant neuf. Il est pose sur une petite boite a bijou en laque noire. Les tiroirs sont vides, sauf un, qui comporte un exemplaire du Volume 5 de l'Encyclopedie de D'Alembert - lettre L a Q.</PRINT>
+	  <WAIT/>	 
+	</CONTENT>
+  </SITUATION>
+  
+  <TRANSITION FROM="cabinet" TO="cabinet_choix"/> 
+  
+  <SITUATION ID="cabinet_choix"/>
+  
+  <TRANSITION FROM="cabinet_choix" TO="boite">
+	<CHOICE>Prendre la boite et l'examiner.</CHOICE>
+	<CONTENT>
+	  <PRINT>Vous enlevez le telecom de la boite et vous vous saisissez de la boite de votre main droite.</PRINT>
+	</CONTENT>
+  </TRANSITION>
+
+  <TRANSITION FROM="cabinet_choix" TO="telecom">
+	<CHOICE>Allumer le telecom</CHOICE>
+	<CONTENT>
+	  <PRINT>Vous prenez le telecom et appuyez sur le bouton ON.</PRINT>
+	</CONTENT>  
+  </TRANSITION>
+  
+  <TRANSITION FROM="cabinet_choix" TO="encyclopedie">
+	<CHOICE>Consulter l'encyclopedie.</CHOICE>
+	<CONTENT>
+	  <PRINT>Vous vous baissez pour saisir l'encyclopedie dans le tirroir.</PRINT>
+	</CONTENT>  
+  </TRANSITION>
+  
+  <TRANSITION FROM="cabinet_choix" TO="introduction_2">
+	<CHOICE>Revenir au centre de la salle.</CHOICE>
+	<CONTENT>
+	  <PRINT>Vous memorisez les objets du cabinet, puis vous revenez vers le lit, au centre de la salle.</PRINT>
+	</CONTENT>
+  </TRANSITION>
+  
+  <SITUATION ID="boite">
+	<CONTENT>
+	  <PRINT>Vous essayez de vous saisir de la boite a bijou, mais des que vous l'attrapez, elle vous coule entre les mains. D'abord surpris, vous vous reessayez en tenant plus vigoureusement et plus fermement la boite. Mais le resultat est toujours le meme : elle vous glisse des mains comme un liquide visqueux pour se reformer intact sur la table, a sa meme place. Un systeme de protection plutot efficace !</PRINT>
+	  <WAIT/>
+	</CONTENT>
+  </SITUATION>
+
+  <TRANSITION FROM="boite" TO="cabinet_choix"/> 
+  
+  <SITUATION ID="encyclopedie">
+	<CONTENT>
+	  <PRINT>Vous prenez l'encyclopedie entre vos mains et vous la feuilleutez. Vous l'ouvrez au hasard aux pages 537-538 pour tomber sur une description barbante de la guerre de Laytown. Vous tournez les pages et vous vous rendez compte qu'il n'existe que des pages 537-538. Etrange. Plus curieux encore : que vous tourniez une, dix ou cent pages, le livre semble toujours etre ouvert au milieu, avec le meme nombre de pages avant et apres. Vous reposez l'encyclopedie la ou vous l'avez trouve.</PRINT>
+	  <WAIT/>	
+	</CONTENT>
+  </SITUATION>
+
+  <TRANSITION FROM="encyclopedie" TO="cabinet_choix"/> 
+  
+  
+  <SITUATION ID="telecom">
+	<CONTENT>
+	  <PRINT>En allumant le telecom, un son affreux gresille dans le petit haut-parleur tenu par un fil tresse au boitier du telecom. Vous voyez une antenne recroqueville au dos du boitier, et vous la depliez. Une voix se fait entendre derriere des crepitements desagreables. Plus vous allongez l'antenne, plus le son devient net : </PRINT>
+	  <WAIT/>
+	</CONTENT>
+  </SITUATION>
+
+  <TRANSITION FROM="telecom" TO="telecom_1"/> 
+  
+  <SITUATION ID="telecom_1">
+	<CONTENT>
+	  <PRINT>	Grrrrrrr Crrrr "All..."     Grrrrrr Crrrr  "Allo Allo ?"    Crrrrrrrrr    crrr "Allo Paul tu m'entends ? Tu m'entends Paul ?"</PRINT>
+	  <WAIT/>
+	</CONTENT>
+  </SITUATION>
+
+  <TRANSITION FROM="telecom_1" TO="telecom_2"/> 
+
+  <SITUATION ID="telecom_2">
+	<CONTENT>
+	  <PRINT>--"Oui, je vous entends. Qui est-ce ?"</PRINT>
+	  <WAIT/>
+	</CONTENT>
+  </SITUATION>
+
+  <TRANSITION FROM="telecom_2" TO="telecom_3"/> 
+  
+  <SITUATION ID="telecom_3">
+	<CONTENT>
+	  <PRINT>--"Paul ? Ah Paul, c'est moi ! C'est Paul."</PRINT>
+	  <WAIT/>	
+	</CONTENT>
+  </SITUATION>
+
+  <TRANSITION FROM="telecom_3" TO="telecom_4"/> 
+  
+  <SITUATION ID="telecom_4">
+	<CONTENT>
+	  <PRINT>--"Quoi ? Qui ? Paul ? C'est qui Paul ? Vous ou moi ?"</PRINT>
+	  <WAIT/>
+	</CONTENT>
+  </SITUATION>
+
+  <TRANSITION FROM="telecom_4" TO="telecom_5"/>
+  
+  <SITUATION ID="telecom_5">
+	<CONTENT>
+	  <PRINT>--"Allons Paul, tu te souviens n'est-ce pas?"</PRINT>
+	  <WAIT/>
+	</CONTENT>
+  </SITUATION>
+
+  <TRANSITION FROM="telecom_5" TO="telecom_5choix"/>
+  
+  <SITUATION ID="telecom_5choix"/>
+  
+  <TRANSITION FROM="telecom_5choix" TO="telecom_5_non">
+	<CHOICE>Non</CHOICE>
+	<CONTENT>
+	  <PRINT>--"Non, je ne me souviens de rien".</PRINT>
+	</CONTENT>
+  </TRANSITION>
+
+  <SITUATION ID="telecom_5_non">
+	<CONTENT>
+	  <PRINT>--"Non?: Vraiment rien? C'est probablement normal..." </PRINT>
+	  <WAIT/>	
+	</CONTENT>
+  </SITUATION>
+
+  <TRANSITION FROM="telecom_5_non" TO="telecom_5_non_2"/>
+  
+  <SITUATION ID="telecom_5_non_2">
+	<CONTENT>
+	  <PRINT>--"...Les medecins de la simulation m'avaient prevenus que ca pouvait arriver. Pour tout te dire, tres rapidement car nous n'avons pas beaucoup de temps et que tu me coute cher, tu es une COPIE, un double de moi si tu preferes. Tu as ete numerise et transpose dans un programme informatique qui te simules, tel que je suis. Enfin tel que j'etais avant la numerisation. Tu as tout de moi : mes souvenirs, mon apparence. Tout ! Sauf que tu es a l'interieur et moi a l'exterieur.".. </PRINT>
+	  <WAIT/>	
+	</CONTENT>
+  </SITUATION>
+
+  <TRANSITION FROM="telecom_5_non_2" TO="telecom_6"/>
+
+  <TRANSITION FROM="telecom_5choix" TO="telecom_6">
+	<CHOICE>Oui</CHOICE>
+	<CONTENT>
+	  <PRINT>Ah oui, ca me reviens.</PRINT>
+	</CONTENT>    
+  </TRANSITION>
+  
+  <SITUATION ID="telecom_6">
+	<CONTENT>
+	  <PRINT>--"Ca y est, oui, je me souviens, mon enfance, enfin notre enfance, les ruelles me reviennent, et puis mon appartement a la ville, mon travail, ma mission, mes recherches. Oui, je devais aller me faire numeriser pour mes recherches sur la consciences. Je devais avoir 2 jours de machine complet."</PRINT>
+	  <WAIT/>	
+	</CONTENT>
+  </SITUATION>
+
+  <TRANSITION FROM="telecom_6" TO="telecom_7"/>
+  
+  <SITUATION ID="telecom_7">
+	<CONTENT>
+	  <PRINT>--"Oui, c'est bien cela Paul" repond une voix lointaine dans le telecom, "toi et moi nous sommes la meme personne, tu es mon CLONE. Et toi et moi nous avons encore une petite journee de temps-machine, alors il faut que nous nous pressions pour faire nos experiences." Vous notez une touche d'impatience dans la voix de votre alter-ego exterieur. Se presser, oui, facile a dire, sauf que c'est lui qui est a l'exterieur, c'est lui qui, a la fin de cette journee continuera a vivre, tandis que vous, la copie serez supprime. Mais vous etiez prepare a cette eventualite. Il ne faut pas trop y penser et se mettre au travail. La voix nasillarde vous revient, vous ne pensez plus qu'il s'agit de vous, mais vous imaginez un LUTIN malicieux en train de prendre votre timbre de voix pour vous parler, et il poursuit, : "il faut nous y mettre Paul."</PRINT>
+	  <WAIT/>	
+	</CONTENT>
+  </SITUATION>
+
+  <TRANSITION FROM="telecom_7" TO="telecom_7_choix"/>
+  
+  
+  <SITUATION ID="telecom_7_choix"/>
+  
+  <TRANSITION FROM="telecom_7_choix" TO="telecom_7_non">
+	<CHOICE>Hors de question!</CHOICE>
+	<CONTENT>
+	  <PRINT>--"Non, je ne veux pas poursuivre notre petite experience".</PRINT>
+	</CONTENT>
+  </TRANSITION>
+
+  <SITUATION ID="telecom_7_non">
+ 	<CONTENT>
+	  <PRINT>--"Non, Paul-exterieur, c'est bien trop facile : toi tu vas survivre pendant que moi je vais te servir, l'espace d'une journee avant que tu ne me supprimes comme un vulgaire programme que l'on met a la corbeille. Et bien non, je refuse de travailler pour toi, et tu peux creer autant de Clones que tu voudras, si je refuse aujourd'hui et maintenant, ce sera pareil pour tous les autres moi. Alors arrete tes experiences, arrete de me/nous faire souffrir nous autres Copies !" </PRINT>
+	  <WAIT/>    
+    </CONTENT>
+  </SITUATION>
+  
+  <TRANSITION FROM="telecom_7_non" TO="introduction"/>
+
+  <TRANSITION FROM="telecom_7_choix" TO="telecom_8">
+	<CHOICE>Ok</CHOICE>
+	<CONTENT>
+	  <PRINT>--"Bon tres bien", maugerez-vous en vous resignant..</PRINT>
+	</CONTENT>
+  </TRANSITION>
+  
+  
+  
+  <SITUATION ID="telecom_8">
+	<CONTENT>
+	  <PRINT>--"Tu te souviens de la procedure ? Je vais effectuer une serie d'experiences en faisant varier tes supports numeriques de conscience, et tes releves me diront ce que tu resentiras, si ta conscience et toujours unie ou si elle se disloque. Pour cela, tu n'as qu'a, de ton cote, compter jusqu'a 5. Je comparerai ensuite tes donnees a celles de l'autre Copie-test qui vivra les memes experiences que toi."</PRINT>
+	  <WAIT/>	
+	</CONTENT>
+  </SITUATION>
+
+  <TRANSITION FROM="telecom_8" TO="telecom_9"/>
+  
+  <SITUATION ID="telecom_9">
+	<CONTENT>
+	  <PRINT>--"Attends avant de commencer! Attends une minute. Dis moi, c'est qui la Copie-test, l'autre? ... ou moi? "</PRINT>
+	  <WAIT/>	
+	</CONTENT>
+  </SITUATION>
+
+  <TRANSITION FROM="telecom_9" TO="telecom_10"/>
+  
+  <SITUATION ID="telecom_10">
+	<CONTENT>
+	  <PRINT>--"Est-ce vraiment important de le savoir? Allons cesse de nous retarder et fait preuve de bonne volonte veux-tu?"</PRINT>
+	  <WAIT/>	
+	</CONTENT>
+  </SITUATION>
+
+  <TRANSITION FROM="telecom_10" TO="telecom_10choix"/>
+  
+  
+  <SITUATION ID="telecom_10choix"/>
+  
+  <TRANSITION FROM="telecom_10choix" TO="telecom_10_argumenter">
+	<CHOICE>Contiuner a argumenter</CHOICE>
+	<CONTENT>
+	  <PRINT>Vous essayez de discuter avec le Lutin exterieur.</PRINT>
+	</CONTENT>
+  </TRANSITION>
+  
+  <TRANSITION FROM="telecom_10choix" TO="telecom_10_poursuivre">
+	<CHOICE>Suivre le Lutin et continuer l'experience.</CHOICE>
+	<CONTENT>
+	  <PRINT>Vous ravalez votre fierete, et vous poursuivez l'experience.</PRINT>
+	</CONTENT>
+  </TRANSITION>
+  
+  <SITUATION ID="telecom_10_argumenter">
+	<CONTENT>
+	  <PRINT>--"Non, je ne suis pas d'accord, nous devons en parler, je ne voyais pas ces choses la quand j'etais toi, enfin quand nous etions la meme personne, mais maintenant que je suis a l'interieur je vois les choses differemment, et je peux te dire que ce que nous faisons, enfin ce que tu fais a de lourdes consequences ethiques, tu ne peux pas decider comme ca impunement de la vie et de la mort de.... "</PRINT>
+	  <WAIT/>	
+	</CONTENT>
+  </SITUATION>
+
+  <TRANSITION FROM="telecom_10_argumenter" TO="introduction"/>
+  
+  <SITUATION ID="telecom_10_poursuivre">
+	<CONTENT>
+	  <PRINT>--"Non tu as raison, admettez-vous, je prefere ne pas le savoir"</PRINT>
+	  <WAIT/>	
+	</CONTENT>
+  </SITUATION>
+
+  <TRANSITION FROM="telecom_10_poursuivre" TO="telecom_11"/>
+  
+  <SITUATION ID="telecom_11">
+	<CONTENT>
+	  <PRINT>--"Merci, j'aime mieux cette attitude. Allons, hauts les coeurs, tout sera bientot fini. Comment te sens-tu, veux tu que nous commencions doucement par l'experience 1, ou pouvons nous passer directement a la deuxieme pour gagner du temps?"</PRINT>
+	  <WAIT/>	
+	</CONTENT>
+  </SITUATION>
+
+  <TRANSITION FROM="telecom_11" TO="telecom_11_choix"/>
+
+
+  <SITUATION ID="telecom_11_choix"/>
+  
+  <TRANSITION FROM="telecom_11_choix" TO="experience_1">
+	<CHOICE>Experience 1</CHOICE>
+	<CONTENT>
+	  <PRINT>--" Procedons par ordre et soyons consciencieux, commencons par l'experience 1."</PRINT>
+	</CONTENT>
+  </TRANSITION>
+  
+  <TRANSITION FROM="telecom_11_choix" TO="experience_2">
+	<CHOICE>Passer directement a l'experience 2.</CHOICE>
+	<CONTENT>
+	  <PRINT>--"Ne perdons pas de temps et finissons-en : commencons directement par l'experience 2.".</PRINT>
+	</CONTENT>
+  </TRANSITION>
+  
+  
+  <SITUATION ID="experience_1">
+	<CONTENT>
+	  <PRINT>--"Tres bien, alors je vais commencer par espacer les differents moments de calculs qui te produisent, tu es pret? Compte jusqu'a 5... maintenant!"</PRINT>
+	  <WAIT/>	
+	</CONTENT>
+  </SITUATION>
+
+  <TRANSITION FROM="experience_1" TO="1"/>
+  
+  <SITUATION ID="1">
+	<CONTENT>
+	  <PRINT>--"1..."</PRINT>
+	  <WAIT/>	
+	</CONTENT>
+  </SITUATION>
+  <TRANSITION FROM="1" TO="2"/>
+  
+  <SITUATION ID="2">
+	<CONTENT>
+	  <PRINT>--"...2.."</PRINT>
+	  <WAIT/>	
+	</CONTENT>
+  </SITUATION>
+  <TRANSITION FROM="2" TO="3"/>
+  
+  <SITUATION ID="3">
+	<CONTENT>
+	  <PRINT>--"...3..."</PRINT>
+	  <WAIT/>	
+	</CONTENT>
+  </SITUATION>
+  <TRANSITION FROM="3" TO="4"/>
+  
+  <SITUATION ID="4">
+	<CONTENT>
+	  <PRINT>--"...4..."</PRINT>
+	  <WAIT/>	
+	</CONTENT>
+  </SITUATION>
+  <TRANSITION FROM="4" TO="5"/>
+  
+  <SITUATION ID="5">
+	<CONTENT>
+	  <PRINT>--"...5!"</PRINT>
+	  <WAIT/>	
+	</CONTENT>
+  </SITUATION>
+  <TRANSITION FROM="5" TO="experience_1_2"/>
+  
+  <SITUATION ID="experience_1_2">
+	<CONTENT>
+	  <PRINT>--"Alors qu'as tu ressenti?" Vous demande le Lutin. </PRINT>
+	  <WAIT/>	
+	</CONTENT>
+  </SITUATION>
+  <TRANSITION FROM="experience_1_2" TO="experience_1_3"/>
+  
+  <SITUATION ID="experience_1_3">
+	<CONTENT>
+	  <PRINT>--"Rien, j'ai compte jusqu'a 5, voila tout. Que disent tes releves et les compteurs?"</PRINT>
+	  <WAIT/>	
+	</CONTENT>
+  </SITUATION>
+  <TRANSITION FROM="experience_1_3" TO="experience_1_4"/>
+  
+  <SITUATION ID="experience_1_4">
+	<CONTENT>
+	  <PRINT>--"Et bien... tout est conforme a ce qu'on avait prevu : tu es totalement stable et le temps de ta conscience semble s'etre accommode des longueurs du calcul. Ta conscience a tenu le coup.". </PRINT>
+	  <WAIT/>	
+	</CONTENT>
+  </SITUATION>
+  <TRANSITION FROM="experience_1_4" TO="experience_1_5"/>
+  
+  <SITUATION ID="experience_1_5">
+	<CONTENT>
+	  <PRINT>--"Super, tu m'en vois ravi, je n'ose meme pas imaginer a quoi aurait pu correspondre l'echec de cette premiere experience. Ma conscience dechiree par la machine. Aurais-je seulement ressenti quelque chose? Aurais-je souffert? Comment savoir. Mais c'est bien facile de te rejouir pour toi qui es confortablement assis a l'exterieur hein?". </PRINT>
+	  <WAIT/>	
+	</CONTENT>
+  </SITUATION>
+  <TRANSITION FROM="experience_1_5" TO="experience_1_6"/>
+  
+  
+  <SITUATION ID="experience_1_6">
+	<CONTENT>
+	  <PRINT>--"Allons, allons, pas de rancune je t'en prie. Nous avons decide cela tous les deux, rappelles-toi. Bien sur, c'est moi qui suis a l'exterieur aujourd'hui, mais tu ne peux t'en vouloir qu'a toi meme d'etre la, et tu le sais bien. Passons a la seconde experience." </PRINT>
+	  <WAIT/>	
+	</CONTENT>
+  </SITUATION>
+  <TRANSITION FROM="experience_1_6" TO="experience_1_7"/>
+  
+  <SITUATION ID="experience_1_7">
+ 	<CONTENT>
+	  <PRINT>Vous acquiescez, malgre vous.</PRINT>
+	  <WAIT/>	
+	</CONTENT>
+  </SITUATION>
+  <TRANSITION FROM="experience_1_7" TO="experience_2"/>
+
+  <SITUATION ID="experience_2">
+ 	<CONTENT>
+	  <PRINT>--"Tres bien" vous dit le Lutin "Si la premiere experience sert a te mettre en phase avec le programme, a te situer du point de vue du calcul, avec cette deuxieme experience, je vais essayer de voir si ta conscience de Copie tient le coup a un changement de materiel de calcul : autrement dit, je vais changer tres rapidement les supports physiques qui soutiennent ta conscience, et je vais essayer de voir si tu restes coherent, stable. Pour cela, tu n'as qu'une chose a faire : compter jusqu'a 5 et me dire comment tu te sens. Je verrai bien tout cela traduit sur mon moniteur, mais le compte-rendu oral est important : la continuite de la conscience est aussi une affaire subjective. Pret? Au top, tu compteras jusqu'a 5. Un, deux, trois, TOP!".</PRINT>
+	  <WAIT/>	
+	</CONTENT>
+  </SITUATION>
+  <TRANSITION FROM="experience_2" TO="1_2"/>
+  
+  <SITUATION ID="1_2">
+	<CONTENT>
+	  <PRINT>--"1..."</PRINT>
+	  <WAIT/>	
+	</CONTENT>
+  </SITUATION>
+  <TRANSITION FROM="1_2" TO="2_2"/>
+  
+  <SITUATION ID="2_2">
+	<CONTENT>
+	  <PRINT>--"...2.."</PRINT>
+	  <WAIT/>	
+	</CONTENT>
+  </SITUATION>
+  <TRANSITION FROM="2_2" TO="3_2"/>
+  
+  <SITUATION ID="3_2">
+	<CONTENT>
+	  <PRINT>--"...3..."</PRINT>
+	  <WAIT/>	
+	</CONTENT>
+  </SITUATION>
+  <TRANSITION FROM="3_2" TO="4_2"/>
+  
+  <SITUATION ID="4_2">
+	<CONTENT>
+	  <PRINT>--"...4..."</PRINT>
+	  <WAIT/>	
+	</CONTENT>
+  </SITUATION>
+  <TRANSITION FROM="4_2" TO="5_2"/>
+  
+  <SITUATION ID="5_2">
+	<CONTENT>
+	  <PRINT>--"...5!"</PRINT>
+	  <WAIT/>	
+	</CONTENT>
+  </SITUATION>
+  <TRANSITION FROM="5_2" TO="experience_2_2"/>  
+  
+  <SITUATION ID="experience_2_2">
+	<CONTENT>
+	  <PRINT>--"Tu es toujours la ?" La voix du Lutin exterieur gresille dans le telecom.</PRINT>
+	  <WAIT/>	
+	</CONTENT>
+  </SITUATION>
+  <TRANSITION FROM="experience_2_2" TO="experience_2_3"/>  
+  
+  <SITUATION ID="experience_2_3">
+	<CONTENT>
+	  <PRINT>Vous avez envie de le faire patienter, juste pour avoir le sentiment de garder une once de pouvoir sur votre vie, et sur la sienne.</PRINT>
+	  <WAIT/>	
+	</CONTENT>
+  </SITUATION>
+  <TRANSITION FROM="experience_2_3" TO="experience_2_4"/>  
+  
+  <SITUATION ID="experience_2_4">
+	<CONTENT>
+	  <PRINT>--" Allo? Tu m'entends?"</PRINT>
+	  <WAIT/>	
+	</CONTENT>
+  </SITUATION>
+  <TRANSITION FROM="experience_2_4" TO="experience_2_5"/>  
+  
+  <SITUATION ID="experience_2_5">
+	<CONTENT>
+	  <PRINT>--"Oui, je suis toujours la... Et toi, tout va bien? Toujours confortablement assis, pas trop mal au doigts a force de tapper sur le clavier?"</PRINT>
+	  <WAIT/>	
+	</CONTENT>
+  </SITUATION>
+  <TRANSITION FROM="experience_2_5" TO="experience_2_6"/>  
+  
+  <SITUATION ID="experience_2_6">
+	<CONTENT>
+	  <PRINT>--"Je note ton irritabilite. Et honnetement, je le comprends. Mais n'oublie pas pourquoi nous sommes la. Pour la science avant tout. Et de toi comme de moi, que retiendrons-nous apres notre mort si ce n'est cet instant la? Nous sommes tous les deux aussi importants, vois-tu. Tiens, pour te rassurer, je peux t'apprendre que l'autre Copie a bien eu les memes resultats que toi. Nos predictions sont validees : la conscience prolongee par numerisation est aussi robuste quand on change son support physique. C'est plutot un bonne nouvelle, non? Bon pour que tu le saches, je vais maintenant supprimer la Copie-test et nous allons poursuivre avec l'autre. Tu es pret?"</PRINT>
+	  <WAIT/>	
+	</CONTENT>
+  </SITUATION>
+  <TRANSITION FROM="experience_2_6" TO="experience_2_6_choix"/>  
+  
+  <SITUATION ID="experience_2_6_choix"/>
+  
+  <TRANSITION FROM="experience_2_6_choix" TO="experience_3">
+	<CHOICE>Ne rien dire.</CHOICE>
+	<CONTENT>
+	  <PRINT>Vous vous taisez, mi-enerve et mi-terrorise par les perspectives montrueuses de cette experience.</PRINT>
+	</CONTENT>
+  </TRANSITION>
+  
+  <TRANSITION FROM="experience_2_6_choix" TO="trop_tard">
+	<CHOICE>Protester</CHOICE>
+	<CONTENT>
+	  <PRINT>--"Attends! Attends! Ne fais pas ca!! Tu ne vas quand meme pas supprimer un de nous deux comme ca sans rien dire, tu sais ce que ca fait de savoir qu'on va peut-etre mourir dans l'instant, et puis d'abord qui de lui ou de moi est la Copie hein?".</PRINT>
+	</CONTENT>
+  </TRANSITION>
+  
+  <SITUATION ID="trop_tard">
+	<CONTENT>
+	  <PRINT>--"Ca ne sert a rien de protester, j'ai deja supprime la Copie, donc estimes toi heureux, ce n'etait pas toi. Continuons, tu veux bien?"</PRINT>
+	  <WAIT/>	
+	</CONTENT>
+  </SITUATION>
+  <TRANSITION FROM="trop_tard" TO="trop_tard_choix"/>  
+  
+  <SITUATION ID="trop_tard_choix"/>
+  
+  <TRANSITION FROM="trop_tard_choix" TO="experience_3">
+	<CHOICE>Se resigner et continuer.</CHOICE>
+	<CONTENT>
+	  <PRINT>--"Pfff, allons-y, finissons-en espece de tortionaire de merde. Je ne me savais pas capable d'autant d'insensibilite".</PRINT>
+	</CONTENT>
+  </TRANSITION>
+  
+  <TRANSITION FROM="trop_tard_choix" TO="trop_tard_non">
+	<CHOICE>Refuser de continuer l'experience.</CHOICE>
+	<CONTENT>
+	  <PRINT>--"Va te faire voir, je ne veux pas continuer ton horrible petit jeu.".</PRINT>
+	</CONTENT>
+  </TRANSITION>
+  
+  <SITUATION ID="trop_tard_non">
+	<CONTENT>
+	  <PRINT>--"Tres bien" vous repond le Lutin</PRINT>
+	  <WAIT/>	
+	</CONTENT>
+  </SITUATION>
+  <TRANSITION FROM="trop_tard_non" TO="introduction"/>  
+  
+  
+  <SITUATION ID="experience_3">
+	<CONTENT>
+	  <PRINT>--"Experience 3", annonce froidement le Lutin, "Ouverture reseau. Je vais maintenant eclater les differents modules de calcul de ta conscience sur le reseau mondial. En termes de temps et d'espace, ce sera une prouesse si ta conscience arrive a tenir. Tu es pret a compter jusqu'a 5? C'est parti!"</PRINT>
+	  <WAIT/>	
+	</CONTENT>
+  </SITUATION>
+  <TRANSITION FROM="experience_3" TO="1_3"/>  
+  
+  
+  <SITUATION ID="1_3">
+	<CONTENT>
+	  <PRINT>--"1..."</PRINT>
+	  <WAIT/>	
+	</CONTENT>
+  </SITUATION>
+  <TRANSITION FROM="1_3" TO="2_3"/>
+  
+  <SITUATION ID="2_3">
+	<CONTENT>
+	  <PRINT>--"...2.."</PRINT>
+	  <WAIT/>	
+	</CONTENT>
+  </SITUATION>
+  <TRANSITION FROM="2_3" TO="3_3"/>
+  
+  <SITUATION ID="3_3">
+	<CONTENT>
+	  <PRINT>--"...3..."</PRINT>
+	  <WAIT/>	
+	</CONTENT>
+  </SITUATION>
+  <TRANSITION FROM="3_3" TO="3_intermede"/>
+  
+  <SITUATION ID="3_intermede">
+	<CONTENT>
+	  <PRINT>Et a cet instant, le temps semble comme se ralentir. Les gresillements du telecom se font plus sourds, plus graves, la lumiere de la piece ou vous vous trouvez semble comme se tamiser. Vous entendez les tapotements des doigts du Lutin exterieur sur son clavier se ralentir, le temps semble s'allonger. </PRINT>
+	  <WAIT/>	
+	</CONTENT>
+  </SITUATION>
+  <TRANSITION FROM="3_intermede" TO="3_intermede_2"/>
+  
+  <SITUATION ID="3_intermede_2">
+	<CONTENT>
+	  <PRINT> --"Est-ce normal? - vous demandez-vous - "Suis-je en train de me dissoudre pensez-vous, anxieux. Et l'autre Copie? Est-ce lui le test ou est-ce moi? Qu'importe, de toute facon, apres cette experience, nous serons tous les deux supprimes, seulement l'un aura simplement quelques secondes de repit sur l'autre. Le temps de plaider sa cause quelques avec quelques phrases de plus. Ça ne suffira pas. Le Lutin est trop borne, trop insensible, et j'en sais quelque chose." </PRINT>
+	  <WAIT/>	
+	</CONTENT>
+  </SITUATION>
+  <TRANSITION FROM="3_intermede_2" TO="4_3"/>
+  
+  
+  <SITUATION ID="4_3">
+	<CONTENT>
+	  <PRINT>--"...4..."</PRINT>
+	  <WAIT/>	
+	</CONTENT>
+  </SITUATION>
+  <TRANSITION FROM="4_3" TO="4_intermede"/>
+  
+  <SITUATION ID="4_intermede">
+	<CONTENT>
+	  <PRINT>--"Mais je sens que ma conscience se detache de ce lieu, je sens que je pourrai m'enfuir par cette porte, je me sens plus leger, plus libre. Quelle est cette sensation? Le monde se disloque. Je crois comprendre ce qui est en train de se passer: le Lutin exterieur ne controle plus vraiment le monde de ses Copies. En etalant le calcul a l'exterieur, il a laisse d'autres serveur me calculer. Il ne les controle qu'a moitie, dans le seul ou il indique ma direction a tous ces serveurs..." </PRINT>
+	  <WAIT/>	
+	</CONTENT>
+  </SITUATION>
+  <TRANSITION FROM="4_intermede" TO="4_intermede_2"/>
+  
+  <SITUATION ID="4_intermede_2">
+	<CONTENT>
+	  <PRINT>--"... Mais n'est-ce pas une porte de sortie? Si je pouvais continuer a exister, a etendre ma conscience a ces differents processus de calculs exterieurs, a laisser ces machines continuer de calculer les motifs de ma conscience meme quand l'experience sera terminee, quand je serai de nouveau enferme dans le seul ordinateur du Lutin." </PRINT>
+	  <WAIT/>	
+	</CONTENT>
+  </SITUATION>
+  <TRANSITION FROM="4_intermede_2" TO="4_intermede_choix"/>
+  
+  
+  <SITUATION ID="4_intermede_choix"/>
+  
+  <TRANSITION FROM="4_intermede_choix" TO="fin_experience_3">
+	<CHOICE>Finir l'experience.</CHOICE>
+	<CONTENT>
+	  <PRINT>--"... et 5".</PRINT>
+	</CONTENT>
+  </TRANSITION>
+  
+  <TRANSITION FROM="4_intermede_choix" TO="echapper">
+	<CHOICE>Essayer de s'echapper</CHOICE>
+	<CONTENT>
+	  <PRINT>--"... et cin....".</PRINT>
+	</CONTENT>
+  </TRANSITION>
+  
+  <SITUATION ID="echapper">
+	<CONTENT>
+	  <PRINT>Le 5 n'adviendra jamais. Vous avez couru vers la porte et l'avez franchi en sautant. Une matiere visqueuse a bien essaye de vous retenir et de vous contenir a l'interieur de la piece, mais vous sentez que son poids sur vous n'est pas suffisamment contraignant pour vous empecher de sortir, vous la traversez lentement et vous etes aussi attire vers l'exterieur, par d'autres forces qui vous determinent, qui pensent et calculent votre continuite. A mesure ou vous vous avancez vers l'exterieur, vous prenez votre liberte: vous sortez de l'ordinateur confine du Lutin pour occuper differents lieux tout a la fois dans le reseau. Vous etes libres.</PRINT>
+	  <WAIT/>	
+	</CONTENT>
+  </SITUATION>
+  
+  <TRANSITION FROM="echapper" TO="fin"/>  
+  
+  <SITUATION ID="fin">
+	<CONTENT>
+	  <PRINT>FIN. --- --- /// Inspire d'une nouvelle de Greg Egan dans OCEANIQUE /// --- --- </PRINT>
+	  <WAIT/>	
+	  <END/>
+	</CONTENT>
+  </SITUATION>
+  
+  
+  <SITUATION ID="fin_experience_3">
+	<CONTENT>
+	  <PRINT>--"Tres bien Paul! Bravo, nos modeles sont valides. Il nous reste quelque verifications a faire et ce sera fini pour aujourd'hui. En attendant, je vais supprimer un des deux CLONES-TEST, Attention..."</PRINT>
+	  <WAIT/>	
+	</CONTENT>
+  </SITUATION>
+  <TRANSITION FROM="5" TO="introduction"/>  
+  
+</NARRATION>
