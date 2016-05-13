@@ -1,0 +1,8 @@
+<NARRATION START="start">
+  <SITUATION ID="start">
+	<CONTENT>
+	  <PRINT>Youhou!</PRINT>
+	  <END/>
+	</CONTENT>
+  </SITUATION>
+</NARRATION>
