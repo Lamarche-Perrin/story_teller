@@ -19,7 +19,15 @@ src/*
 !src/*.hpp
 !src/*.h
 
-# Input files
+# PHP files
+php/*
+!php/*.php
+!php/function
+
+php/function/*
+!php/function/*.php
+
+# XML files
 #xml/*
 #!xml/*.xml
 
