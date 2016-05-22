@@ -16,174 +16,174 @@
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 --
--- Table structure for table `ELEMENT`
+-- Table structure for table `element`
 --
 
-DROP TABLE IF EXISTS `ELEMENT`;
+DROP TABLE IF EXISTS `element`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `ELEMENT` (
-  `ID_ELEMENT` int(11) NOT NULL AUTO_INCREMENT,
-  `ID_NARRATIVE` int(11) NOT NULL,
-  `TYPE` enum('NARRATIVE','SITUATION','TRANSITION','') COLLATE utf8_bin NOT NULL,
-  `NAME` varchar(64) COLLATE utf8_bin NOT NULL,
-  `DATE` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`ID_ELEMENT`),
-  KEY `ID_NARRATIVE` (`ID_NARRATIVE`),
-  CONSTRAINT `CONST_ELEMENT_NARRATIVE` FOREIGN KEY (`ID_NARRATIVE`) REFERENCES `NARRATIVE` (`ID_NARRATIVE`)
+CREATE TABLE `element` (
+  `id_element` int(11) NOT NULL AUTO_INCREMENT,
+  `id_narrative` int(11) NOT NULL,
+  `type` enum('narrative','situation','transition','') COLLATE utf8_bin NOT NULL,
+  `name` varchar(64) COLLATE utf8_bin NOT NULL,
+  `date` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id_element`),
+  KEY `id_narrative` (`id_narrative`),
+  CONSTRAINT `const_element_narrative` FOREIGN KEY (`id_narrative`) REFERENCES `narrative` (`id_narrative`)
 ) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `ELEMENT`
+-- Dumping data for table `element`
 --
 
-LOCK TABLES `ELEMENT` WRITE;
-/*!40000 ALTER TABLE `ELEMENT` DISABLE KEYS */;
-INSERT INTO `ELEMENT` VALUES (1,1,'NARRATIVE','histoire_regis','2016-05-21 21:03:23'),(2,2,'NARRATIVE','histoire_robin','2016-05-21 21:03:23'),(3,3,'NARRATIVE','histoire_regis_robin','2016-05-21 21:03:51'),(4,4,'NARRATIVE','histoire_commune','2016-05-21 21:03:51'),(5,1,'SITUATION','start','2016-05-21 21:08:42'),(6,2,'SITUATION','start','2016-05-21 21:08:42'),(7,3,'SITUATION','start','2016-05-21 21:08:42'),(8,4,'SITUATION','start','2016-05-21 21:08:42'),(9,4,'SITUATION','end_robin','2016-05-21 21:15:58'),(10,4,'SITUATION','end_regis','2016-05-21 21:15:58'),(11,4,'TRANSITION','trans_robin','2016-05-21 21:15:58'),(12,4,'TRANSITION','trans_regis','2016-05-21 21:15:58');
-/*!40000 ALTER TABLE `ELEMENT` ENABLE KEYS */;
+LOCK TABLES `element` WRITE;
+/*!40000 ALTER TABLE `element` DISABLE KEYS */;
+INSERT INTO `element` VALUES (1,1,'narrative','histoire_regis','2016-05-21 21:03:23'),(2,2,'narrative','histoire_robin','2016-05-21 21:03:23'),(3,3,'narrative','histoire_regis_robin','2016-05-21 21:03:51'),(4,4,'narrative','histoire_commune','2016-05-21 21:03:51'),(5,1,'situation','start','2016-05-21 21:08:42'),(6,2,'situation','start','2016-05-21 21:08:42'),(7,3,'situation','start','2016-05-21 21:08:42'),(8,4,'situation','start','2016-05-21 21:08:42'),(9,4,'situation','end_robin','2016-05-21 21:15:58'),(10,4,'situation','end_regis','2016-05-21 21:15:58'),(11,4,'transition','trans_robin','2016-05-21 21:15:58'),(12,4,'transition','trans_regis','2016-05-21 21:15:58');
+/*!40000 ALTER TABLE `element` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
--- Table structure for table `MEMBER`
+-- Table structure for table `member`
 --
 
-DROP TABLE IF EXISTS `MEMBER`;
+DROP TABLE IF EXISTS `member`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `MEMBER` (
-  `ID_MEMBER` int(11) NOT NULL AUTO_INCREMENT,
-  `NAME` varchar(64) COLLATE utf8_bin NOT NULL,
-  `PASSWORD` varchar(64) COLLATE utf8_bin NOT NULL,
-  `EMAIL` varchar(64) COLLATE utf8_bin NOT NULL,
-  `LAST_VISIT` datetime DEFAULT NULL,
-  `DATE` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`ID_MEMBER`)
+CREATE TABLE `member` (
+  `id_member` int(11) NOT NULL AUTO_INCREMENT,
+  `name` varchar(64) COLLATE utf8_bin NOT NULL,
+  `password` varchar(64) COLLATE utf8_bin NOT NULL,
+  `email` varchar(64) COLLATE utf8_bin NOT NULL,
+  `last_visit` datetime DEFAULT NULL,
+  `date` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id_member`)
 ) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `MEMBER`
+-- Dumping data for table `member`
 --
 
-LOCK TABLES `MEMBER` WRITE;
-/*!40000 ALTER TABLE `MEMBER` DISABLE KEYS */;
-INSERT INTO `MEMBER` VALUES (1,'Régis','Régispass','Regis.Catinaud@gmail.com',NULL,'2016-05-21 20:55:35'),(2,'Robin','Robinpass','Robin.Lamarche.Perrin@gmail.com',NULL,'2016-05-21 20:55:35');
-/*!40000 ALTER TABLE `MEMBER` ENABLE KEYS */;
+LOCK TABLES `member` WRITE;
+/*!40000 ALTER TABLE `member` DISABLE KEYS */;
+INSERT INTO `member` VALUES (1,'Régis','Régispass','Regis.Catinaud@gmail.com',NULL,'2016-05-21 20:55:35'),(2,'Robin','Robinpass','Robin.Lamarche.Perrin@gmail.com',NULL,'2016-05-21 20:55:35');
+/*!40000 ALTER TABLE `member` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
--- Table structure for table `NARRATIVE`
+-- Table structure for table `narrative`
 --
 
-DROP TABLE IF EXISTS `NARRATIVE`;
+DROP TABLE IF EXISTS `narrative`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `NARRATIVE` (
-  `ID_NARRATIVE` int(11) NOT NULL AUTO_INCREMENT,
-  `TITLE` varchar(64) COLLATE utf8_bin NOT NULL,
-  `ABSTRACT` text COLLATE utf8_bin NOT NULL,
-  `DATE` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`ID_NARRATIVE`)
+CREATE TABLE `narrative` (
+  `id_narrative` int(11) NOT NULL AUTO_INCREMENT,
+  `title` varchar(64) COLLATE utf8_bin NOT NULL,
+  `abstract` text COLLATE utf8_bin NOT NULL,
+  `date` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id_narrative`)
 ) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `NARRATIVE`
+-- Dumping data for table `narrative`
 --
 
-LOCK TABLES `NARRATIVE` WRITE;
-/*!40000 ALTER TABLE `NARRATIVE` DISABLE KEYS */;
-INSERT INTO `NARRATIVE` VALUES (1,'Histoire Régis','Cette narration est modifiable par Régis uniquement.','2016-05-21 21:00:11'),(2,'Histoire Robin','Cette narration est modifiable par Robin uniquement. ','2016-05-21 21:00:11'),(3,'Histoire Régis et Robin','Cette narration est modifiable par Régis et Robin.','2016-05-21 21:01:41'),(4,'Histoire ouverte','Cette narration est modifiable par tout le monde.','2016-05-21 21:01:41');
-/*!40000 ALTER TABLE `NARRATIVE` ENABLE KEYS */;
+LOCK TABLES `narrative` WRITE;
+/*!40000 ALTER TABLE `narrative` DISABLE KEYS */;
+INSERT INTO `narrative` VALUES (1,'Histoire Régis','Cette narration est modifiable par Régis uniquement.','2016-05-21 21:00:11'),(2,'Histoire Robin','Cette narration est modifiable par Robin uniquement. ','2016-05-21 21:00:11'),(3,'Histoire Régis et Robin','Cette narration est modifiable par Régis et Robin.','2016-05-21 21:01:41'),(4,'Histoire ouverte','Cette narration est modifiable par tout le monde.','2016-05-21 21:01:41');
+/*!40000 ALTER TABLE `narrative` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
--- Table structure for table `READING`
+-- Table structure for table `reading`
 --
 
-DROP TABLE IF EXISTS `READING`;
+DROP TABLE IF EXISTS `reading`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `READING` (
-  `ID_MEMBER` int(11) NOT NULL,
-  `ID_ELEMENT` int(11) NOT NULL,
-  `DATE` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  UNIQUE KEY `ID_MEMBER_2` (`ID_MEMBER`,`ID_ELEMENT`,`DATE`),
-  KEY `ID_MEMBER` (`ID_MEMBER`),
-  KEY `ID_ELEMENT` (`ID_ELEMENT`),
-  CONSTRAINT `CONST_READING_ELEMENT` FOREIGN KEY (`ID_ELEMENT`) REFERENCES `ELEMENT` (`ID_ELEMENT`),
-  CONSTRAINT `CONST_READING_MEMBER` FOREIGN KEY (`ID_MEMBER`) REFERENCES `MEMBER` (`ID_MEMBER`)
+CREATE TABLE `reading` (
+  `id_member` int(11) NOT NULL,
+  `id_element` int(11) NOT NULL,
+  `date` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  UNIQUE KEY `id_member_element` (`id_member`,`id_element`,`date`),
+  KEY `id_member` (`id_member`),
+  KEY `id_element` (`id_element`),
+  CONSTRAINT `const_reading_element` FOREIGN KEY (`id_element`) REFERENCES `element` (`id_element`),
+  CONSTRAINT `const_reading_member` FOREIGN KEY (`id_member`) REFERENCES `member` (`id_member`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `READING`
+-- Dumping data for table `reading`
 --
 
-LOCK TABLES `READING` WRITE;
-/*!40000 ALTER TABLE `READING` DISABLE KEYS */;
-/*!40000 ALTER TABLE `READING` ENABLE KEYS */;
+LOCK TABLES `reading` WRITE;
+/*!40000 ALTER TABLE `reading` DISABLE KEYS */;
+/*!40000 ALTER TABLE `reading` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
--- Table structure for table `RIGHTS`
+-- Table structure for table `rights`
 --
 
-DROP TABLE IF EXISTS `RIGHTS`;
+DROP TABLE IF EXISTS `rights`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `RIGHTS` (
-  `ID_MEMBER` int(11) NOT NULL,
-  `ID_ELEMENT` int(11) NOT NULL,
-  `TYPE` enum('NONE','READ','ADD','MOD','FULL') COLLATE utf8_bin NOT NULL,
-  `DATE` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`ID_MEMBER`,`ID_ELEMENT`) USING BTREE,
-  KEY `CONST_RIGHTS_ELEMENT` (`ID_ELEMENT`),
-  CONSTRAINT `CONST_RIGHTS_ELEMENT` FOREIGN KEY (`ID_ELEMENT`) REFERENCES `ELEMENT` (`ID_ELEMENT`),
-  CONSTRAINT `CONST_RIGHTS_MEMBER` FOREIGN KEY (`ID_MEMBER`) REFERENCES `MEMBER` (`ID_MEMBER`)
+CREATE TABLE `rights` (
+  `id_member` int(11) NOT NULL,
+  `id_element` int(11) NOT NULL,
+  `type` enum('none','read','add','mod','full') COLLATE utf8_bin NOT NULL,
+  `date` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id_member`,`id_element`) USING BTREE,
+  KEY `const_rights_element` (`id_element`),
+  CONSTRAINT `const_rights_element` FOREIGN KEY (`id_element`) REFERENCES `element` (`id_element`),
+  CONSTRAINT `const_rights_member` FOREIGN KEY (`id_member`) REFERENCES `member` (`id_member`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `RIGHTS`
+-- Dumping data for table `rights`
 --
 
-LOCK TABLES `RIGHTS` WRITE;
-/*!40000 ALTER TABLE `RIGHTS` DISABLE KEYS */;
-INSERT INTO `RIGHTS` VALUES (1,1,'FULL','2016-05-21 21:06:09'),(1,3,'FULL','2016-05-21 21:06:09'),(1,4,'ADD','2016-05-21 21:06:09'),(2,2,'FULL','2016-05-21 21:06:09'),(2,3,'MOD','2016-05-21 21:06:09'),(2,4,'ADD','2016-05-21 21:06:09');
-/*!40000 ALTER TABLE `RIGHTS` ENABLE KEYS */;
+LOCK TABLES `rights` WRITE;
+/*!40000 ALTER TABLE `rights` DISABLE KEYS */;
+INSERT INTO `rights` VALUES (1,1,'full','2016-05-21 21:06:09'),(1,3,'full','2016-05-21 21:06:09'),(1,4,'add','2016-05-21 21:06:09'),(2,2,'full','2016-05-21 21:06:09'),(2,3,'mod','2016-05-21 21:06:09'),(2,4,'add','2016-05-21 21:06:09');
+/*!40000 ALTER TABLE `rights` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
--- Table structure for table `WRITING`
+-- Table structure for table `writing`
 --
 
-DROP TABLE IF EXISTS `WRITING`;
+DROP TABLE IF EXISTS `writing`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `WRITING` (
-  `ID_MEMBER` int(11) NOT NULL,
-  `ID_ELEMENT` int(11) NOT NULL,
-  `TYPE` enum('CREATE','MODIFY','SUPPRESS','') COLLATE utf8_bin NOT NULL,
-  `XML` text COLLATE utf8_bin NOT NULL,
-  `DATE` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  UNIQUE KEY `ID_MEMBER_2` (`ID_MEMBER`,`ID_ELEMENT`,`DATE`),
-  KEY `ID_MEMBER` (`ID_MEMBER`),
-  KEY `ID_ELEMENT` (`ID_ELEMENT`),
-  CONSTRAINT `CONST_WRITING_ELEMENT` FOREIGN KEY (`ID_ELEMENT`) REFERENCES `ELEMENT` (`ID_ELEMENT`),
-  CONSTRAINT `CONST_WRITING_MEMBER` FOREIGN KEY (`ID_MEMBER`) REFERENCES `MEMBER` (`ID_MEMBER`)
+CREATE TABLE `writing` (
+  `id_member` int(11) NOT NULL,
+  `id_element` int(11) NOT NULL,
+  `type` enum('create','modify','suppress','') COLLATE utf8_bin NOT NULL,
+  `xml` text COLLATE utf8_bin NOT NULL,
+  `date` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  UNIQUE KEY `id_member_2` (`id_member`,`id_element`,`date`),
+  KEY `id_member` (`id_member`),
+  KEY `id_element` (`id_element`),
+  CONSTRAINT `const_writing_element` FOREIGN KEY (`id_element`) REFERENCES `element` (`id_element`),
+  CONSTRAINT `const_writing_member` FOREIGN KEY (`id_member`) REFERENCES `member` (`id_member`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `WRITING`
+-- Dumping data for table `writing`
 --
 
-LOCK TABLES `WRITING` WRITE;
-/*!40000 ALTER TABLE `WRITING` DISABLE KEYS */;
-INSERT INTO `WRITING` VALUES (1,5,'CREATE','<SITUATION NAME=\"start\">\r\n  <CONTENT>\r\n    <PRINT>Hello Régis!</PRINT>\r\n    <END/>\r\n  </CONTENT>\r\n</SITUATION>','2016-05-21 21:10:57'),(1,7,'MODIFY','<SITUATION NAME=\"start\">\r\n  <CONTENT>\r\n    <PRINT>Hello Robin et Régis!</PRINT>\r\n    <END/>\r\n  </CONTENT>\r\n</SITUATION>','2016-05-21 21:14:21'),(1,8,'CREATE','<SITUATION NAME=\"start\">\r\n  <CONTENT>\r\n    <PRINT>Hello...</PRINT>\r\n  </CONTENT>\r\n</SITUATION>','2016-05-21 21:20:48'),(1,10,'CREATE','<SITUATION NAME=\"end_robin\">\r\n  <CONTENT>\r\n    <PRINT>... Régis!</PRINT>\r\n    <END/>\r\n  </CONTENT>\r\n</SITUATION>','2016-05-21 21:19:18'),(1,12,'CREATE','<TRANSITION FROM=\"start\" TO=\"end_regis\">\r\n  <CHOICE>Régis</CHOICE>\r\n</TRANSITION>','2016-05-21 21:19:18'),(2,6,'CREATE','<SITUATION NAME=\"start\">\r\n  <CONTENT>\r\n    <PRINT>Hello Robin!</PRINT>\r\n    <END/>\r\n  </CONTENT>\r\n</SITUATION>','2016-05-21 21:10:57'),(2,7,'CREATE','<SITUATION NAME=\"start\">\r\n  <CONTENT>\r\n    <PRINT>Hello Robin!</PRINT>\r\n    <END/>\r\n  </CONTENT>\r\n</SITUATION>','2016-05-21 21:14:03'),(2,9,'CREATE','<SITUATION NAME=\"end_robin\">\n  <CONTENT>\n    <PRINT>... Robin!</PRINT>\n    <END/>\n  </CONTENT>\n</SITUATION>','2016-05-21 21:19:18'),(2,11,'CREATE','<TRANSITION FROM=\"start\" TO=\"end_robin\">\r\n  <CHOICE>Robin</CHOICE>\r\n</TRANSITION>','2016-05-21 21:19:18');
-/*!40000 ALTER TABLE `WRITING` ENABLE KEYS */;
+LOCK TABLES `writing` WRITE;
+/*!40000 ALTER TABLE `writing` DISABLE KEYS */;
+INSERT INTO `writing` VALUES (1,5,'create','<SITUATION NAME=\"start\">\r\n  <CONTENT>\r\n    <PRINT>Hello Régis!</PRINT>\r\n    <END/>\r\n  </CONTENT>\r\n</SITUATION>','2016-05-21 21:10:57'),(1,7,'modify','<SITUATION NAME=\"start\">\r\n  <CONTENT>\r\n    <PRINT>Hello Robin et Régis!</PRINT>\r\n    <END/>\r\n  </CONTENT>\r\n</SITUATION>','2016-05-21 21:14:21'),(1,8,'create','<SITUATION NAME=\"start\">\r\n  <CONTENT>\r\n    <PRINT>Hello...</PRINT>\r\n  </CONTENT>\r\n</SITUATION>','2016-05-21 21:20:48'),(1,10,'create','<SITUATION NAME=\"end_robin\">\r\n  <CONTENT>\r\n    <PRINT>... Régis!</PRINT>\r\n    <END/>\r\n  </CONTENT>\r\n</SITUATION>','2016-05-21 21:19:18'),(1,12,'create','<TRANSITION FROM=\"start\" TO=\"end_regis\">\r\n  <CHOICE>Régis</CHOICE>\r\n</TRANSITION>','2016-05-21 21:19:18'),(2,6,'create','<SITUATION NAME=\"start\">\r\n  <CONTENT>\r\n    <PRINT>Hello Robin!</PRINT>\r\n    <END/>\r\n  </CONTENT>\r\n</SITUATION>','2016-05-21 21:10:57'),(2,7,'create','<SITUATION NAME=\"start\">\r\n  <CONTENT>\r\n    <PRINT>Hello Robin!</PRINT>\r\n    <END/>\r\n  </CONTENT>\r\n</SITUATION>','2016-05-21 21:14:03'),(2,9,'create','<SITUATION NAME=\"end_robin\">\n  <CONTENT>\n    <PRINT>... Robin!</PRINT>\n    <END/>\n  </CONTENT>\n</SITUATION>','2016-05-21 21:19:18'),(2,11,'create','<TRANSITION FROM=\"start\" TO=\"end_robin\">\r\n  <CHOICE>Robin</CHOICE>\r\n</TRANSITION>','2016-05-21 21:19:18');
+/*!40000 ALTER TABLE `writing` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
@@ -195,4 +195,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2016-05-22 11:49:53
+-- Dump completed on 2016-05-22 14:25:07
