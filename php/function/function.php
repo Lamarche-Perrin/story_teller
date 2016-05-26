@@ -90,7 +90,7 @@ function getStoryText ($id_story)
 
     $result = $conn->query($sql) or trigger_error($conn->error." [$sql]");
 	
-	if (!checkExists ($sql, $result)) { return null; }
+	if (!checkUnique ($sql, $result)) { return null; }
 
 	else {
 		$row = $result->fetch_assoc();
@@ -117,9 +117,77 @@ function getStoryText ($id_story)
 				$text .= $row['text'];
 			}
 		}
+
+		return $text;
+	}
+}
+
+
+/*
+ * The database has first to be connected.
+ */
+function getStoryCurrent ($id_story)
+{
+	global $conn;
+
+	$sql = "SELECT current FROM story WHERE id_story = '$id_story'";
+	printSQL($sql);
+
+    $result = $conn->query($sql) or trigger_error($conn->error." [$sql]");
+	
+	if (!checkUnique ($sql, $result)) { return null; }
+
+	else {
+		$row = $result->fetch_assoc();
+		return $row['current'];
+	}
+}
+
+
+/*
+ * The database has first to be connected.
+ */
+function getSituationXML ($id_narrative, $name)
+{
+	global $conn;
+
+	// Get text of current situation
+	$sql = "SELECT w.text FROM element e
+				INNER JOIN writing w ON e.id_element = w.id_element
+			WHERE e.id_narrative = '$id_narrative' AND e.type = 'situation' AND e.name = '$name'
+				AND w.date = (SELECT MAX(x.date) FROM writing x WHERE w.id_element = x.id_element)";
+	printSQL($sql);
+
+	$result = $conn->query($sql) or trigger_error($conn->error." [$sql]");
+
+	if (!checkUnique ($sql, $result)) { return null; }
+
+	$row = $result->fetch_assoc();
+
+	$xml = "<XML>\n";
+	$xml .= "<TEXT>\n";
+	$xml .= $row['text'];
+	$xml .= "</TEXT>\n";
+
+	// Get next transisions
+	$sql = "SELECT w.xml FROM element e
+				INNER JOIN writing w ON e.id_element = w.id_element
+			WHERE e.id_narrative = '$id_narrative' AND e.type = 'transition' AND e.name = '$name'
+				AND w.date = (SELECT MAX(x.date) FROM writing x WHERE w.id_element = x.id_element)";
+	printSQL($sql);
+
+	$result = $conn->query($sql) or trigger_error($conn->error." [$sql]");
+
+	while ($row = $result->fetch_assoc())
+	{
+		$xml .= "<TRANSITION>\n";
+		$xml .= $row['xml'] . "\n";
+		$xml .= "</TRANSITION>\n";
 	}
 
-	return $text;
+	$xml .= "</XML>\n";
+	
+	return $xml;
 }
 
 

@@ -167,16 +167,14 @@ CREATE TABLE `story` (
   `id_story` int(11) NOT NULL AUTO_INCREMENT,
   `id_member` int(11) NOT NULL,
   `id_narrative` int(11) NOT NULL,
-  `id_element` int(11) NOT NULL,
-  `finished` tinyint(1) NOT NULL DEFAULT '0',
-  `path` text COLLATE utf8_bin,
   `variables` text COLLATE utf8_bin,
+  `path` text COLLATE utf8_bin,
+  `current` varchar(64) COLLATE utf8_bin NOT NULL DEFAULT 'start',
+  `finished` tinyint(1) NOT NULL DEFAULT '0',
   `date` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id_story`),
   KEY `id_member` (`id_member`),
   KEY `id_narrative` (`id_narrative`),
-  KEY `id_element` (`id_element`),
-  CONSTRAINT `const_story_element` FOREIGN KEY (`id_element`) REFERENCES `element` (`id_element`),
   CONSTRAINT `const_story_member` FOREIGN KEY (`id_member`) REFERENCES `member` (`id_member`),
   CONSTRAINT `const_story_narrative` FOREIGN KEY (`id_narrative`) REFERENCES `narrative` (`id_narrative`)
 ) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
@@ -188,7 +186,7 @@ CREATE TABLE `story` (
 
 LOCK TABLES `story` WRITE;
 /*!40000 ALTER TABLE `story` DISABLE KEYS */;
-INSERT INTO `story` VALUES (2,2,4,8,0,'start;',NULL,'2016-05-26 20:57:50'),(3,2,2,6,0,'start;',NULL,'2016-05-26 21:56:06');
+INSERT INTO `story` VALUES (2,2,4,NULL,'','start',0,'2016-05-26 20:57:50'),(3,2,2,NULL,'','start',0,'2016-05-26 21:56:06');
 /*!40000 ALTER TABLE `story` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -220,7 +218,7 @@ CREATE TABLE `writing` (
 
 LOCK TABLES `writing` WRITE;
 /*!40000 ALTER TABLE `writing` DISABLE KEYS */;
-INSERT INTO `writing` VALUES (1,5,'create','Hello Régis!','<CONTENT>\n  <PRINT>Hello Régis!</PRINT>\n  <END/>\n</CONTENT>','2016-05-21 21:10:57'),(1,7,'modify','Hello Robin et Régis!','<CONTENT>\n  <PRINT>Hello Robin et Régis!</PRINT>\n  <END/>\n</CONTENT>','2016-05-21 21:14:21'),(1,8,'create','Hello...','<CONTENT>\n  <PRINT>Hello...</PRINT>\n</CONTENT>','2016-05-21 21:20:48'),(1,10,'create','... Régis!','<CONTENT>\n  <PRINT>... Régis!</PRINT>\n  <END/>\n</CONTENT>','2016-05-21 21:19:18'),(1,12,'create',NULL,'<TO>end_regis</TO>\n<CHOICE>Régis</CHOICE>','2016-05-21 21:19:18'),(1,12,'modify',NULL,'<TO>end_regis</TO>\r\n<CHOICE>Régis!</CHOICE>','2016-05-22 19:47:06'),(2,6,'create','Hello...','<CONTENT>\r\n  <PRINT>Hello...</PRINT>\r\n</CONTENT>','2016-05-21 21:10:57'),(2,7,'create','Hello Robin!','<CONTENT>\n  <PRINT>Hello Robin!</PRINT>\n  <END/>\n</CONTENT>','2016-05-21 21:14:03'),(2,9,'create','... Robin!','<CONTENT>\n  <PRINT>... Robin!</PRINT>\n  <END/>\n</CONTENT>','2016-05-21 21:19:18'),(2,11,'create',NULL,'<TO>end_robin</TO>\n<CHOICE>Robin</CHOICE>','2016-05-21 21:19:18'),(2,11,'modify',NULL,'<TO>end_robin</TO>\r\n<CHOICE>Robin!</CHOICE>','2016-05-22 19:46:40'),(2,13,'create','(wait for it)','<CONTENT>\r\n  <PRINT>(wait for it)</PRINT>\r\n</CONTENT>','2016-05-26 21:52:57'),(2,14,'create','... world!','<CONTENT>\n  <PRINT>... world!</PRINT>\n  <END/>\n</CONTENT>','2016-05-26 21:52:57'),(2,15,'create',NULL,'<TO>middle</TO>','2016-05-26 21:55:19'),(2,16,'create',NULL,'<TO>end</TO>','2016-05-26 21:55:19');
+INSERT INTO `writing` VALUES (1,5,'create','Hello Régis!','<END/>','2016-05-21 21:10:57'),(1,7,'modify','Hello Robin et Régis!','<END/>','2016-05-21 21:14:21'),(1,8,'create','Hello...','','2016-05-21 21:20:48'),(1,10,'create','... Régis!','<END/>','2016-05-21 21:19:18'),(1,12,'create',NULL,'<TO>end_regis</TO>\n<CHOICE>Régis</CHOICE>','2016-05-21 21:19:18'),(1,12,'modify',NULL,'<TO>end_regis</TO>\n<CHOICE>Régis!</CHOICE>','2016-05-22 19:47:06'),(2,6,'create','Hello...','','2016-05-21 21:10:57'),(2,7,'create','Hello Robin!','<END/>','2016-05-21 21:14:03'),(2,9,'create','... Robin!','<END/>','2016-05-21 21:19:18'),(2,11,'create',NULL,'<TO>end_robin</TO>\n<CHOICE>Robin</CHOICE>','2016-05-21 21:19:18'),(2,11,'modify',NULL,'<TO>end_robin</TO>\n<CHOICE>Robin!</CHOICE>','2016-05-22 19:46:40'),(2,13,'create','(wait for it)','','2016-05-26 21:52:57'),(2,14,'create','... world!','','2016-05-26 21:52:57'),(2,15,'create',NULL,'<TO>middle</TO>','2016-05-26 21:55:19'),(2,16,'create',NULL,'<TO>end</TO>','2016-05-26 21:55:19');
 /*!40000 ALTER TABLE `writing` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -233,4 +231,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2016-05-26 21:58:53
+-- Dump completed on 2016-05-27  0:53:19
