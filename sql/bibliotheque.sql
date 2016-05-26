@@ -30,8 +30,9 @@ CREATE TABLE `element` (
   `date` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id_element`),
   KEY `id_narrative` (`id_narrative`),
+  KEY `id_narrative_2` (`id_narrative`),
   CONSTRAINT `const_element_narrative` FOREIGN KEY (`id_narrative`) REFERENCES `narrative` (`id_narrative`)
-) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+) ENGINE=InnoDB AUTO_INCREMENT=17 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -40,7 +41,7 @@ CREATE TABLE `element` (
 
 LOCK TABLES `element` WRITE;
 /*!40000 ALTER TABLE `element` DISABLE KEYS */;
-INSERT INTO `element` VALUES (1,1,'narrative','histoire_regis','2016-05-21 21:03:23'),(2,2,'narrative','histoire_robin','2016-05-21 21:03:23'),(3,3,'narrative','histoire_regis_robin','2016-05-21 21:03:51'),(4,4,'narrative','histoire_commune','2016-05-21 21:03:51'),(5,1,'situation','start','2016-05-21 21:08:42'),(6,2,'situation','start','2016-05-21 21:08:42'),(7,3,'situation','start','2016-05-21 21:08:42'),(8,4,'situation','start','2016-05-21 21:08:42'),(9,4,'situation','end_robin','2016-05-21 21:15:58'),(10,4,'situation','end_regis','2016-05-21 21:15:58'),(11,4,'transition','trans_robin','2016-05-21 21:15:58'),(12,4,'transition','trans_regis','2016-05-21 21:15:58');
+INSERT INTO `element` VALUES (1,1,'narrative','histoire_regis','2016-05-21 21:03:23'),(2,2,'narrative','histoire_robin','2016-05-21 21:03:23'),(3,3,'narrative','histoire_regis_robin','2016-05-21 21:03:51'),(4,4,'narrative','histoire_commune','2016-05-21 21:03:51'),(5,1,'situation','start','2016-05-21 21:08:42'),(6,2,'situation','start','2016-05-21 21:08:42'),(7,3,'situation','start','2016-05-21 21:08:42'),(8,4,'situation','start','2016-05-21 21:08:42'),(9,4,'situation','end_robin','2016-05-21 21:15:58'),(10,4,'situation','end_regis','2016-05-21 21:15:58'),(11,4,'transition','start','2016-05-21 21:15:58'),(12,4,'transition','start','2016-05-21 21:15:58'),(13,2,'situation','middle','2016-05-26 21:51:28'),(14,2,'situation','end','2016-05-26 21:51:28'),(15,2,'transition','start','2016-05-26 21:51:28'),(16,2,'transition','middle','2016-05-26 21:51:28');
 /*!40000 ALTER TABLE `element` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -156,6 +157,42 @@ INSERT INTO `rights` VALUES (1,1,'full','2016-05-21 21:06:09'),(1,3,'full','2016
 UNLOCK TABLES;
 
 --
+-- Table structure for table `story`
+--
+
+DROP TABLE IF EXISTS `story`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `story` (
+  `id_story` int(11) NOT NULL AUTO_INCREMENT,
+  `id_member` int(11) NOT NULL,
+  `id_narrative` int(11) NOT NULL,
+  `id_element` int(11) NOT NULL,
+  `finished` tinyint(1) NOT NULL DEFAULT '0',
+  `path` text COLLATE utf8_bin,
+  `variables` text COLLATE utf8_bin,
+  `date` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id_story`),
+  KEY `id_member` (`id_member`),
+  KEY `id_narrative` (`id_narrative`),
+  KEY `id_element` (`id_element`),
+  CONSTRAINT `const_story_element` FOREIGN KEY (`id_element`) REFERENCES `element` (`id_element`),
+  CONSTRAINT `const_story_member` FOREIGN KEY (`id_member`) REFERENCES `member` (`id_member`),
+  CONSTRAINT `const_story_narrative` FOREIGN KEY (`id_narrative`) REFERENCES `narrative` (`id_narrative`)
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `story`
+--
+
+LOCK TABLES `story` WRITE;
+/*!40000 ALTER TABLE `story` DISABLE KEYS */;
+INSERT INTO `story` VALUES (2,2,4,8,0,'start;',NULL,'2016-05-26 20:57:50'),(3,2,2,6,0,'start;',NULL,'2016-05-26 21:56:06');
+/*!40000 ALTER TABLE `story` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `writing`
 --
 
@@ -166,6 +203,7 @@ CREATE TABLE `writing` (
   `id_member` int(11) NOT NULL,
   `id_element` int(11) NOT NULL,
   `type` enum('create','modify','suppress','') COLLATE utf8_bin NOT NULL,
+  `text` text COLLATE utf8_bin,
   `xml` text COLLATE utf8_bin NOT NULL,
   `date` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   UNIQUE KEY `id_member_2` (`id_member`,`id_element`,`date`),
@@ -182,7 +220,7 @@ CREATE TABLE `writing` (
 
 LOCK TABLES `writing` WRITE;
 /*!40000 ALTER TABLE `writing` DISABLE KEYS */;
-INSERT INTO `writing` VALUES (1,5,'create','<SITUATION NAME=\"start\">\r\n  <CONTENT>\r\n    <PRINT>Hello Régis!</PRINT>\r\n    <END/>\r\n  </CONTENT>\r\n</SITUATION>','2016-05-21 21:10:57'),(1,7,'modify','<SITUATION NAME=\"start\">\r\n  <CONTENT>\r\n    <PRINT>Hello Robin et Régis!</PRINT>\r\n    <END/>\r\n  </CONTENT>\r\n</SITUATION>','2016-05-21 21:14:21'),(1,8,'create','<SITUATION NAME=\"start\">\r\n  <CONTENT>\r\n    <PRINT>Hello...</PRINT>\r\n  </CONTENT>\r\n</SITUATION>','2016-05-21 21:20:48'),(1,10,'create','<SITUATION NAME=\"end_robin\">\r\n  <CONTENT>\r\n    <PRINT>... Régis!</PRINT>\r\n    <END/>\r\n  </CONTENT>\r\n</SITUATION>','2016-05-21 21:19:18'),(1,12,'create','<TRANSITION FROM=\"start\" TO=\"end_regis\">\r\n  <CHOICE>Régis</CHOICE>\r\n</TRANSITION>','2016-05-21 21:19:18'),(2,6,'create','<SITUATION NAME=\"start\">\r\n  <CONTENT>\r\n    <PRINT>Hello Robin!</PRINT>\r\n    <END/>\r\n  </CONTENT>\r\n</SITUATION>','2016-05-21 21:10:57'),(2,7,'create','<SITUATION NAME=\"start\">\r\n  <CONTENT>\r\n    <PRINT>Hello Robin!</PRINT>\r\n    <END/>\r\n  </CONTENT>\r\n</SITUATION>','2016-05-21 21:14:03'),(2,9,'create','<SITUATION NAME=\"end_robin\">\n  <CONTENT>\n    <PRINT>... Robin!</PRINT>\n    <END/>\n  </CONTENT>\n</SITUATION>','2016-05-21 21:19:18'),(2,11,'create','<TRANSITION FROM=\"start\" TO=\"end_robin\">\r\n  <CHOICE>Robin</CHOICE>\r\n</TRANSITION>','2016-05-21 21:19:18');
+INSERT INTO `writing` VALUES (1,5,'create','Hello Régis!','<CONTENT>\n  <PRINT>Hello Régis!</PRINT>\n  <END/>\n</CONTENT>','2016-05-21 21:10:57'),(1,7,'modify','Hello Robin et Régis!','<CONTENT>\n  <PRINT>Hello Robin et Régis!</PRINT>\n  <END/>\n</CONTENT>','2016-05-21 21:14:21'),(1,8,'create','Hello...','<CONTENT>\n  <PRINT>Hello...</PRINT>\n</CONTENT>','2016-05-21 21:20:48'),(1,10,'create','... Régis!','<CONTENT>\n  <PRINT>... Régis!</PRINT>\n  <END/>\n</CONTENT>','2016-05-21 21:19:18'),(1,12,'create',NULL,'<TO>end_regis</TO>\n<CHOICE>Régis</CHOICE>','2016-05-21 21:19:18'),(1,12,'modify',NULL,'<TO>end_regis</TO>\r\n<CHOICE>Régis!</CHOICE>','2016-05-22 19:47:06'),(2,6,'create','Hello...','<CONTENT>\r\n  <PRINT>Hello...</PRINT>\r\n</CONTENT>','2016-05-21 21:10:57'),(2,7,'create','Hello Robin!','<CONTENT>\n  <PRINT>Hello Robin!</PRINT>\n  <END/>\n</CONTENT>','2016-05-21 21:14:03'),(2,9,'create','... Robin!','<CONTENT>\n  <PRINT>... Robin!</PRINT>\n  <END/>\n</CONTENT>','2016-05-21 21:19:18'),(2,11,'create',NULL,'<TO>end_robin</TO>\n<CHOICE>Robin</CHOICE>','2016-05-21 21:19:18'),(2,11,'modify',NULL,'<TO>end_robin</TO>\r\n<CHOICE>Robin!</CHOICE>','2016-05-22 19:46:40'),(2,13,'create','(wait for it)','<CONTENT>\r\n  <PRINT>(wait for it)</PRINT>\r\n</CONTENT>','2016-05-26 21:52:57'),(2,14,'create','... world!','<CONTENT>\n  <PRINT>... world!</PRINT>\n  <END/>\n</CONTENT>','2016-05-26 21:52:57'),(2,15,'create',NULL,'<TO>middle</TO>','2016-05-26 21:55:19'),(2,16,'create',NULL,'<TO>end</TO>','2016-05-26 21:55:19');
 /*!40000 ALTER TABLE `writing` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -195,4 +233,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2016-05-22 14:25:07
+-- Dump completed on 2016-05-26 21:58:53
