@@ -6,13 +6,10 @@ include("./function.php");
 
 session_start();
 
-$_SESSION['id_member'] = 2;
-$_SESSION['id_narrative'] = 4;
-$_SESSION['id_story'] = 2;
-
 $conn = getConnection();
 
-$current = getStoryCurrent ($_SESSION['id_story']);
+if (isset($_POST['current'])) { $current = $_POST['current']; }
+else { $current = getStoryCurrent ($_SESSION['id_story']); }
 
 $xml = getSituationXML ($_SESSION['id_narrative'], $current);
 

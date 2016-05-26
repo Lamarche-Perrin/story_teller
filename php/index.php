@@ -7,8 +7,8 @@ session_start();
 $conn = getConnection();
 
 $_SESSION['id_member'] = 2;
-$_SESSION['id_narrative'] = 4;
-$_SESSION['id_story'] = 2;
+$_SESSION['id_narrative'] = 2;
+$_SESSION['id_story'] = 3;
 
 $text = getStoryText ($_SESSION['id_story']);
 
@@ -27,7 +27,7 @@ $conn->close();
 		<DIV ID="page"></DIV>
 
 		<SCRIPT>
-		 function next ()
+		 function next (current)
 		 {
 			 var xhttp = new XMLHttpRequest();
 			 xhttp.onreadystatechange = function ()
@@ -37,14 +37,29 @@ $conn->close();
 					 var xml = xhttp.responseXML;
 					 var text = xml.getElementsByTagName("TEXT")[0].childNodes[0].nodeValue;
 					 document.getElementById("book").innerHTML += text + "<BR>\n<BR>\n";
-					 document.getElementById("page").innerHTML = "<BUTTON TYPE=\"button\" ONCLICK=\"next()\">Suite</BUTTON>";
+
+					 document.getElementById("page").innerHTML = "";
+					 var transitions = xml.getElementsByTagName("TRANSITION");
+					 for (var i = 0; i < transitions.length; i++)
+					 {
+						 var to = transitions[i].getElementsByTagName("TO")[0].childNodes[0].nodeValue;
+
+						 var choice = "Continuer";
+						 if (transitions[i].getElementsByTagName("CHOICE").length != 0)
+						 { choice = transitions[i].getElementsByTagName("CHOICE")[0].childNodes[0].nodeValue; }
+						 document.getElementById("page").innerHTML += "<BUTTON TYPE=\"button\" ONCLICK=\"next('"+to+"')\">"+choice+"</BUTTON>";
+					 }
 				 }
 			 };
-			 xhttp.open("GET", "function/get_xml.php", true);
-			 xhttp.send();
+
+			 xhttp.open ("POST", "function/get_xml.php", true);
+			 xhttp.setRequestHeader ("Content-type", "application/x-www-form-urlencoded");
+
+			 if (current != null) { xhttp.send("current="+current); }
+			 else { xhttp.send (); }
 		 }
 
-		 next();
+		 next(null);
 		</SCRIPT>
 	</BODY>
 </HTML>
