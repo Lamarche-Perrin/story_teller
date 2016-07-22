@@ -28,8 +28,8 @@ php/function/*
 !php/function/*.php
 
 # XML files
-#xml/*
-#!xml/*.xml
+xml/*
+!xml/*.xml
 
 #Binary files
 bin/*

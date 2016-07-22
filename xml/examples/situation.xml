@@ -1,10 +1,7 @@
-<NARRATION START="hello">
+<narrative>
 
-  <SITUATION ID="hello">
-	<CONTENT>
-	  <PRINT>Hello world!</PRINT>
-	  <END/>
-	</CONTENT>
-  </SITUATION>
+  <situation name="start" end="true">
+	<text>Hello world!</text>
+  </situation>
 
-</NARRATION>
+</narrative>
