@@ -13,7 +13,7 @@ $_SESSION['id_story'] = 12;
 
 openConnection();
 
-deleteNarrative(11);
+//deleteNarrative(11);
 //$_SESSION['id_narrative'] = newNarrative ("clone", "Clone", "Première narration, écrite par Régis.");
 //importXML ($_SESSION['id_member'], $_SESSION['id_narrative'], "../xml/clone.xml");
 //$_SESSION['id_story'] = newStory ($_SESSION['id_member'], $_SESSION['id_narrative']);

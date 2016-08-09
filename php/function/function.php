@@ -4,6 +4,7 @@ $GLOBALS['sql_connection'] = null; // sql connection
 $GLOBALS['verbose_sql'] = false; // Set to true to print sql requests.
 $GLOBALS['no_verbose'] = false; // Set to true to forbid any verbose.
 
+
 /*
  * Print error message.
  */
@@ -37,7 +38,7 @@ function checkUnique ($sql, $result)
 
 /*
  * Initiate connection to the "bibliotheque" database.
- * Don't forget to close the database after usage (see closeConnection.
+ * Don't forget to close the database after usage (see closeConnection).
  */
 function openConnection ()
 {

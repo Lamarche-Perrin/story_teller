@@ -177,7 +177,7 @@
  <transition from="trans_salle3" to="salle"/>
 
  <situation name="attendre_fenetre">
-	<text>vous observez avec plus d'attention vos voisins d'en face. Plusieurs rideaux sont tirés, et des volets fermés. Le soleil donne sur ce versant de l'immeuble. Quelques étages plus bas, vous voyez une famille assise devant la télé. Sur le même niveau, quelques fenêtres à droites, un homme en caleçon tire un rideau. Au-dessus de vous, vous apercevez aussi un homme en costard en train de se parler à lui-même dans une glace (il est probablement dans sa salle de bain pensez-vous).</text>
+	<text>Vous observez avec plus d'attention vos voisins d'en face. Plusieurs rideaux sont tirés, et des volets fermés. Le soleil donne sur ce versant de l'immeuble. Quelques étages plus bas, vous voyez une famille assise devant la télé. Sur le même niveau, quelques fenêtres à droites, un homme en caleçon tire un rideau. Au-dessus de vous, vous apercevez aussi un homme en costard en train de se parler à lui-même dans une glace (il est probablement dans sa salle de bain pensez-vous).</text>
  </situation>
 
  <transition from="attendre_fenetre" to="trans_attendre_fenetre2">
