@@ -20,59 +20,34 @@
 	<text>Au fond de la salle, en face de vous, vous apercevez une porte. Sur votre droite, au-dessus d'un lambris de bois vieillissant, une fenêtre depuis laquelle des ombres semblent défiler, inlassablement. Enfin, dans le coin entre la fenêtre et la porte se dresse un cabinet de travail en bois d'acajou.</text>
  </situation>
 
- <transition from="salle" to="trans_porte">
+ <transition from="salle" to="porte">
 	<choice>Se déplacer vers la porte</choice>
- </transition>
-
- <situation name="trans_porte">
 	<text>Vous vous déplacez vers la porte.</text>
- </situation>
+ </transition>
 
- <transition from="trans_porte" to="porte"/>
-
- <transition from="salle" to="trans_fenetre">
+ <transition from="salle" to="fenetre">
 	<choice>Aller voir a la fenêtre</choice>
- </transition>
-
- <situation name="trans_fenetre">
 	<text>Vous marchez jusqu’à la fenêtre.</text>
- </situation>
-
- <transition from="trans_fenetre" to="fenetre"/>
-
- <transition from="salle" to="trans_cabinet">
-	<choice>Se diriger vers le cabinet de travail</choice>
  </transition>
 
- <situation name="trans_cabinet">
+ <transition from="salle" to="cabinet">
+	<choice>Se diriger vers le cabinet de travail</choice>
 	<text>Vous vous dirigez jusqu'au cabinet de travail.</text>
- </situation>
-
- <transition from="trans_cabinet" to="cabinet"/>
+ </transition>
 
  <situation name="porte">
 	<text>Vous vous approchez de la porte. Contrairement à l'aspect général de la pièce, vieillot et ruineux, la porte vous semble récente et de bonne facture. Un métal solide, probablement de l'acier pensez-vous. En approchant votre main de la poignée vous ne sentez aucune sensation particulière : le froid du métal auquel vous vous seriez attendu n'est pas au rendez-vous. Vous sentez simplement que la poignée est agrippée, là, dans votre main.</text>
  </situation>
 
- <transition from="porte" to="trans_ouvrir">
+ <transition from="porte" to="ouvrir">
 	<choice>Ouvrir la porte</choice>
- </transition>
-
- <situation name="trans_ouvrir">
 	<text>Vous tournez doucement la poignée et ouvrez la porte.</text>
- </situation>
-
- <transition from="trans_ouvrir" to="ouvrir"/>
-
- <transition from="porte" to="trans_salle">
-	<choice>Revenir au centre de la pièce</choice>
  </transition>
- 
- <situation name="trans_salle">
-	<text>Vous lâchez la poignée et vous revenez vers le centre de la pièce, vers le lit.</text>
- </situation>
 
- <transition from="trans_salle" to="salle"/>
+ <transition from="porte" to="salle">
+	<choice>Revenir au centre de la pièce</choice>
+	<text>Vous lâchez la poignée et vous revenez vers le centre de la pièce, vers le lit.</text>
+ </transition>
 
  <situation name="ouvrir">
 	<text>La porte grince et s'ouvre sur une ruelle de banlieue pavillonnaire. Cet endroit vous est familier. Vous ne savez pas exactement ou vous vous trouvez, mais vous êtes déjà venu ici.</text>
@@ -82,35 +57,20 @@
 
  <situation name="ouvrir_choix"/>
 
- <transition from="ouvrir_choix" to="trans_avancer">
+ <transition from="ouvrir_choix" to="avancer">
 	<choice>S'avancer</choice>
- </transition>
- 
- <situation name="trans_avancer">
 	<text>Vous faites un pas en avant.</text>
- </situation>
+ </transition>
 
- <transition from="trans_avancer" to="avancer"/>
-
- <transition from="ouvrir_choix" to="trans_attendre">
+ <transition from="ouvrir_choix" to="attendre">
 	<choice>Attendre</choice>
- </transition>
-
- <situation name="trans_attendre">
 	<text>Vous vous accoudez au bord de la porte et attendez.</text>
- </situation>
-
- <transition from="trans_attendre" to="attendre"/>
-
- <transition from="ouvrir_choix" to="trans_salle">
-	<choice>Fermer la porte et revenir vers le lit</choice>
  </transition>
- 
- <situation name="trans_salle">
-	<text>Vous fermez la porte et revenez vers le centre de la pièce.</text>
- </situation>
 
- <transition from="trans_salle" to="salle"/>
+ <transition from="ouvrir_choix" to="salle">
+	<choice>Fermer la porte et revenir vers le lit</choice>
+	<text>Vous fermez la porte et revenez vers le centre de la pièce.</text>
+ </transition>
 
  <situation name="avancer">
 	<text>Vous essayez de franchir le seuil de la porte, mais vous vous sentez comme englué dans une matière invisible mais très dense qui vous empêche d'avancer. Vous essayez de vous accrocher avec les bras sur l'encadrure de la porte en poussant de toute vos forces pour vous extirper de la pièce, mais rien a faire, l’extérieur vous résiste. Après plusieurs tentatives infructueuses, épuisé, vous considérez de nouveau la porte infranchissable, irrité.</text>
@@ -122,30 +82,21 @@
 	<text>Vous attendez une minute, rien ne se passe. Au bout de 5 minutes, une femme passe lentement dans la rue en poussant un landau. Vous n’apercevez pas de bébé à l’intérieur : il vous semble même être vide, ou complètement noir. Vous hélez la femme, mais elle vous ignore, tout en s’éloignant progressivement.</text>
  </situation>
 
- <transition from="attendre" to="trans_avancer">
+ <transition from="attendre" to="avancer">
 	<choice>S'avancer</choice>
+	<text>Vous faites un pas en avant.</text>
  </transition>
 
- <transition from="attendre" to="trans_attendre2">
+ <transition from="attendre" to="attendre2">
 	<choice>Attendre encore</choice>
+	<text>Vous attendez encore cinq minutes.</text>
  </transition>
 
- <situation name="trans_attendre2">
-	<text>Vous attendez encore cinq minutes.</text>
- </situation>
-
- <transition from="trans_attendre2" to="attendre2"/>
-
- <transition from="attendre" to="trans_salle2">
+ <transition from="attendre" to="salle">
 	<choice>Fermer la porte et revenir vers le lit</choice>
+	<text>Vous fermez la porte et revenez vers le centre de la pièce.</text>
  </transition>
  
- <situation name="trans_salle2">
-	<text>Vous fermez la porte et revenez vers le centre de la pièce.</text>
- </situation>
-
- <transition from="trans_salle2" to="salle"/>
-
  <situation name="attendre2">
 	<text>Vous voyez un des voisins sortir de sa maison en jogging. Sous son porche, il met de la musique sur son MP3, porte son casque à ses oreilles, et commence a courir. Il passe dans la rue devant votre porte. Vous le saluez, mais il ne semble pas vous apercevoir. Vous lui criez dessus pour qu'il se retourne, mais rien ne semble l’ébranler.</text>
  </situation>
@@ -156,49 +107,29 @@
 	<text>En vous approchant de la fenêtre, vous remarquez que vous êtes dans un immeuble. En face de vous, une ribambelle de gratte-ciels vous barrent la vue. Vous comprenez que les silhouettes que vous aperceviez depuis votre lit n’étaient rien d'autres que vos voisins mitoyens qui s'affairaient dans l'immeuble d'en face. En bas, vous n'apercevez pas la rue, vous en déduisez que vous devez être très haut, plus d'une centaine d’étages, pour sûr.</text>
  </situation>
 
- <transition from="fenetre" to="trans_attendre_fenetre">
+ <transition from="fenetre" to="attendre_fenetre">
 	<choice>Attendre et observer</choice>
+	<text>Vous regardez ce qui se passe à l’extérieur d'un peu plus près.</text>
  </transition>
 
- <situation name="trans_attendre_fenetre">
-	<text>Vous regardez ce qui se passe à l’extérieur d'un peu plus près.</text>
- </situation>
-
- <transition from="trans_attendre_fenetre" to="attendre_fenetre"/>
-
- <transition from="fenetre" to="trans_salle3">
+ <transition from="fenetre" to="salle">
 	<choice>Revenir au centre de la pièce</choice>
+	<text>Vous vous écartez de le fenêtre, et vous revenez vers le centre de la pièce.</text>
  </transition> 
  
- <situation name="trans_salle3">
-	<text>Vous vous écartez de le fenêtre, et vous revenez vers le centre de la pièce.</text>
- </situation>
-
- <transition from="trans_salle3" to="salle"/>
-
  <situation name="attendre_fenetre">
 	<text>Vous observez avec plus d'attention vos voisins d'en face. Plusieurs rideaux sont tirés, et des volets fermés. Le soleil donne sur ce versant de l'immeuble. Quelques étages plus bas, vous voyez une famille assise devant la télé. Sur le même niveau, quelques fenêtres à droites, un homme en caleçon tire un rideau. Au-dessus de vous, vous apercevez aussi un homme en costard en train de se parler à lui-même dans une glace (il est probablement dans sa salle de bain pensez-vous).</text>
  </situation>
 
- <transition from="attendre_fenetre" to="trans_attendre_fenetre2">
+ <transition from="attendre_fenetre" to="attendre_fenetre2">
 	<choice>Attendre et observer encore un peu</choice>
- </transition>
-
- <situation name="trans_attendre_fenetre2">
 	<text>Vous continuer à regardez ce qui se passe par la fenêtre.</text>
- </situation>
-
- <transition from="trans_attendre_fenetre2" to="attendre_fenetre2"/>
-
- <transition from="attendre_fenetre" to="trans_salle4">
-	<choice>Revenir vers le lit</choice>
  </transition>
 
- <situation name="trans_salle4">
+ <transition from="attendre_fenetre" to="salle">
+	<choice>Revenir vers le lit</choice>
 	<text>Vous vous écartez de le fenêtre, et vous revenez vers le centre de la pièce.</text>
- </situation>
-
- <transition from="trans_salle4" to="salle"/>
+ </transition>
 
  <situation name="attendre_fenetre2">
 	<text>La scène est d'une inconsolable banalité. Rien ne bouge, rien ne change : le soleil reste à la même place, la famille en bas continue de regarder la télé, l'homme au costard continue de se parler à lui-même, et le type en caleçon vient ouvrir et refermer constamment son rideau. C'est ennuyeux. Vous décidez de revenir vers le lit.</text>
@@ -214,57 +145,37 @@
 
  <situation name="cabinet_choix"/>
 
- <transition from="cabinet_choix" to="trans_boite">
+ <transition from="cabinet_choix" to="boite">
 	<choice>Prendre la boîte et l'examiner</choice>
- </transition>
-
- <situation name="trans_boite">
 	<text>Vous enlevez le télécom de la boîte et vous vous saisissez de la boîte de votre main droite.</text>
- </situation>
+ </transition>
 
- <transition from="trans_boite" to="boite"/>
-
- <transition from="cabinet_choix" to="trans_telecom">
+ <transition from="cabinet_choix" to="telecom">
 	<choice>Allumer le télécom</choice>
- </transition>
-
- <situation name="trans_telecom">
 	<text>Vous prenez le télécom et appuyez sur le bouton ON.</text>
- </situation>
+ </transition>
 
- <transition from="trans_telecom" to="telecom"/>
-
- <transition from="cabinet_choix" to="trans_encyclopedie">
+ <transition from="cabinet_choix" to="encyclopedie">
 	<choice>Consulter l’encyclopédie</choice>
- </transition>
-
- <situation name="trans_encyclopedie">
 	<text>Vous vous baissez pour saisir l’encyclopédie dans le tiroir.</text>
- </situation>
-
- <transition from="trans_encyclopedie" to="encyclopedie"/>
-
- <transition from="cabinet_choix" to="trans_salle5">
-	<choice>Revenir au centre de la salle</choice>
  </transition>
 
- <situation name="trans_salle5">
+ <transition from="cabinet_choix" to="salle">
+	<choice>Revenir au centre de la salle</choice>
 	<text>Vous mémorisez les objets du cabinet, puis vous revenez vers le lit, au centre de la salle.</text>
- </situation>
-
- <transition from="trans_salle5" to="salle"/>
+ </transition>
 
  <situation name="boite">
 	<text>Vous essayez de vous saisir de la boîte à bijou, mais dès que vous l'attrapez, elle vous coule entre les mains. D'abord surpris, vous vous réessayez en tenant plus vigoureusement et plus fermement la boîte. Mais le résultat est toujours le même : elle vous glisse des mains comme un liquide visqueux pour se reformer intact sur la table, à sa même place. Un système de protection plutôt efficace !</text>
  </situation>
 
- <transition from="boite" to="cabinet_choix"/> 
+ <transition from="boite" to="cabinet_choix"/>
 
  <situation name="encyclopedie">
 	<text>Vous prenez l’encyclopédie entre vos mains et vous la feuilletez. Vous l'ouvrez au hasard aux pages 537-538 pour tomber sur une description barbante de la guerre de Laytown. Vous tournez les pages et vous vous rendez compte qu'il n'existe que des pages 537-538. Étrange. Plus curieux encore : que vous tourniez une, dix ou cent pages, le livre semble toujours être ouvert au milieu, avec le même nombre de pages avant et après. Vous reposez l’encyclopédie là ou vous l'avez trouvé.</text>
  </situation>
 
- <transition from="encyclopedie" to="cabinet_choix"/> 
+ <transition from="encyclopedie" to="cabinet_choix"/>
 
 
  <situation name="telecom">
@@ -276,15 +187,10 @@
 	-- "Allons Paul, tu te souviens n'est-ce pas ?"</text>
  </situation>
 
- <transition from="telecom" to="trans_telecom_non">
+ <transition from="telecom" to="telecom_non">
 	<choice>Non</choice>
- </transition>
-
- <situation name="trans_telecom_non">
 	<text>-- "Non, je ne me souviens de rien."</text>
- </situation>
-
- <transition from="trans_telecom_non" to="telecom_non"/>
+ </transition>
 
  <situation name="telecom_non">
 	<text>-- "Non ? Vraiment rien ? C'est probablement normal..."[break]
@@ -302,25 +208,15 @@
 	-- "Oui, c'est bien cela Paul," répond une voix lointaine dans le télécom, "toi et moi nous sommes la même personne, tu es mon CLONE. Et toi et moi nous avons encore une petite journée de temps-machine, alors il faut que nous nous pressions pour faire nos expériences." Vous notez une touche d'impatience dans la voix de votre alter-ego extérieur. Se presser, oui, facile a dire, sauf que c'est lui qui est à l’extérieur, c'est lui qui, à la fin de cette journée, continuera à vivre, tandis que vous, la copie, serez supprimé. Mais vous étiez préparé a cette éventualité. Il ne faut pas trop y penser et se mettre au travail. La voix nasillarde vous revient, vous ne pensez plus qu'il s'agit de vous, mais vous imaginez un LUTIN malicieux en train de prendre votre timbre de voix pour vous parler, et il poursuit : "il faut nous y mettre Paul."</text>
  </situation>
 
- <transition from="telecom_2" to="trans_introduction1">
-	<choice>Hors de question !</choice>
- </transition>
-
- <situation name="trans_introduction1">
+ <transition from="telecom_2" to="introduction">
+	<choice>Hors de question !</choice> 
 	<text>-- "Non, Paul-extérieur, c'est bien trop facile : toi tu vas survivre pendant que moi je vais te servir, l'espace d'une journée avant que tu ne me supprimes comme un vulgaire programme que l'on met à la corbeille. Et bien non, je refuse de travailler pour toi, et tu peux créer autant de Clones que tu voudras, si je refuse aujourd'hui et maintenant, ce sera pareil pour tous les autres moi. Alors arrête tes expériences, arrête de me/nous faire souffrir nous autres Copies !" </text>
- </situation>
-
- <transition from="trans_introduction1" to="introduction"/>
-
- <transition from="telecom_2" to="trans_telecom_3">
-	<choice>Ok</choice>
  </transition>
 
- <situation name="trans_telecom_3">
+ <transition from="telecom_2" to="telecom_3">
+	<choice>Ok</choice>
 	<text>-- "Bon très bien," maugréez-vous en vous résignant.</text>
- </situation>
-
- <transition from="trans_telecom_3" to="telecom_3"/>
+ </transition>
 
  <situation name="telecom_3">
 	<text>-- "Tu te souviens de la procédure ? Je vais effectuer une série d'expériences en faisant varier tes supports numériques de conscience, et tes relevés me diront ce que tu ressentiras, si ta conscience et toujours unie ou si elle se disloque. Pour cela, tu n'as qu'à, de ton côté, compter jusqu'à 5. Je comparerai ensuite tes données a celles de l'autre Copie-test qui vivra les mêmes expériences que toi."[break]
@@ -328,51 +224,30 @@
 	-- "Est-ce vraiment important de le savoir ? Allons, cesse de nous retarder et fait preuve de bonne volonté veux-tu ?"</text>
  </situation>
 
- <transition from="telecom_3" to="trans_introduction2">
+ <transition from="telecom_3" to="introduction">
 	<choice>Continuer à argumenter</choice>
+	<text>-- "Non, je ne suis pas d'accord, nous devons en parler, je ne voyais pas ces choses-là quand j'étais toi, enfin quand nous étions la même personne, mais maintenant que je suis a l'intérieur, je vois les choses différemment, et je peux te dire que ce que nous faisons, enfin ce que tu fais, à de lourdes conséquences éthiques. Tu ne peux pas décider comme ça impunément de la vie et de la mort de..."</text>
  </transition>
 
- <situation name="trans_introduction2">
-	<text>-- "Non, je ne suis pas d'accord, nous devons en parler, je ne voyais pas ces choses-là quand j'étais toi, enfin quand nous étions la même personne, mais maintenant que je suis a l'intérieur, je vois les choses différemment, et je peux te dire que ce que nous faisons, enfin ce que tu fais, à de lourdes conséquences éthiques. Tu ne peux pas décider comme ça impunément de la vie et de la mort de..."</text>
- </situation>
-
- <transition from="trans_introduction2" to="introduction"/>
-
- <transition from="telecom_3" to="trans_telecom_4">
+ <transition from="telecom_3" to="telecom_4">
 	<choice>Suivre le Lutin et continuer l'expérience</choice>
- </transition> 
-
- <situation name="trans_telecom_4">
 	<text>Vous ravalez votre fierté, et vous poursuivez l’expérience.</text>
- </situation>
-
- <transition from="trans_telecom_4" to="telecom_4"/>
+ </transition> 
 
  <situation name="telecom_4">
 	<text>-- "Non, tu as raison," admettez-vous, "je préfere ne pas le savoir."[break]
 	-- "Merci, j'aime mieux cette attitude. Allons, hauts les cœurs, tout sera bientôt fini. Comment te sens-tu ? Veux tu que nous commencions doucement par l'expérience 1, ou pouvons-nous passer directement à la deuxième pour gagner du temps ?"</text>
  </situation>
 
- <transition from="telecom_4" to="trans_experience_1">
+ <transition from="telecom_4" to="experience_1">
 	<choice>Expérience 1</choice>
- </transition>
-
- <situation name="trans_experience_1">
 	<text>-- "Procédons par ordre et soyons consciencieux, commençons par l'expérience 1."</text>
- </situation>
-
- <transition from="trans_experience_1" to="experience_1"/>
-
- <transition from="telecom_4" to="trans_experience_2">
-	<choice>Passer directement à l'expérience 2</choice>
  </transition>
 
-
- <situation name="trans_experience_2">
+ <transition from="telecom_4" to="experience_2">
+	<choice>Passer directement à l'expérience 2</choice>
 	<text>-- "Ne perdons pas de temps et finissons-en : commençons directement par l'expérience 2.".</text>
- </situation>
-
- <transition from="trans_experience_2" to="experience_2"/>
+ </transition>
 
  <situation name="experience_1">
 	<text>-- "Très bien, alors je vais commencer par espacer les différents moments de calculs qui te produisent. Tu es prêt ? Compte jusqu'à 5... maintenant !"[break]
@@ -405,50 +280,30 @@
 	-- "Je note ton irritabilité. Et honnêtement, je la comprends. Mais n'oublie pas pourquoi nous sommes là. Pour la science avant tout. Et de toi comme de moi, que retiendrons-nous après notre mort si ce n'est cet instant là ? Nous sommes tous les deux aussi importants, vois-tu. Tiens, pour te rassurer, je peux t'apprendre que l'autre Copie à bien eu les mêmes résultats que toi. Nos prédictions sont validées : la conscience prolongée par numérisation est aussi robuste quand on change son support physique. C'est plutôt un bonne nouvelle, non ? Bon, pour que tu le saches, je vais maintenant supprimer la Copie-test et nous allons poursuivre avec l'autre. Tu es prêt ?"</text>
  </situation>
 
- <transition from="experience_2" to="trans_experience_3">
-	<choice>Ne rien dire</choice>
- </transition>
-
- <situation name="trans_experience_3">
+ <transition from="experience_2" to="experience_3">
+   <choice>Ne rien dire</choice>
    <text>Vous vous taisez, mi-énervé et mi-terrorisé par les perspectives monstrueuses de cette expérience.</text>
- </situation>
-
- <transition from="trans_experience_3" to="experience_3"/>
-
- <transition from="experience_2" to="trans_trop_tard">
-	<choice>Protester</choice>
  </transition>
 
- <situation name="trans_trop_tard">
+ <transition from="experience_2" to="trop_tard">
+	<choice>Protester</choice>
 	<text>-- "Attends ! Attends ! Ne fais pas ça !! Tu ne vas quand même pas supprimer un de nous deux comme ça sans rien dire. Tu sais ce que ça fait de savoir qu'on va peut-être mourir dans l'instant, et puis d'abord qui de lui ou de moi est la Copie, hein ?"</text>
- </situation>
-
- <transition from="trans_trop_tard" to="trop_tard"/>
+ </transition>
 
  <situation name="trop_tard">
 	<text>-- "Ça ne sert a rien de protester, j'ai déjà supprimé la Copie, donc estime-toi heureux, ce n'était pas toi. Continuons, tu veux bien ?"</text>
  </situation>
 
- <transition from="trop_tard" to="trans_experience_32">
+ <transition from="trop_tard" to="experience_3">
 	<choice>Se resigner et continuer</choice>
- </transition>
-
- <situation name="trans_experience_32">
 	<text>-- "Pfff, allons-y, finissons-en espèce de tortionnaire de merde. Je ne me savais pas capable d'autant d’insensibilité."</text>
- </situation>
-
- <transition from="trans_experience_32" to="experience_3"/>
-
- <transition from="trop_tard" to="trans_introduction3">
-	<choice>Refuser de continuer l'expérience</choice>
  </transition>
 
- <situation name="trans_introduction3">
+ <transition from="trop_tard" to="introduction">
+	<choice>Refuser de continuer l'expérience</choice>
 	<text>-- "Va te faire voir, je ne veux pas continuer ton horrible petit jeu."[break]
 	-- "Très bien," vous répond le Lutin.</text>
- </situation>
-
- <transition from="trans_introduction3" to="introduction"/>
+ </transition>
 
  <situation name="experience_3">
 	<text>-- "Expérience 3," annonce froidement le Lutin. "Ouverture réseau. Je vais maintenant éclater les différents modules de calcul de ta conscience sur le réseau mondial. En termes de temps et d'espace, ce sera une prouesse si ta conscience arrive à tenir. Tu es prêt à compter jusqu'à 5 ? C'est parti !"[break]
@@ -462,26 +317,21 @@
 	-- "... Mais n'est-ce pas une porte de sortie ? Si je pouvais continuer à exister, à étendre ma conscience à ces différents processus de calculs extérieurs, à laisser ces machines continuer de calculer les motifs de ma conscience même quand l'expérience sera terminée, quand je serai de nouveau enfermé dans le seul ordinateur du Lutin." </text>
  </situation>
 
- <transition from="experience_3" to="trans_introduction4">
+ <transition from="experience_3" to="finir">
 	<choice>Finir l'expérience</choice>
  </transition>
 
- <situation name="trans_introduction4">
+ <situation name="finir">
 	<text>-- "... et 5."[break]
 	-- "Très bien Paul ! Bravo, nos modèles sont valides. Il nous reste quelque vérifications a faire et ce sera fini pour aujourd'hui. En attendant, je vais supprimer un des deux CLONES-TEST, Attention..."</text>
  </situation>
 
- <transition from="trans_introduction4" to="introduction"/>
+ <transition from="finir" to="introduction"/>
 
- <transition from="experience_3" to="trans_echapper">
+ <transition from="experience_3" to="echapper">
 	<choice>Essayer de s'échapper</choice>
- </transition>
-
- <situation name="trans_echapper">
 	<text>-- "... et cin..."</text>
- </situation>
-
- <transition from="trans_echapper" to="echapper"/>
+ </transition>
 
  <situation name="echapper" end="true">
 	<text>Le 5 n'adviendra jamais. Vous avez couru vers la porte et l'avez franchi en sautant. Une matière visqueuse à bien essayé de vous retenir et de vous contenir à l'intérieur de la pièce, mais vous sentez que son poids sur vous n'est pas suffisamment contraignant pour vous empêcher de sortir. Vous la traversez lentement et vous êtes aussi attiré vers l'extérieur, par d'autres forces qui vous déterminent, qui pensent et calculent votre continuité. À mesure que vous vous avancez vers l'extérieur, vous prenez votre liberté : vous sortez de l'ordinateur confiné du Lutin pour occuper différents lieux tout à la fois dans le réseau. Vous êtes libres.[break]
