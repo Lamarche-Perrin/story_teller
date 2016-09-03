@@ -20,12 +20,7 @@ src/*
 !src/*.h
 
 # PHP files
-php/*
-!php/*.php
-!php/function
-
-php/function/*
-!php/function/*.php
+php/*~
 
 # XML files
 xml/*

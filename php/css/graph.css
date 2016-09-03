@@ -1,0 +1,16 @@
+
+.node {
+	stroke: #FFFFFF;
+	stroke-width: 1.5px;
+}
+
+.link {
+	stroke: #999999;
+	stroke-width: 4px;
+  	stroke-opacity: .8;
+	marker-end: url(#end-arrow);
+}
+
+#end-arrow {
+	fill: #88A;
+}
