@@ -25,5 +25,36 @@ openConnection();
 
 closeConnection();
 
+$mageValue = 2;
+$spellValue = 14;
+$nbDice = 4;
+$nbTest = 100000;
+$withMagic = false;
+
+$nbTouch = 0;
+$diceArray = array();
+
+for ($i = 0; $i < $nbTest; $i++)
+{
+	$sum = $mageValue;
+	$min = 6;
+
+	for ($d = 0; $d < $nbDice; $d++)
+	{
+		$r = rand(1,6);
+		$diceArray[$d] = $r;
+		$sum += $r;
+		if ($r < $min) { $min = $r; }
+	}
+
+	if ($sum >= $spellValue) { $nbTouch++; }
+	else if ($withMagic) {
+		$sum = $sum - $min + rand(1,6);
+		if ($sum >= $spellValue) { $nbTouch++; }
+	}
+}
+
+echo $nbTouch/$nbTest;
+
 ?>
 
