@@ -1,7 +1,7 @@
 <?php
 
 $GLOBALS['sql_connection'] = null; // sql connection
-$GLOBALS['verbose_sql'] = false; // Set to true to print sql requests.
+$GLOBALS['verbose_sql'] = true; // Set to true to print sql requests.
 $GLOBALS['no_verbose'] = false; // Set to true to forbid any verbose.
 
 
@@ -74,6 +74,10 @@ function execSQL ($sql)
 {
 	printSQL ($sql);
 	$result = $GLOBALS['sql_connection']->query($sql) or trigger_error($GLOBALS['sql_connection']->error." [$sql]");
+
+	#$sql2 = "INSERT INTO log (`sql`) VALUES ('" . escapeSQL($sql) . "')";
+	#$GLOBALS['sql_connection']->query($sql2) or trigger_error($GLOBALS['sql_connection']->error." [$sql2]");
+	
 	return $result;
 }
 
@@ -89,6 +93,14 @@ function getIdSQL () { return $GLOBALS['sql_connection']->insert_id; }
  */
 function escapeSQL ($var) { return $GLOBALS['sql_connection']->real_escape_string($var); }
 
+
+function formatDate ($date)
+{
+	$frMonth = Array("", "janvier", "février", "mars", "avril", "mai", "juin", "juillet", "août", "septembre", "octobre", "novembre", "décembre");
+	$strDate = strtotime ($date);
+	$formatDate = date('j',$strDate) . " " . $frMonth[date('n',$strDate)] . " " . date('Y',$strDate);
+	return $formatDate;
+}
 
 /*
  * Create a new narrative (along with its corresponding 'narrative' element and its 'start' situation).
@@ -114,43 +126,63 @@ function newNarrative ($id_member, $name, $title, $abstract)
 }
 
 
+
 /*
- * Get author, title, and description of a given narrative.
+ * Get name, address, etc., of a given member (if specified, else all).
  * The database has first to be connected.
  */
-function getNarrativeInfo ($id_narrative)
+function getMembersData ($id_member = NULL)
 {
-	$info = array();
+	$data = array();
 
-	// Get info in narrative table
-	$sql = "SELECT title, abstract, date FROM narrative WHERE id_narrative = '$id_narrative'";
+	// Get data in member table
+	if (is_null($id_member)) { $whereClause = ""; } else { $whereClause = "WHERE id_member = '$id_member'"; }
+	$sql = "SELECT * FROM member $whereClause";
 	$result = execSQL ($sql);
 	
-	if (!checkUnique ($sql, $result)) { return null; }
+	while ($row = $result->fetch_assoc()) { $data[$row['id_member']] = $row; }
 
-	else {
-		$row = $result->fetch_assoc();
-		$info['title'] = $row['title'];
-		$info['abstract'] = $row['abstract'];
-		$info['date'] = $row['date'];
-		$info['authors'] = array();
+	return $data;
+}
 
-		// Add info regarding authors
-		$sql = "SELECT m.name FROM element e
+
+
+/*
+ * Get author, title, and description of a given narrative (if specified, else all).
+ * The database has first to be connected.
+ */
+function getNarrativesData ($id_narrative = NULL)
+{
+	$data = array();
+
+	// Get data in narrative table
+	if (is_null($id_narrative)) { $whereClause = ""; } else { $whereClause = "WHERE id_narrative = '$id_narrative'"; }
+	$sql = "SELECT * FROM narrative $whereClause";
+	$result = execSQL ($sql);
+	
+	while ($row = $result->fetch_assoc())
+	{
+		$id_narrative = $row['id_narrative'];
+		$data[$id_narrative] = $row;
+		$data[$id_narrative]['authors'] = array();
+
+		// Add data regarding authors
+		$sql2 = "SELECT m.id_member, m.name FROM element e
 					INNER JOIN rights r ON r.id_element = e.id_element
 					INNER JOIN member m ON m.id_member = r.id_member
 				WHERE e.id_narrative = '$id_narrative' AND e.type = 'narrative' AND r.type IN ('add','mod','full')";
-		$result = execSQL ($sql);
+		$result2 = execSQL ($sql2);
 
-		while ($row = $result->fetch_assoc())
+		while ($row2 = $result2->fetch_assoc())
 		{
 			$author = array();
-			$author['name'] = $row['name'];
-			$info['authors'][] = $author;
+			$author['id_member'] = $row2['id_member'];
+			$author['name'] = $row2['name'];
+			$data[$id_narrative]['authors'][$author['id_member']] = $author;
 		}
-
-		return $info;
 	}
+
+	return $data;
 }
 
 
@@ -158,7 +190,7 @@ function getNarrativeInfo ($id_narrative)
  * Get informations about an given element.
  * The database has first to be connected.
  */
-function getElementInfo ($id_element)
+function getElementData ($id_element)
 {
 	$sql = "SELECT e.id_element, e.type, e.name, e.from, e.to, w.text, w.end, w.choice, w.date, m.name AS author
 			FROM element e
@@ -178,11 +210,9 @@ function getElementInfo ($id_element)
  * Get informations about all elements of a given narrative.
  * The database has first to be connected.
  */
-function getElementsInfo ($id_narrative)
+function getElementsData ($id_narrative)
 {
-	$info = array();
-	$info['situations'] = array();
-	$info['transitions'] = array();
+	$data = array();
 
 	$sql = "SELECT e.id_element, e.type, e.name, e.from, e.to, w.text, w.end, w.choice, w.date, m.name AS author
 			FROM element e
@@ -193,13 +223,9 @@ function getElementsInfo ($id_narrative)
 				AND w.type IN ('create', 'modify')";
 	$result = execSQL ($sql);
 
-	while ($row = $result->fetch_assoc())
-	{
-		if ($row['type'] == 'situation') { $info['situations'][$row['id_element']] = $row; }
-		if ($row['type'] == 'transition') { $info['transitions'][$row['id_element']] = $row; }
-	}
+	while ($row = $result->fetch_assoc()) { $data[$row['id_element']] = $row; }
 
-	return $info;
+	return $data;
 }
 
 
@@ -304,6 +330,24 @@ function newStory ($id_member, $id_narrative)
 
 
 /*
+ * Get the last / current story (read by a given member and corresponding to a given narrative).
+ * The database has first to be connected.
+ */
+function getLastStory ($id_member, $id_narrative)
+{
+	$sql = "SELECT id_story FROM story
+			WHERE id_member = '$id_member' AND id_narrative = '$id_narrative' AND current IS NOT NULL
+				ORDER BY date DESC LIMIT 0,1";
+	$result = execSQL ($sql);
+
+	if ($result->num_rows == 0) { return null; }
+
+	$row = $result->fetch_assoc();
+	return $row['id_story'];
+}
+
+
+/*
  * Get all the text preceding the current state of a given story.
  * The database has first to be connected.
  */
@@ -384,7 +428,7 @@ function getSituationXML ($id_narrative, $name)
 
 	$xml = "<XML>\n";
 	$xml .= "<TEXT>";
-	$xml .= $row['text'];
+	if (!is_null($row['text'])) { $xml .= $row['text']; } else { $xml .= "NULL"; }
 	$xml .= "</TEXT>\n";
 
 	// Get next transisions
@@ -400,7 +444,7 @@ function getSituationXML ($id_narrative, $name)
 		{
 			$xml .= "<TRANSITION>\n";
 			$xml .= "<TO>" . $row['to'] . "</TO>\n";
-			if ($row['choice'] != "NULL") { $xml .= "<CHOICE>" . $row['choice'] . "</CHOICE>\n"; }
+			if (!is_null($row['choice'])) { $xml .= "<CHOICE>" . $row['choice'] . "</CHOICE>\n"; }
 			$xml .= "</TRANSITION>\n";
 		}
 	}
@@ -428,6 +472,46 @@ function getSituationXML ($id_narrative, $name)
    }
  */
 
+
+/*
+ * New situation in a narrative. Return NULL if it already exists.
+ * The database has first to be connected.
+ */
+function newSituation ($id_narrative, $name)
+{
+	$sql = "SELECT id_element FROM element WHERE id_narrative = '$id_narrative' AND type='situation'";
+	$result = execSQL ($sql);
+	if ($result->num_rows > 0) { return NULL; }
+	
+	$sql = "INSERT INTO element (id_narrative, type, name) VALUES ('$id_narrative', 'situation', '$name')";
+	execSQL ($sql);
+	return getIdSQL();
+}
+
+
+/*
+ * Change the values of an existing element.
+ * The database has first to be connected.
+ */
+function setElement ($id_member, $id_element, $values)
+{
+	$sql = "INSERT INTO writing (id_member, id_element, type, text, end, choice)
+				VALUES ('$id_member', '$id_element', 'modify', '". escapeSQL($values['text']) . "', '" . $values['end'] . "', '" . escapeSQL($values['choice']) . "')";
+	execSQL ($sql);
+}
+
+
+
+/*
+ * Create an empty element.
+ * The database has first to be connected.
+ */
+function setElementBlank ($id_member, $id_element)
+{
+	$sql = "INSERT INTO writing (id_member, id_element, type, text)
+				VALUES ('$id_member', '$id_element', 'create')";
+	execSQL ($sql);
+}
 
 
 /*

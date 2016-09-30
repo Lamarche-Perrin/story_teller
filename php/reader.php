@@ -4,19 +4,20 @@ include("functions/function.php");
 
 session_start();
 
-$_SESSION['id_member'] = 1;
-$_SESSION['id_narrative'] = 19;
-$_SESSION['id_story'] = 17;
-
+if (isset($_GET) && isset($_GET['id_narrative'])) { $_SESSION['id_narrative'] = $_GET['id_narrative']; } else { $_SESSION['id_narrative'] = NULL; }
 
 openConnection();
+
+$_SESSION['id_story'] = getLastStory ($_SESSION['id_member'], $_SESSION['id_narrative']);
+if (is_null($_SESSION['id_story'])) { $_SESSION['id_story'] = newStory ($_SESSION['id_member'], $_SESSION['id_narrative']);  }
 
 //deleteNarrative(11);
 //$_SESSION['id_narrative'] = newNarrative ("clone", "Clone", "Première narration, écrite par Régis.");
 //importXML ($_SESSION['id_member'], $_SESSION['id_narrative'], "../xml/clone.xml");
 //$_SESSION['id_story'] = newStory ($_SESSION['id_member'], $_SESSION['id_narrative']);
 
-$info = getNarrativeInfo ($_SESSION['id_narrative']);
+$info = getNarrativesInfo ($_SESSION['id_narrative']);
+$info = $info[$_SESSION['id_narrative']];
 $text = getStoryText ($_SESSION['id_story']);
 
 closeConnection();
@@ -43,10 +44,7 @@ closeConnection();
 									}
 									?></div>
 				<div class="date"><?php
-								  $frMonth = Array("", "janvier", "février", "mars", "avril", "mai", "juin", "juillet", "août", "septembre", "octobre", "novembre", "décembre");
-								  $strDate = strtotime ($info['date']);
-								  $formatDate = date('j',$strDate) . " " . $frMonth[date('n',$strDate)] . " " . date('Y',$strDate);
-								  echo $formatDate;
+								  echo formatDate($info['date']);
 								  ?></div>
 			</div>
 			<div id="page2" align="justify"></div>
@@ -134,7 +132,6 @@ closeConnection();
 					 { choice = transitions[i].getElementsByTagName("CHOICE")[0].childNodes[0].nodeValue; }
 					 button += "<button id=\"button\" type=\"button\" onClick=\"next('"+to+"')\">"+choice+"</button>";
 				 }
-
 			 }
 			 
 			 //if (closedBook)
