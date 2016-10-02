@@ -7,17 +7,16 @@ $GLOBALS['no_verbose'] = true;
 
 session_start();
 
-if (isset($_POST['type']) && isset($_POST['id_element']))
-{
-	openConnection();
+$json = json_decode (file_get_contents ("php://input"), true);
 
-	setElement ($_SESSION['id_member'], $_POST['id_element'], $_POST);
-	$data = getElementData ($_POST['id_element']);
+openConnection();
 
-	closeConnection();
+setElement ($_SESSION['id_member'], $json['id_element'], $json);
+$data = getElementData ($json['id_element']);
 
-	echo json_encode($data);
-}
+closeConnection();
+
+echo json_encode ($data);
 
 ?>
 

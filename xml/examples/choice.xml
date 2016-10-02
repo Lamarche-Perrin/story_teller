@@ -1,6 +1,6 @@
 <narrative>
 
-  <situation name="start">
+  <situation name="start" start="true">
 	<text>Hello...</text>
   </situation>
 

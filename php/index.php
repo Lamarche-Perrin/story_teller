@@ -7,6 +7,12 @@ $_SESSION = array();
 
 openConnection();
 
+
+//deleteNarrative (33);
+//$id_narrative = newNarrative (2, "choice", "Choice", "Exemple de transition avec choix.");
+//importNarrative (2, $id_narrative, "../xml/examples/choice.xml");
+
+
 $datas = getMembersData ();
 
 closeConnection();

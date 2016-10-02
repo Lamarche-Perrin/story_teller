@@ -16,7 +16,7 @@ if (is_null($_SESSION['id_story'])) { $_SESSION['id_story'] = newStory ($_SESSIO
 //importXML ($_SESSION['id_member'], $_SESSION['id_narrative'], "../xml/clone.xml");
 //$_SESSION['id_story'] = newStory ($_SESSION['id_member'], $_SESSION['id_narrative']);
 
-$info = getNarrativesInfo ($_SESSION['id_narrative']);
+$info = getNarrativesData ($_SESSION['id_narrative']);
 $info = $info[$_SESSION['id_narrative']];
 $text = getStoryText ($_SESSION['id_story']);
 
@@ -61,7 +61,7 @@ closeConnection();
 		 var nextPage = false;
 		 var nextButton = "";
 
-		 function next (current)
+		 function next (id_current)
 		 {
 			 var xhttp = new XMLHttpRequest();
 			 xhttp.onreadystatechange = function ()
@@ -76,7 +76,7 @@ closeConnection();
 			 xhttp.open ("POST", "scripts/get_next_situation.php", true);
 			 xhttp.setRequestHeader ("Content-type", "application/x-www-form-urlencoded");
 
-			 if (current != null) { xhttp.send("current="+current); }
+			 if (id_current != null) { xhttp.send("id_current="+id_current); }
 			 else { xhttp.send (); }
 		 }
 
@@ -125,12 +125,12 @@ closeConnection();
 				 var transitions = xml.getElementsByTagName("TRANSITION");
 				 for (var i = 0; i < transitions.length; i++)
 				 {
-					 var to = transitions[i].getElementsByTagName("TO")[0].childNodes[0].nodeValue;
+					 var id_to = transitions[i].getElementsByTagName("ID_TO")[0].childNodes[0].nodeValue;
 
 					 var choice = "Continuer";
 					 if (transitions[i].getElementsByTagName("CHOICE").length != 0)
 					 { choice = transitions[i].getElementsByTagName("CHOICE")[0].childNodes[0].nodeValue; }
-					 button += "<button id=\"button\" type=\"button\" onClick=\"next('"+to+"')\">"+choice+"</button>";
+					 button += "<button id=\"button\" type=\"button\" onClick=\"next('"+id_to+"')\">"+choice+"</button>";
 				 }
 			 }
 			 

@@ -113,7 +113,7 @@ function newNarrative ($id_member, $name, $title, $abstract)
 
 	$id_narrative = getIdSQL();
 
-	$sql = "INSERT INTO element (id_narrative, type, name) VALUES ('$id_narrative', 'narrative', '$name')";
+	$sql = "INSERT INTO element (id_narrative, type) VALUES ('$id_narrative', 'narrative')";
 	execSQL ($sql);
 
 	$id_element = getIdSQL();
@@ -192,7 +192,7 @@ function getNarrativesData ($id_narrative = NULL)
  */
 function getElementData ($id_element)
 {
-	$sql = "SELECT e.id_element, e.type, e.name, e.from, e.to, w.text, w.end, w.choice, w.date, m.name AS author
+	$sql = "SELECT e.id_element, e.type, w.name, w.id_from, w.id_to, w.start, w.end, w.choice, w.text, w.date, m.name AS author
 			FROM element e
 				INNER JOIN writing w ON w.id_element = e.id_element
 				INNER JOIN member m ON m.id_member = w.id_member
@@ -214,7 +214,7 @@ function getElementsData ($id_narrative)
 {
 	$data = array();
 
-	$sql = "SELECT e.id_element, e.type, e.name, e.from, e.to, w.text, w.end, w.choice, w.date, m.name AS author
+	$sql = "SELECT e.id_element, e.type, w.name, w.id_from, w.id_to, w.start, w.end, w.choice, w.text, w.date, m.name AS author
 			FROM element e
 				INNER JOIN writing w ON w.id_element = e.id_element
 				INNER JOIN member m ON m.id_member = w.id_member
@@ -292,10 +292,10 @@ function deleteNarrative ($id_narrative)
 	$sql = "DELETE FROM reading WHERE id_element IN (SELECT id_element FROM element WHERE id_narrative = '$id_narrative')";
 	execSQL ($sql);
 
-	$sql = "DELETE FROM element WHERE id_narrative = '$id_narrative'";
+	$sql = "DELETE FROM story WHERE id_narrative = '$id_narrative'";
 	execSQL ($sql);
 
-	$sql = "DELETE FROM story WHERE id_narrative = '$id_narrative'";
+	$sql = "DELETE FROM element WHERE id_narrative = '$id_narrative'";
 	execSQL ($sql);
 
 	$sql = "DELETE FROM narrative WHERE id_narrative = '$id_narrative'";
@@ -322,7 +322,20 @@ function setRights ($id_member, $id_element, $type)
  */
 function newStory ($id_member, $id_narrative)
 {
-	$sql = "INSERT INTO story (id_member, id_narrative) VALUES ('$id_member', '$id_narrative')";
+	$sql = "SELECT e.id_element FROM element e
+				INNER JOIN writing w ON w.id_element = e.id_element
+			WHERE e.id_narrative = '$id_narrative' AND e.type = 'situation' AND w.start = 1
+				AND w.date = (SELECT MAX(x.date) FROM writing x WHERE w.id_element = x.id_element)
+				AND w.type IN ('create', 'modify')";
+	$result = execSQL ($sql);
+
+	if (!checkExists ($sql, $result)) { return null; }
+	if (!checkUnique ($sql, $result)) { return null; }
+
+	$row = $result->fetch_assoc();
+	$id_current = $row['id_element'];
+
+	$sql = "INSERT INTO story (id_member, id_narrative, id_current) VALUES ('$id_member', '$id_narrative', '$id_current')";
 	execSQL ($sql);
 
 	return getIdSQL();
@@ -336,7 +349,7 @@ function newStory ($id_member, $id_narrative)
 function getLastStory ($id_member, $id_narrative)
 {
 	$sql = "SELECT id_story FROM story
-			WHERE id_member = '$id_member' AND id_narrative = '$id_narrative' AND current IS NOT NULL
+			WHERE id_member = '$id_member' AND id_narrative = '$id_narrative' AND id_current IS NOT NULL
 				ORDER BY date DESC LIMIT 0,1";
 	$result = execSQL ($sql);
 
@@ -362,18 +375,18 @@ function getStoryText ($id_story)
 	else {
 		$row = $result->fetch_assoc();
 		$id_narrative = $row['id_narrative'];
-		$names = explode (";", $row['path']);
+		$ids_element = explode (";", $row['path']);
 
 		// Loop through all situations that have been visited
 		$text = "";
-		foreach ($names as $name)
+		foreach ($ids_element as $id_element)
 		{
-			if ($name == "") { continue; }
+			if ($id_element == "") { continue; }
 
 			// Get text corresponding to the traveled situation
 			$sql = "SELECT w.text FROM element e
 						INNER JOIN writing w ON e.id_element = w.id_element
-					WHERE e.id_narrative = '$id_narrative' AND e.type = 'situation' AND e.name = '$name'
+					WHERE e.id_narrative = '$id_narrative' AND e.type = 'situation' AND e.id_element = '$id_element'
 						AND w.date = (SELECT MAX(x.date) FROM writing x WHERE w.id_element = x.id_element)";
 			$result = execSQL ($sql);
 
@@ -396,14 +409,14 @@ function getStoryText ($id_story)
  */
 function getStoryCurrent ($id_story)
 {
-	$sql = "SELECT current FROM story WHERE id_story = '$id_story'";
+	$sql = "SELECT id_current FROM story WHERE id_story = '$id_story'";
 	$result = execSQL ($sql);
 	
 	if (!checkUnique ($sql, $result)) { return null; }
 
 	else {
 		$row = $result->fetch_assoc();
-		return $row['current'];
+		return $row['id_current'];
 	}
 }
 
@@ -413,12 +426,12 @@ function getStoryCurrent ($id_story)
  * Get text and transitions of a given situation (XML-formatted).
  * The database has first to be connected.
  */
-function getSituationXML ($id_narrative, $name)
+function getSituationXML ($id_narrative, $id_element)
 {
 	// Get text of current situation
 	$sql = "SELECT w.text FROM element e
 				INNER JOIN writing w ON e.id_element = w.id_element
-			WHERE e.id_narrative = '$id_narrative' AND e.type = 'situation' AND e.name = '$name'
+			WHERE e.id_narrative = '$id_narrative' AND e.type = 'situation' AND e.id_element = '$id_element'
 				AND w.date = (SELECT MAX(x.date) FROM writing x WHERE w.id_element = x.id_element)";
 	$result = execSQL ($sql);
 
@@ -432,9 +445,9 @@ function getSituationXML ($id_narrative, $name)
 	$xml .= "</TEXT>\n";
 
 	// Get next transisions
-	$sql = "SELECT e.to, w.choice, w.type FROM element e
+	$sql = "SELECT w.id_to, w.choice, w.type FROM element e
 				INNER JOIN writing w ON e.id_element = w.id_element
-			WHERE e.id_narrative = '$id_narrative' AND e.type = 'transition' AND e.from = '$name'
+			WHERE e.id_narrative = '$id_narrative' AND e.type = 'transition' AND w.id_from = '$id_element'
 				AND w.date = (SELECT MAX(x.date) FROM writing x WHERE w.id_element = x.id_element)";
 	$result = execSQL ($sql);
 
@@ -443,7 +456,7 @@ function getSituationXML ($id_narrative, $name)
 		if ($row["type"] != "suppress")
 		{
 			$xml .= "<TRANSITION>\n";
-			$xml .= "<TO>" . $row['to'] . "</TO>\n";
+			$xml .= "<ID_TO>" . $row['id_to'] . "</ID_TO>\n";
 			if (!is_null($row['choice'])) { $xml .= "<CHOICE>" . $row['choice'] . "</CHOICE>\n"; }
 			$xml .= "</TRANSITION>\n";
 		}
@@ -495,8 +508,16 @@ function newSituation ($id_narrative, $name)
  */
 function setElement ($id_member, $id_element, $values)
 {
-	$sql = "INSERT INTO writing (id_member, id_element, type, text, end, choice)
-				VALUES ('$id_member', '$id_element', 'modify', '". escapeSQL($values['text']) . "', '" . $values['end'] . "', '" . escapeSQL($values['choice']) . "')";
+	$name = $values['name'] == NULL ? 'NULL' : "'" . $values['name'] . "'";
+	$id_from = $values['id_from'] == NULL ? 'NULL' : "'" . $values['id_from'] . "'";
+	$id_to = $values['id_to'] == NULL ? 'NULL' : "'" . $values['id_to'] . "'";
+	$start = $values['start'] == NULL ? 'NULL' : "'" . $values['start'] . "'";
+	$end = $values['end'] == NULL ? 'NULL' : "'" . $values['end'] . "'";
+	$choice = $values['choice'] == NULL ? 'NULL' : "'" . escapeSQL($values['choice']) . "'";
+	$text = $values['text'] == NULL ? 'NULL' : "'" . escapeSQL($values['text']) . "'";
+
+	$sql = "INSERT INTO writing (id_member, id_element, type, name, id_from, id_to, start, end, choice, text)
+				VALUES ('$id_member', '$id_element', 'modify', $name, $id_from, $id_to, $start, $end, $choice, $text)";
 	execSQL ($sql);
 }
 
@@ -543,7 +564,7 @@ function setElementChoiceAndText ($id_member, $id_element, $text)
  * If $id_narrative is null, a new narrative is built.
  * The database has first to be connected.
  */
-function importXML ($id_member, $id_narrative, $file)
+function importNarrative ($id_member, $id_narrative, $file)
 {
 	$error = false;
 	$verbose = false;
@@ -581,6 +602,19 @@ function importXML ($id_member, $id_narrative, $file)
 			if ($verbose) { echo "text = '" . $textVar . "'<BR>"; }
 		}
 		$situationVar["text"] = $textVar;
+
+		// Get start
+		$startVar = 0;
+		$start = $situation->attributes->getNamedItem("start");
+		if (isset($start))
+		{
+			$startVar = $start->nodeValue;
+			if ($startVar != "true" && $startVar != "false") { $error = true; printError ("'start' attribute of situation '" . $nameVar . "' has an incorrect value (only 'true' or 'false' allowed)"); }
+			elseif ($startVar == "true") { $startVar = 1; }
+			elseif ($startVar == "false") { $startVar = 0; }
+			if ($verbose) { echo "start = '" . $startVar . "'<BR>"; }
+		}
+		$situationVar["start"] = $startVar;
 
 		// Get end
 		$endVar = 0;
@@ -660,7 +694,7 @@ function importXML ($id_member, $id_narrative, $file)
 	else {
 
 		// Get previous status of all situations
-		$sql = "SELECT e.id_element, e.name, w.type, w.text, w.end FROM element e
+		$sql = "SELECT e.id_element, w.type, w.name, w.start, w.end, w.text FROM element e
 					INNER JOIN writing w ON e.id_element = w.id_element
 				WHERE e.id_narrative = '$id_narrative' AND e.type = 'situation'
 					AND w.date = (SELECT MAX(x.date) FROM writing x WHERE w.id_element = x.id_element)";
@@ -673,7 +707,10 @@ function importXML ($id_member, $id_narrative, $file)
 
 			if (isset($situationsVar[$name]))
 			{
+				$situationsVar[$name]["id_element"] = $id_element;
+				
 				$text = $situationsVar[$name]["text"];
+				$start = $situationsVar[$name]["start"];
 				$end = $situationsVar[$name]["end"];
 
 				$textStr = escapeSQL($text);
@@ -685,19 +722,19 @@ function importXML ($id_member, $id_narrative, $file)
 					echo "Situation '$name' re-created<BR>\n";
 
 					// Insert writing
-					$sql = "INSERT INTO writing (id_member, id_element, type, text, end)
-								VALUES ('$id_member', '$id_element', '$type', $textStr, '$end')";
+					$sql = "INSERT INTO writing (id_member, id_element, type, name, start, end, text)
+								VALUES ('$id_member', '$id_element', '$type', '$name', '$start', '$end', $textStr)";
 					execSQL($sql);
 				}
 
-				elseif ($text != $row["text"] || $end != $row["end"])
+				elseif ($text != $row["text"] || $start != $row["start"] || $end != $row["end"])
 				{
 					$type = "modify";
 					echo "Situation '$name' modified<BR>\n";
 
 					// Insert writing
-					$sql = "INSERT INTO writing (id_member, id_element, type, text, end)
-								VALUES ('$id_member', '$id_element', '$type', $textStr, '$end')";
+					$sql = "INSERT INTO writing (id_member, id_element, type, name, start, end, text)
+								VALUES ('$id_member', '$id_element', '$type', '$name', '$start', '$end', $textStr)";
 					execSQL($sql);
 				}
 
@@ -705,6 +742,7 @@ function importXML ($id_member, $id_narrative, $file)
 
 				$situationsVar[$name]["handled"] = true;
 			}
+			
 			else {
 				if ($row["type"] == "suppress") { echo "Situation '$name' kept suppressed<BR>\n"; }
 				else {
@@ -712,7 +750,7 @@ function importXML ($id_member, $id_narrative, $file)
 					echo "Situation '$name' suppressed<BR>\n";
 
 					// Insert writing
-					$sql = "INSERT INTO writing (id_member, id_element, type) VALUES ('$id_member', '$id_element', '$type')";
+					$sql = "INSERT INTO writing (id_member, id_element, type, name) VALUES ('$id_member', '$id_element', '$type', '$name')";
 					execSQL($sql);
 				}
 			}
@@ -726,6 +764,7 @@ function importXML ($id_member, $id_narrative, $file)
 				$type = "create";
 				$name = $situationVar["name"];
 				$text = $situationVar["text"];
+				$start = $situationVar["start"];
 				$end = $situationVar["end"];
 
 				$textStr = escapeSQL($text);
@@ -734,24 +773,30 @@ function importXML ($id_member, $id_narrative, $file)
 				echo "Situation '$name' created<BR>\n";
 
 				// Insert element
-				$sql = "INSERT INTO element (id_narrative, type, name)
-							VALUES ('$id_narrative', 'situation', '$name')";
+				$sql = "INSERT INTO element (id_narrative, type)
+							VALUES ('$id_narrative', 'situation')";
 				execSQL($sql);
+				
 				$id_element = getIdSql();
+				$situationsVar[$name]["id_element"] = $id_element;
 
 				// Insert writing
-				$sql = "INSERT INTO writing (id_member, id_element, type, text, end)
-							VALUES ('$id_member', '$id_element', '$type', $textStr, '$end')";
+				$sql = "INSERT INTO writing (id_member, id_element, type, name, start, end, text)
+							VALUES ('$id_member', '$id_element', '$type', '$name', '$start', '$end', $textStr)";
 				execSQL($sql);
 			}
 		}
 
 
 		// Get previous status of all transitions
-		$sql = "SELECT e.id_element, e.from, e.to, w.type, w.choice, w.text FROM element e
+		$sql = "SELECT e.id_element, w.type, wf.name AS `from`, wt.name AS `to`, w.id_from, w.id_to, w.choice, w.text FROM element e
 					INNER JOIN writing w ON e.id_element = w.id_element
+					INNER JOIN writing wf ON w.id_from = wf.id_element
+					INNER JOIN writing wt ON w.id_to = wt.id_element
 				WHERE e.id_narrative = '$id_narrative' AND e.type = 'transition'
-					AND w.date = (SELECT MAX(x.date) FROM writing x WHERE w.id_element = x.id_element)";
+					AND w.date = (SELECT MAX(x.date) FROM writing x WHERE w.id_element = x.id_element)
+					AND wf.date = (SELECT MAX(x.date) FROM writing x WHERE wf.id_element = x.id_element)
+					AND wt.date = (SELECT MAX(x.date) FROM writing x WHERE wt.id_element = x.id_element)";
 		$result = execSQL ($sql);
 
 		while ($row = $result->fetch_assoc())
@@ -760,8 +805,13 @@ function importXML ($id_member, $id_narrative, $file)
 			$from = $row["from"];
 			$to = $row["to"];
 
+			$id_from = $row["id_from"];
+			$id_to = $row["id_to"];
+
 			if (isset($transitionsVar[$from][$to]))
 			{
+				$transitionsVar[$from][$to]['id_element'] = $id_element;
+				
 				$choice = $transitionsVar[$from][$to]["choice"];
 				$text = $transitionsVar[$from][$to]["text"];
 
@@ -777,8 +827,8 @@ function importXML ($id_member, $id_narrative, $file)
 					echo "Transition from '$from' to '$to' re-created<BR>\n";
 
 					// Insert writing
-					$sql = "INSERT INTO writing (id_member, id_element, type, choice, text)
-								VALUES ('$id_member', '$id_element', '$type', $choiceStr, $textStr)";
+					$sql = "INSERT INTO writing (id_member, id_element, type, id_from, id_to, choice, text)
+								VALUES ('$id_member', '$id_element', '$type', '$id_from', '$id_to', $choiceStr, $textStr)";
 					execSQL($sql);
 				}
 
@@ -788,8 +838,8 @@ function importXML ($id_member, $id_narrative, $file)
 					echo "Transition from '$from' to '$to' modified<BR>\n";
 
 					// Insert writing
-					$sql = "INSERT INTO writing (id_member, id_element, type, choice, text)
-								VALUES ('$id_member', '$id_element', '$type', $choiceStr, $textStr)";
+					$sql = "INSERT INTO writing (id_member, id_element, type, id_from, id_to, choice, text)
+								VALUES ('$id_member', '$id_element', '$type', '$id_from', '$id_to', $choiceStr, $textStr)";
 					execSQL($sql);
 				}
 
@@ -797,6 +847,7 @@ function importXML ($id_member, $id_narrative, $file)
 
 				$transitionsVar[$from][$to]["handled"] = true;
 			}
+			
 			else {
 				if ($row["type"] == "suppress") { echo "Transition from '$from' to '$to' kept suppressed<BR>\n"; }
 				else {
@@ -804,7 +855,7 @@ function importXML ($id_member, $id_narrative, $file)
 					echo "Transition from '$from' to '$to' suppressed<BR>\n";
 
 					// Insert writing
-					$sql = "INSERT INTO writing (id_member, id_element, type) VALUES ('$id_member', '$id_element', '$type')";
+					$sql = "INSERT INTO writing (id_member, id_element, type, id_from, id_to) VALUES ('$id_member', '$id_element', '$type', '$id_from', '$id_to')";
 					execSQL($sql);
 				}
 			}
@@ -831,14 +882,19 @@ function importXML ($id_member, $id_narrative, $file)
 					$to = $transitionVar["to"];
 					echo "Transition from '$from' to '$to' created<BR>\n";
 
+					$id_from = $situationsVar[$from]["id_element"];
+					$id_to = $situationsVar[$to]["id_element"];
+					
 					// Insert element
-					$sql = "INSERT INTO element (id_narrative, type, `from`, `to`) VALUES ('$id_narrative', 'transition', '$from', '$to')";
+					$sql = "INSERT INTO element (id_narrative, type) VALUES ('$id_narrative', 'transition')";
 					execSQL($sql);
+
 					$id_element = getIdSql();
+					$transitionVars[$from][$to]['id_element'] = $id_element;
 
 					// Insert writing
-					$sql = "INSERT INTO writing (id_member, id_element, type, choice, text)
-								VALUES ('$id_member', '$id_element', '$type', $choiceStr, $textStr)";
+					$sql = "INSERT INTO writing (id_member, id_element, type, id_from, id_to, choice, text)
+								VALUES ('$id_member', '$id_element', '$type', '$id_from', '$id_to', $choiceStr, $textStr)";
 					execSQL($sql);
 				}
 			}

@@ -24,7 +24,8 @@
 
 .tab
 {
-    border: 3px solid black;
+    border: 3px;
+	border-style: solid;
 	border-color: black;
 	margin: 2px;
 }
@@ -32,4 +33,38 @@
 .tab.modified
 {
 	border-color: red;
+}
+
+.tab_group
+{
+	display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.tab_up
+{
+	height: 80px;
+}
+
+.tab_middle
+{
+	height: 40px;
+}
+
+.tab_down
+{
+	height: 80px;
+}
+
+.form_object
+{
+	border-style: none;
+}
+
+.form_object.modified
+{
+    border: 3px;
+	border-style: solid;
+	border-color: red;	
 }

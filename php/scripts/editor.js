@@ -1,4 +1,5 @@
 var data;
+
 var orderNum = 1;
 var current_id_element = null;
 
@@ -22,6 +23,7 @@ xhttp.send();
 /* Display all data */
 function displayData ()
 {
+	/* Create HTML objects */
 	var div_form = document.getElementById("div_form");
 	var list = document.getElementById("list");
 
@@ -33,8 +35,13 @@ function displayData ()
 		var type = element['type'];
 	
 		var label = null;
-		if (type == 'situation') { label = element['name']; }
-		if (type == 'transition') { label = element['from'] + ' -> ' + element['to']; }
+		if (type == 'situation') { label = '<span class="name_'+id_element+'">'+element['name']+'</span>'; }
+		if (type == 'transition')
+		{
+			label = '<span class="name_'+data[element['id_from']]['id_element']+'">'+data[element['id_from']]['name']+'</span>'
+				+ ' -> '
+				+ '<span class="name_'+data[element['id_to']]['id_element']+'">'+data[element['id_to']]['name']+'</span>';
+		}
 		
 		var a = $('<a>')
 			.attr ('href', '#')
@@ -95,7 +102,7 @@ function displayData ()
 			/* Situation tab */
 			var displayButton = $('<button>')
 				.attr ('type', 'button')
-				.append (element['name'])
+				.append ($('<div>').addClass('name_'+id_element).append(element['name']))
 				.click ({id_element: id_element}, function (event) { displayForm (event.data.id_element); } );
 			
 			tab.append (displayButton);
@@ -118,11 +125,11 @@ function displayData ()
 
 		if (type == 'transition')
 		{
-			var from = element['from'];
-			var to = element['to'];
+			var id_from = element['id_from'];
+			var id_to = element['id_to'];
 
 			/* To tab */
-			var tab_down = $('#tab_group_'+from+' .tab_down');
+			var tab_down = $('#tab_group_'+id_from+' .tab_down');
 			
 			var tab = $('<div>')
 				.addClass ('tab')
@@ -131,19 +138,12 @@ function displayData ()
 
 			tab_down.append (tab);
 
-			var displayButtonTransition = $('<button>')
+			var displayButton = $('<button>')
 				.attr ('type', 'button')
-				.append ('->')
+				.append ('-> '+data[element['id_to']]['name'])
 				.click ({id_element: id_element}, function (event) { displayForm (event.data.id_element); } );
 			
-			tab.append (displayButtonTransition);
-
-			var displayButtonSituation = $('<button>')
-				.attr ('type', 'button')
-				.append (element['to'])
-				.click ({id_element: element['to']}, function (event) { displayForm (event.data.id_element); } );
-			
-			tab.append (displayButtonSituation);
+			tab.append (displayButton);
 
 			var closeButton = $('<button>')
 				.attr ('type', 'button')
@@ -153,7 +153,7 @@ function displayData ()
 			tab.append (closeButton);
 
 			/* From tab */
-			var tab_up = $('#tab_group_'+to+' .tab_up');
+			var tab_up = $('#tab_group_'+id_to+' .tab_up');
 			
 			var tab = $('<div>')
 				.addClass ('tab')
@@ -162,19 +162,12 @@ function displayData ()
 
 			tab_up.append (tab);
 
-			var displayButtonSituation = $('<button>')
+			var displayButton = $('<button>')
 				.attr ('type', 'button')
-				.append (element['from'])
-				.click ({id_element: element['from']}, function (event) { displayForm (event.data.id_element); } );
-			
-			tab.append (displayButtonSituation);
-
-			var displayButtonTransition = $('<button>')
-				.attr ('type', 'button')
-				.append ('->')
+				.append (data[element['id_from']]['name']+' ->')
 				.click ({id_element: id_element}, function (event) { displayForm (event.data.id_element); } );
 			
-			tab.append (displayButtonTransition);
+			tab.append (displayButton);
 
 			var closeButton = $('<button>')
 				.attr ('type', 'button')
@@ -228,26 +221,65 @@ function getElementForm (element)
 	var name_object = $('<input>')
 		.attr ('name', 'name')
 		.attr ('type', 'text')
-		.attr ('disabled', '')
-		.attr ('value', element['name']);
+		.attr ('value', element['name'])
+		.on ("input", {id_element: id_element}, function (event) { checkForm (event.data.id_element); } );
 		
 	form.append (getFormInput ('Nom de la situation', name_object, type == 'situation'));
 
-	var from_object = $('<input>')
-		.attr ('name', 'from')
-		.attr ('type', 'text')
-		.attr ('disabled', '')
-		.attr ('value', element['from']);
-	
-	form.append (getFormInput ('Situation de départ', from_object, type == 'transition'))
+	var id_from_object = $('<select>')
+		.attr ('name', 'id_from')
+		.on ("input", {id_element: id_element}, function (event) { checkForm (event.data.id_element); } );
 
-	var to_object = $('<input>')
-		.attr ('name', 'to')
-		.attr ('type', 'text')
-		.attr ('disabled', '')
-		.attr ('value', element['to']);
+	if (type == 'transition')
+	{
+		for (var i in data)
+		{
+			var element2 = data[i];
+			if (element2['type'] == 'transition') continue;
+			
+			var option_object = $('<option>')
+				.attr ('value', element2['id_element'])
+				.text (element2['name']);
+
+			if (element2['id_element'] == element['id_from']) { option_object.attr ('selected', 'selected'); }
+			
+			id_from_object.append (option_object);
+		}
+	}
+
+	form.append (getFormInput ('Situation de départ', id_from_object, type == 'transition'))
+
+	var id_to_object = $('<select>')
+		.attr ('name', 'id_to')
+		.on ("input", {id_element: id_element}, function (event) { checkForm (event.data.id_element); } );
+
+	if (type == 'transition')
+	{
+		for (var i in data)
+		{
+			var element2 = data[i];
+			if (element2['type'] == 'transition') continue;
+			
+			var option_object = $('<option>')
+				.attr ('value', element2['id_element'])
+				.text (element2['name']);
+
+			if (element2['id_element'] == element['id_to']) { option_object.attr ('selected', 'selected'); }
+			
+			id_to_object.append (option_object);
+		}
+	}
+
+	form.append (getFormInput ('Situation d\'arrivée', id_to_object, type == 'transition'))
+
+	var start_object = $('<input>')
+		.attr ('name', 'start')
+		.attr ('type', 'checkbox')
+		.on ("input", {id_element: id_element}, function (event) { checkForm (event.data.id_element); } );
+
+	if (element['start'] == 1) { start_object.attr ('checked', ''); }
 	
-	form.append (getFormInput ('Situation d\'arrivée', to_object, type == 'transition'))
+	form.append (getFormInput ('Situation initiale', start_object, type == 'situation'));
 
 	var end_object = $('<input>')
 		.attr ('name', 'end')
@@ -320,6 +352,27 @@ function openForm (id_element)
 			.css ("order", orderNum.toString())
 			.show ();
 		orderNum++;
+
+		var element = data[id_element];
+
+		if (element['type'] == 'transition')
+		{
+			openForm (element['id_from']);
+			openForm (element['id_to']);
+		}
+
+		if (element['type'] == 'situation')
+		{
+			for (var i in data)
+			{
+				var element2 = data[i];
+				if (element2['type'] == 'transition')
+				{
+					if (element2['id_from'] == id_element && $('.tab_'+element2['id_to']).is(":visible")) { openForm (element2['id_element']); }
+					if (element2['id_to'] == id_element && $('.tab_'+element2['id_from']).is(":visible")) { openForm (element2['id_element']); }
+				}
+			}
+		}
 	}
 }
 
@@ -330,6 +383,21 @@ function safeCloseForm (id_element)
 	{
 		closeForm (id_element);
 		hideForm (id_element);
+
+		var element = data[id_element];
+
+		if (element['type'] == 'situation')
+		{
+			for (var i in data)
+			{
+				var element2 = data[i];
+				if (element2['type'] == 'transition')
+				{
+					if (element2['id_from'] == id_element && $('.tab_'+element2['id_to']).is(":visible")) { safeCloseForm (element2['id_element']); }
+					if (element2['id_to'] == id_element && $('.tab_'+element2['id_from']).is(":visible")) { safeCloseForm (element2['id_element']); }
+				}
+			}
+		}
 	}
 }
 
@@ -344,6 +412,7 @@ function closeForm (id_element)
 	$('#div_form').append (form);
 }
 
+
 function displayForm (id_element)
 {
 	current_id_element = id_element;
@@ -354,32 +423,56 @@ function displayForm (id_element)
 	$('#form_'+id_element+' [name="text"]').focus().val('').val(text);	
 }
 
+
 function hideForm (id_element)
 {
 	current_id_element = null;
 	$('#form_'+id_element).hide();
 }
 
+
 function saveForm (id_element)
 {
 	var form = $('#form_'+id_element);
+	var type = data[id_element]['type'];
+	
 	var values = {
-		id_element: form.find('[name="id_element"]').val(),
-		type: form.find('[name="type"]').val(),
-		text: form.find('[name="text"]').val(),
-		end: form.find('[name="end"]').is(":checked") ? 1 : 0,
-		choice: form.find('[name="choice"]').val()
+		'id_element': form.find('[name="id_element"]').val(),
+		'type': form.find('[name="type"]').val(),
+		'name' : form.find('[name="name"]').val(),
+		'id_from': form.find('[name="id_from"]').val(),
+		'id_to': form.find('[name="id_to"]').val(),
+		'start': form.find('[name="start"]').is(":checked") ? 1 : 0,
+		'end': form.find('[name="end"]').is(":checked") ? 1 : 0,
+		'choice': form.find('[name="choice"]').val(),
+		'text': form.find('[name="text"]').val()
 	};
 
-	$.post ('scripts/save_editor_element.php',
-			values,
-			function (element)
-			{
-				data[id_element] = element;
-				resetForm (id_element);
-			},
-			'json');
+	values['name'] = (values['name'] == '') ? null : values['name'];
+	values['choice'] = (values['choice'] == '') ? null : values['choice'];
+	values['text'] = (values['text'] == '') ? null : values['text'];
+
+	if (type == 'transition')
+	{
+		values['start'] = null;
+		values['end'] = null;
+	}
+
+	//alert(JSON.stringify(values));
+
+	$.ajax({
+		url: 'scripts/save_editor_element.php',
+		type: 'POST',
+		data: JSON.stringify (values),
+		contentType: "application/json",
+		success: function (element)
+		{
+			data[id_element] = element;
+			resetForm (id_element);
+		}
+	});
 }
+
 
 function resetForm (id_element)
 {
@@ -389,23 +482,51 @@ function resetForm (id_element)
 	$('#div_form').append (form);
 	$('#form_'+id_element).show ();
 	$('.tab_'+id_element).removeClass('modified');
+
+	if (data[id_element]['type'] == 'situation') { $('.name_'+id_element).text (data[id_element]['name']); }
 }
+
 
 function isFormModified (id_element)
 {
-	var current_text = data[id_element]['text'];
-	if (current_text === null) { current_text = ''; }
-	
-	var current_choice = data[id_element]['choice'];
-	if (current_choice === null) { current_choice = ''; }
-
-	var current_end = (data[id_element]['choice'] == 1);
-
+	var element = data[id_element];
 	var form = $('#form_'+id_element);
-	return (form.find('[name="text"]').val() != current_text)
-		|| (form.find('[name="end"]').is(":checked") != current_end)
-		|| (form.find('[name="choice"]').val() != current_choice);
+	var modified = false;
+
+	var current_name = element['name'];
+	if (current_name === null) { current_name = ''; }
+	if (form.find('[name="name"]').val() != current_name) { form.find('[name="name"]').closest('.form_object').addClass('modified'); modified = true; }
+	else { form.find('[name="name"]').closest('.form_object').removeClass('modified'); }
+
+	var current_id_from = element['id_from'];
+	if (form.find('[name="id_from"]').val() != current_id_from) { form.find('[name="id_from"]').closest('.form_object').addClass('modified'); modified = true; }
+	else { form.find('[name="id_from"]').closest('.form_object').removeClass('modified'); }
+
+	var current_id_to = element['id_to'];
+	if (form.find('[name="id_to"]').val() != current_id_to) { form.find('[name="id_to"]').closest('.form_object').addClass('modified'); modified = true; }
+	else { form.find('[name="id_to"]').closest('.form_object').removeClass('modified'); }
+
+	var current_start = (element['start'] == 1);
+	if (form.find('[name="start"]').is(":checked") != current_start) { form.find('[name="start"]').closest('.form_object').addClass('modified'); modified = true; }
+	else { form.find('[name="start"]').closest('.form_object').removeClass('modified'); }
+
+	var current_end = (element['end'] == 1);
+	if (form.find('[name="end"]').is(":checked") != current_end) { form.find('[name="end"]').closest('.form_object').addClass('modified'); modified = true; }
+	else { form.find('[name="end"]').closest('.form_object').removeClass('modified'); }
+
+	var current_choice = element['choice'];
+	if (current_choice === null) { current_choice = ''; }
+	if (form.find('[name="choice"]').val() != current_choice) { form.find('[name="choice"]').closest('.form_object').addClass('modified'); modified = true; }
+	else { form.find('[name="choice"]').closest('.form_object').removeClass('modified'); }
+
+	var current_text = element['text'];
+	if (current_text === null) { current_text = ''; }
+	if (form.find('[name="text"]').val() != current_text) { form.find('[name="text"]').closest('.form_object').addClass('modified'); modified = true; }
+	else { form.find('[name="text"]').closest('.form_object').removeClass('modified'); }
+
+	return modified;
 }
+
 
 function checkForm (id_element)
 {
@@ -421,6 +542,7 @@ function checkForm (id_element)
 		$('#form_'+id_element+' .reset_button').attr('disabled','');
 	}
 }
+
 
 shortcut.add ("ctrl+enter",
 			  function () { if (isFormModified (current_id_element)) { saveForm (current_id_element); } }

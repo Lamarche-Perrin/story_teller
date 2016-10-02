@@ -41,12 +41,9 @@ if (isset($_GET) && isset($_GET['id_narrative'])) { $_SESSION['id_narrative'] = 
 				</div>
 
 				<div id="div_editor">
-					<div id="div_tabs">
-						Tabs
-					</div>
-
-					<div id="div_form">
-					</div>
+					<div id="div_tabs"></div>
+					<hr>
+					<div id="div_form"></div>
 				</div>
 			</section>
 
