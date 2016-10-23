@@ -1,9 +1,25 @@
+#div_graph {
+  width: 500px;
+  height: 500px;
+  display: block;
+}
+
+.egograph {
+  width: 300px;
+  height: 300px;
+  display: block;
+}
+
+#main_section {
+	display: flex;
+}
+
 #div_selector
 {
 	display: inline-block;
 	vertical-align: top;
-    width: 200px;
-    border: 1px solid black;
+    width: 500px;
+    /* border: 1px solid black; */
 	padding: 10px;
 }
 
@@ -11,50 +27,42 @@
 {
 	display: inline-block;
 	vertical-align: top;
-    border: 1px solid black;
+    width: 500px;
+    /* border: 1px solid black; */
 	padding: 10px;
 }
 
-#div_tabs
+#div_reader
 {
-	display: flex;
-	flex-wrap: wrap;
-	justify-content: flex-start;
+	display: inline-block;
+	vertical-align: top;
+    /* border: 1px solid black; */
+	padding: 10px;
 }
 
-.tab
+#div_form
 {
-    border: 3px;
-	border-style: solid;
-	border-color: black;
-	margin: 2px;
+	width: 500px;
+	height: 500px;
 }
 
-.tab.modified
+#div_story
 {
-	border-color: red;
+	overflow-y: scroll;
+	height: 95vh;
 }
 
-.tab_group
+#table_story
 {
-	display: flex;
-    flex-direction: column;
-    justify-content: center;
+	width: 100%;
+	table-layout: fixed;
 }
 
-.tab_up
+.story_col1
 {
-	height: 80px;
-}
-
-.tab_middle
-{
-	height: 40px;
-}
-
-.tab_down
-{
-	height: 80px;
+	vertical-align: top;
+	width: 33%;
+	overflow: hidden;
 }
 
 .form_object
@@ -67,4 +75,23 @@
     border: 3px;
 	border-style: solid;
 	border-color: red;	
+}
+
+.link_element
+{
+	color: blue;
+	cursor: pointer;
+	cursor: hand;
+	padding-left: 10px;
+	padding-right: 10px;
+}
+
+.link_element.overed
+{
+	background-color: #ccc;
+}
+
+.link_element.selected
+{
+	background-color: #aaa;
 }

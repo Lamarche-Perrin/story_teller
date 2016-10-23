@@ -1,0 +1,51 @@
+node {
+	background-color: SteelBlue;
+	label: data(name);
+}
+
+node.modified {
+	background-color: red;
+}
+
+node.overed {
+	overlay-color: black;
+	overlay-padding: 10px;
+	overlay-opacity: 0.15;
+	/* background-color: black; */
+}
+
+node.selected {
+	overlay-color: black;
+	overlay-padding: 10px;
+	overlay-opacity: 0.30;
+}
+
+
+edge {
+	width: 10;
+	line-color: DeepSkyBlue;
+	target-arrow-color: DeepSkyBlue;
+	target-arrow-shape: triangle;
+	curve-style: bezier;
+	label: data(name);
+}
+
+edge.modified {
+	line-color: orangered;
+	target-arrow-color: orangered;
+}
+
+edge.overed {
+	overlay-color: black;
+	overlay-padding: 10px;
+	overlay-opacity: 0.15;
+	/* line-color: black; */
+	/* target-arrow-color: black; */
+}
+
+edge.selected {
+	overlay-color: black;
+	overlay-padding: 10px;
+	overlay-opacity: 0.30;
+}
+

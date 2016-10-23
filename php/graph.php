@@ -5,11 +5,11 @@ include("functions/function.php");
 session_start();
 
 $_SESSION['id_member'] = 1;
-$_SESSION['id_narrative'] = 13;
+$_SESSION['id_narrative'] = 33;
 
 openConnection();
 
-$graphStr = getNarrativeGraph($_SESSION['id_narrative']);
+$graphStr = getElementsGraph($_SESSION['id_narrative']);
 //echo $graphStr;
 
 closeConnection();
@@ -26,7 +26,7 @@ closeConnection();
 
 	<body>
 		<script type="text/javascript">
-		 var graphStr = '<?php echo $graphStr; ?>';
+		 var graphStr = '<?php echo json_encode($graphStr); ?>';
 		 var graph = eval('(' + graphStr + ')');
 
 		 var width = 960;

@@ -1,4 +1,4 @@
-module cola.vpsc {
+module vpsc {
     export class PositionStats {
         AB: number = 0;
         AD: number = 0;

@@ -73,7 +73,11 @@ function printSQL ($sql)
 function execSQL ($sql)
 {
 	printSQL ($sql);
-	$result = $GLOBALS['sql_connection']->query($sql) or trigger_error($GLOBALS['sql_connection']->error." [$sql]");
+	$result = $GLOBALS['sql_connection']->query($sql) or trigger_error ($GLOBALS['sql_connection']->error." [$sql]");
+	if ($result === false) {
+		$trace = debug_backtrace();
+		echo 'in <b>' . $trace[0]['file'] . '</b> on line <b>' . $trace[0]['line'] . '</b><br>';		
+	}
 
 	#$sql2 = "INSERT INTO log (`sql`) VALUES ('" . escapeSQL($sql) . "')";
 	#$GLOBALS['sql_connection']->query($sql2) or trigger_error($GLOBALS['sql_connection']->error." [$sql2]");
@@ -228,52 +232,88 @@ function getElementsData ($id_narrative)
 	return $data;
 }
 
-
 /*
  * Get a json-formatted string representing the graph of a narrative.
  * The database has first to be connected.
  */
-function getNarrativeGraph ($id_narrative)
+function getElementsGraphData ($id_narrative)
 {
-	// String representing nodes (situations)
-	$nodeStr = "\"nodes\":[";
+	$cytoGraph = array();
 	
-	$sql = "SELECT name FROM element WHERE id_narrative = '$id_narrative' AND type = 'situation'";
+	$sql = "SELECT e.id_element AS id, e.type, w.name, w.start, w.end, w.text, w.type AS mod_type, w.date AS mod_date, m.name AS mod_name
+			FROM element e
+				INNER JOIN writing w ON w.id_element = e.id_element
+				INNER JOIN member m ON m.id_member = w.id_member
+			WHERE e.id_narrative = '$id_narrative' AND e.type = 'situation'
+				AND w.date = (SELECT MAX(x.date) FROM writing x WHERE w.id_element = x.id_element)
+				AND w.type IN ('create', 'modify')";
 	$result = execSQL ($sql);
 
-	$nodeArray = array();
-	$num = 0;
-	$first = true;
 	while ($row = $result->fetch_assoc())
 	{
-		if ($first) { $first = false; } else { $nodeStr .= ","; }
-		$nodeStr .= "{\"name\":\"" . $row['name'] . "\"}";
-		$nodeArray[$row['name']] = $num++;
-	}
-
-	$nodeStr .= "]";
-
-	// String representing links (transitions)
-	$linkStr = "\"links\":[";
-
-	$sql = "SELECT `from`, `to` FROM element WHERE id_narrative = '$id_narrative' AND type = 'transition'";
-	$result = execSQL ($sql);
-
-	$first = true;
-	while ($row = $result->fetch_assoc())
-	{
-		if ($first) { $first = false; } else { $linkStr .= ","; }
-		$linkStr .= "{\"source\":" . $nodeArray[$row['from']] . ",\"target\":" . $nodeArray[$row['to']] . "}";
+		$row['save'] = $row;
+		$cytoGraph[] = array ('data' => $row);
 	}
 	
-	$linkStr .= "]";
 
-	// String representing constraints
-	$constraintStr = "\"constraints\":[]";
+	$sql = "SELECT e.id_element AS id, e.type, w.id_from AS source, w.id_to AS target, w.choice, w.text, w.type AS mod_type, w.date AS mod_date, m.name AS mod_name
+			FROM element e
+				INNER JOIN writing w ON w.id_element = e.id_element
+				INNER JOIN member m ON m.id_member = w.id_member
+			WHERE e.id_narrative = '$id_narrative' AND e.type = 'transition'
+				AND w.date = (SELECT MAX(x.date) FROM writing x WHERE w.id_element = x.id_element)
+				AND w.type IN ('create', 'modify')";
+	$result = execSQL ($sql);
 
-	// String representing graph (narrative)
-	$graphStr = "{" . $nodeStr . "," . $linkStr . "," . $constraintStr . "}";
-	return $graphStr;
+	while ($row = $result->fetch_assoc())
+	{
+		$row['save'] = $row;
+		$cytoGraph[] = array ('data' => $row);
+	}
+
+	return $cytoGraph;
+}
+
+
+/*
+ * Get a json-formatted string representing the situation in the graph of a narrative.
+ * The database has first to be connected.
+ */
+function getSituationGraphData ($id_element)
+{
+	$sql = "SELECT e.id_element AS id, e.type, w.name, w.start, w.end, w.text, w.type AS mod_type, w.date AS mod_date, m.name AS mod_name
+			FROM element e
+				INNER JOIN writing w ON w.id_element = e.id_element
+				INNER JOIN member m ON m.id_member = w.id_member
+			WHERE e.id_element = '$id_element'
+				AND w.date = (SELECT MAX(x.date) FROM writing x WHERE w.id_element = x.id_element)
+				AND w.type IN ('create', 'modify')";
+	$result = execSQL ($sql);
+
+	$row = $result->fetch_assoc();
+	$row['save'] = $row;
+	return array ('data' => $row);
+}	
+	
+
+/*
+ * Get a json-formatted string representing the transition in the graph of a narrative.
+ * The database has first to be connected.
+ */
+function getTransitionGraphData ($id_element)
+{
+	$sql = "SELECT e.id_element AS id, e.type, w.id_from AS source, w.id_to AS target, w.choice, w.text, w.type AS mod_type, w.date AS mod_date, m.name AS mod_name
+			FROM element e
+				INNER JOIN writing w ON w.id_element = e.id_element
+				INNER JOIN member m ON m.id_member = w.id_member
+			WHERE e.id_element = '$id_element'
+				AND w.date = (SELECT MAX(x.date) FROM writing x WHERE w.id_element = x.id_element)
+				AND w.type IN ('create', 'modify')";
+	$result = execSQL ($sql);
+
+	$row = $result->fetch_assoc();
+	$row['save'] = $row;
+	return array ('data' => $row);
 }
 
 
@@ -453,7 +493,7 @@ function getSituationXML ($id_narrative, $id_element)
 
 	while ($row = $result->fetch_assoc())
 	{
-		if ($row["type"] != "suppress")
+		if ($row["type"] != "delete")
 		{
 			$xml .= "<TRANSITION>\n";
 			$xml .= "<ID_TO>" . $row['id_to'] . "</ID_TO>\n";
@@ -503,21 +543,68 @@ function newSituation ($id_narrative, $name)
 
 
 /*
- * Change the values of an existing element.
+ * Create new situation.
  * The database has first to be connected.
  */
-function setElement ($id_member, $id_element, $values)
+function newSituationGraphData ($id_narrative)
 {
-	$name = $values['name'] == NULL ? 'NULL' : "'" . $values['name'] . "'";
-	$id_from = $values['id_from'] == NULL ? 'NULL' : "'" . $values['id_from'] . "'";
-	$id_to = $values['id_to'] == NULL ? 'NULL' : "'" . $values['id_to'] . "'";
-	$start = $values['start'] == NULL ? 'NULL' : "'" . $values['start'] . "'";
-	$end = $values['end'] == NULL ? 'NULL' : "'" . $values['end'] . "'";
-	$choice = $values['choice'] == NULL ? 'NULL' : "'" . escapeSQL($values['choice']) . "'";
-	$text = $values['text'] == NULL ? 'NULL' : "'" . escapeSQL($values['text']) . "'";
+	$sql = "INSERT INTO element (id_narrative, type) VALUES ('$id_narrative', 'situation')";
+	execSQL ($sql);
+	return getIdSQL();
+}
 
-	$sql = "INSERT INTO writing (id_member, id_element, type, name, id_from, id_to, start, end, choice, text)
-				VALUES ('$id_member', '$id_element', 'modify', $name, $id_from, $id_to, $start, $end, $choice, $text)";
+
+/*
+ * Create new transition.
+ * The database has first to be connected.
+ */
+function newTransitionGraphData ($id_narrative)
+{
+	$sql = "INSERT INTO element (id_narrative, type) VALUES ('$id_narrative', 'transition')";
+	execSQL ($sql);
+	return getIdSQL();
+}
+
+
+/*
+ * Delete element.
+ * The database has first to be connected.
+ */
+function deleteElementGraphData ($id_member, $id_element)
+{
+	$sql = "INSERT INTO writing (id_member, id_element, type) VALUES ('$id_member', '$id_element', 'delete')";
+	execSQL ($sql);
+}
+
+
+/*
+ * Change the values of an existing situation.
+ * The database has first to be connected.
+ */
+function setSituationGraphData ($id_member, $id_element, $values)
+{
+	extract ($values);
+
+	if ($mod_type == 'new') { $type = 'create'; } else { $type = 'modify'; }
+	
+	$sql = "INSERT INTO writing (id_member, id_element, type, name, start, end, text)
+				VALUES ('$id_member', '$id_element', '$type', '$name', '$start', '$end', '$text')";
+	execSQL ($sql);
+}
+
+
+/*
+ * Change the values of an existing transition.
+ * The database has first to be connected.
+ */
+function setTransitionGraphData ($id_member, $id_element, $values)
+{
+	extract ($values);
+
+	if ($mod_type == 'new') { $type = 'create'; } else { $type = 'modify'; }
+
+	$sql = "INSERT INTO writing (id_member, id_element, type, id_from, id_to, choice, text)
+				VALUES ('$id_member', '$id_element', '$type', '$source', '$target', '$choice', '$text')";
 	execSQL ($sql);
 }
 
@@ -716,7 +803,7 @@ function importNarrative ($id_member, $id_narrative, $file)
 				$textStr = escapeSQL($text);
 				if ($text != 'NULL') { $textStr = "'" . $textStr . "'"; }
 				
-				if ($row["type"] == "suppress")
+				if ($row["type"] == "delete")
 				{
 					$type = "create";
 					echo "Situation '$name' re-created<BR>\n";
@@ -744,10 +831,10 @@ function importNarrative ($id_member, $id_narrative, $file)
 			}
 			
 			else {
-				if ($row["type"] == "suppress") { echo "Situation '$name' kept suppressed<BR>\n"; }
+				if ($row["type"] == "delete") { echo "Situation '$name' kept deleted<BR>\n"; }
 				else {
-					$type = "suppress";
-					echo "Situation '$name' suppressed<BR>\n";
+					$type = "delete";
+					echo "Situation '$name' deleted<BR>\n";
 
 					// Insert writing
 					$sql = "INSERT INTO writing (id_member, id_element, type, name) VALUES ('$id_member', '$id_element', '$type', '$name')";
@@ -821,7 +908,7 @@ function importNarrative ($id_member, $id_narrative, $file)
 				$textStr = escapeSQL($text);
 				if ($text != 'NULL') { $textStr = "'" . $textStr . "'"; }
 
-				if ($row["type"] == "suppress")
+				if ($row["type"] == "delete")
 				{
 					$type = "create";
 					echo "Transition from '$from' to '$to' re-created<BR>\n";
@@ -849,10 +936,10 @@ function importNarrative ($id_member, $id_narrative, $file)
 			}
 			
 			else {
-				if ($row["type"] == "suppress") { echo "Transition from '$from' to '$to' kept suppressed<BR>\n"; }
+				if ($row["type"] == "delete") { echo "Transition from '$from' to '$to' kept deleted<BR>\n"; }
 				else {
-					$type = "suppress";
-					echo "Transition from '$from' to '$to' suppressed<BR>\n";
+					$type = "delete";
+					echo "Transition from '$from' to '$to' deleted<BR>\n";
 
 					// Insert writing
 					$sql = "INSERT INTO writing (id_member, id_element, type, id_from, id_to) VALUES ('$id_member', '$id_element', '$type', '$id_from', '$id_to')";

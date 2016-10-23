@@ -1,11 +1,6 @@
 ///<reference path="vpsc.ts"/>
-///<reference path="rbtree.ts"/>
-module cola.vpsc {
-    export interface Point {
-        x: number;
-        y: number
-    }
-
+///<reference path="rbtree.d.ts"/>
+module vpsc {
     export interface Leaf {
         bounds: Rectangle;
         variable: Variable;
@@ -14,7 +9,6 @@ module cola.vpsc {
     export interface Group {
         bounds: Rectangle;
         padding: number;
-        stiffness: number;
         leaves: Leaf[];
         groups: Group[];
         minVar: Variable;
@@ -22,12 +16,11 @@ module cola.vpsc {
     }
 
     export function computeGroupBounds(g: Group): Rectangle {
-        g.bounds = typeof g.leaves !== "undefined" ?
-            g.leaves.reduce((r: Rectangle, c) => c.bounds.union(r), Rectangle.empty()) :
-            Rectangle.empty();
+        g.bounds = g.leaves.reduce((r: Rectangle, c) => c.bounds.union(r), Rectangle.empty());
         if (typeof g.groups !== "undefined")
             g.bounds = <Rectangle>g.groups.reduce((r: Rectangle, c) => computeGroupBounds(c).union(r), g.bounds);
-        g.bounds = g.bounds.inflate(g.padding);
+        if (typeof g.padding !== "undefined")
+            g.bounds = g.bounds.inflate(g.padding);
         return g.bounds;
     }
 
@@ -91,7 +84,9 @@ module cola.vpsc {
          * @param y2 number second y coord of line
          * @return any intersection points found
          */
-        lineIntersections(x1: number, y1: number, x2: number, y2: number): Array<Point> {
+        lineIntersections(x1: number, y1: number, x2: number, y2: number): Array<{
+            x: number; y: number
+        }> {
             var sides = [[this.x, this.y, this.X, this.y],
                     [this.X, this.y, this.X, this.Y],
                     [this.X, this.Y, this.x, this.Y],
@@ -112,12 +107,14 @@ module cola.vpsc {
          * @param y2 number second y coord of line
          * @return any intersection points found
          */
-        rayIntersection(x2: number, y2: number): Point {
+        rayIntersection(x2: number, y2: number): {
+            x: number; y: number
+        } {
             var ints = this.lineIntersections(this.cx(), this.cy(), x2, y2);
             return ints.length > 0 ? ints[0] : null;
         }
 
-        vertices(): Point[] {
+        vertices(): { x: number; y: number }[] {
             return [
                 { x: this.x, y: this.y },
                 { x: this.X, y: this.y },
@@ -130,7 +127,7 @@ module cola.vpsc {
             x1: number, y1: number,
             x2: number, y2: number,
             x3: number, y3: number,
-            x4: number, y4: number): Point {
+            x4: number, y4: number): { x: number; y: number } {
             var dx12 = x2 - x1, dx34 = x4 - x3,
                 dy12 = y2 - y1, dy34 = y4 - y3,
                 denominator = dy34 * dx12 - dx34 * dy12;
@@ -154,21 +151,20 @@ module cola.vpsc {
         }
     }
 
-    export function makeEdgeBetween(source: Rectangle, target: Rectangle, ah: number)
-        : { sourceIntersection: Point; targetIntersection: Point; arrowStart: Point } {
-        const si = source.rayIntersection(target.cx(), target.cy()) || { x: source.cx(), y: source.cy() },
-            ti = target.rayIntersection(source.cx(), source.cy()) || { x: target.cx(), y: target.cy() },
-            dx = ti.x - si.x,
+    export function makeEdgeBetween(link: any, source: Rectangle, target: Rectangle, ah: number) {
+        var si = source.rayIntersection(target.cx(), target.cy());
+        if (!si) si = { x: source.cx(), y: source.cy() };
+        var ti = target.rayIntersection(source.cx(), source.cy());
+        if (!ti) ti = { x: target.cx(), y: target.cy() };
+        var dx = ti.x - si.x,
             dy = ti.y - si.y,
             l = Math.sqrt(dx * dx + dy * dy), al = l - ah;
-        return {
-            sourceIntersection: si,
-            targetIntersection: ti,
-            arrowStart: { x: si.x + al * dx / l, y: si.y + al * dy / l }
-        }
+        link.sourceIntersection = si;
+        link.targetIntersection = ti;
+        link.arrowStart = { x: si.x + al * dx / l, y: si.y + al * dy / l };
     }
 
-    export function makeEdgeTo(s: { x: number; y: number }, target: Rectangle, ah: number): Point {
+    export function makeEdgeTo(s: { x: number; y: number }, target: Rectangle, ah: number): { x: number; y: number } {
         var ti = target.rayIntersection(s.x, s.y);
         if (!ti) ti = { x: target.cx(), y: target.cy() };
         var dx = ti.x - s.x,
@@ -178,7 +174,7 @@ module cola.vpsc {
     }
 
     class Node {
-        prev: cola.vpsc.RBTree<Node>;
+        prev: RBTree<Node>;
         next: RBTree<Node>;
 
         constructor(public v: Variable, public r: Rectangle, public pos: number) {
@@ -201,10 +197,6 @@ module cola.vpsc {
         if (a.isOpen) {
             // open must come before close
             return -1;
-        }
-        if (b.isOpen) {
-            // open must come before close
-            return 1;
         }
         return 0;
     }
@@ -242,7 +234,7 @@ module cola.vpsc {
 
     function generateGroupConstraints(root: Group, f: RectAccessors, minSep: number, isContained: boolean = false): Constraint[]
     {
-        var padding = root.padding,
+        var padding = typeof root.padding === 'undefined' ? 1 : root.padding,
             gn = typeof root.groups !== 'undefined' ? root.groups.length : 0,
             ln = typeof root.leaves !== 'undefined' ? root.leaves.length : 0,
             childConstraints: Constraint[] = !gn ? []
@@ -378,7 +370,9 @@ module cola.vpsc {
         var solver = new vpsc.Solver(vs, cs);
         solver.solve();
         vs.forEach((v, i) => rs[i].setXCentre(v.position()));
-        vs = rs.map(r=> new vpsc.Variable(r.cy()));
+        vs = rs.map(function (r) {
+            return new vpsc.Variable(r.cy());
+        });
         cs = vpsc.generateYConstraints(rs, vs);
         solver = new vpsc.Solver(vs, cs);
         solver.solve();
@@ -387,7 +381,6 @@ module cola.vpsc {
 
     export interface GraphNode extends Leaf {
         fixed: boolean;
-        fixedWeight?: number;
         width: number;
         height: number;
         x: number;
@@ -396,7 +389,7 @@ module cola.vpsc {
         py: number;
     }
 
-    export class IndexedVariable extends Variable {
+    class IndexedVariable extends Variable {
         constructor(public index: number, w: number) {
             super(0, w);
         }
@@ -433,12 +426,11 @@ module cola.vpsc {
                 computeGroupBounds(rootGroup);
                 var i = nodes.length;
                 groups.forEach(g => {
-                    this.variables[i] = g.minVar = new IndexedVariable(i++, typeof g.stiffness !== "undefined" ? g.stiffness : 0.01);
-                    this.variables[i] = g.maxVar = new IndexedVariable(i++, typeof g.stiffness !== "undefined" ? g.stiffness : 0.01);
+                    this.variables[i] = g.minVar = new IndexedVariable(i++, 0.01);
+                    this.variables[i] = g.maxVar = new IndexedVariable(i++, 0.01);
                 });
             }
         }
-
 
         private createSeparation(c: any) : Constraint {
             return new Constraint(
@@ -483,10 +475,10 @@ module cola.vpsc {
                 .forEach(c => this.createAlignment(c));
         }
 
-        private setupVariablesAndBounds(x0: number[], y0: number[], desired: number[], getDesired: (v: GraphNode) => number) {
+        private setupVariablesAndBounds(x0: number[], y0: number[], desired: number[], getDesired: (v:GraphNode) => number) {
             this.nodes.forEach((v, i) => {
                 if (v.fixed) {
-                    v.variable.weight = v.fixedWeight ? v.fixedWeight : 1000;
+                    v.variable.weight = 1000;
                     desired[i] = getDesired(v);
                 } else {
                     v.variable.weight = 1;
@@ -546,7 +538,6 @@ module cola.vpsc {
             this.nodes.forEach(updateNodeBounds);
             if (this.rootGroup && this.avoidOverlaps) {
                 this.groups.forEach(updateGroupBounds);
-                computeGroupBounds(this.rootGroup);
             }
         }
 
