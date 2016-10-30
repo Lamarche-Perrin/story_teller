@@ -379,6 +379,17 @@ function newStory ($id_member, $id_narrative)
 	execSQL ($sql);
 
 	return getIdSQL();
+	/*
+	   $id_story = getIdSQL();
+	   $sql = "SELECT * FROM story WHERE id_story = $id_story";
+	   $result = execSQL ($sql);
+
+	   if (!checkExists ($sql, $result)) { return null; }
+	   if (!checkUnique ($sql, $result)) { return null; }
+
+	   $row = $result->fetch_assoc();
+	   return $row;
+	 */
 }
 
 
@@ -386,10 +397,10 @@ function newStory ($id_member, $id_narrative)
  * Get the last / current story (read by a given member and corresponding to a given narrative).
  * The database has first to be connected.
  */
-function getLastStory ($id_member, $id_narrative)
+function getMostRecentStory ($id_member, $id_narrative)
 {
 	$sql = "SELECT id_story FROM story
-			WHERE id_member = '$id_member' AND id_narrative = '$id_narrative' AND id_current IS NOT NULL
+			WHERE id_member = '$id_member' AND id_narrative = '$id_narrative' AND finished = 0
 				ORDER BY date DESC LIMIT 0,1";
 	$result = execSQL ($sql);
 
@@ -443,6 +454,72 @@ function getStoryText ($id_story)
 }
 
 
+
+/*
+ * Get the data of situations or transitions following the current element of a given story, for the reader.
+ * The database has first to be connected.
+ */
+function getStoryNextData ($id_story)
+{
+	$sql = "SELECT id_narrative, id_current, date FROM story WHERE id_story = $id_story";
+	$result = execSQL ($sql);
+	
+	if (!checkUnique ($sql, $result)) { return null; }
+	if (!checkExists ($sql, $result)) { return null; }
+
+	$story = $result->fetch_assoc();
+
+	$sql = "SELECT e.type, w.id_to FROM element e
+				INNER JOIN writing w ON w.id_element = e.id_element
+			WHERE e.id_element = " . $story['id_current'] . "
+	AND w.date = (SELECT MAX(x.date) FROM writing x WHERE w.id_element = x.id_element AND x.date <= '" . $story['date'] . "')
+	AND w.type IN ('create', 'modify')";
+	$result = execSQL ($sql);
+	
+	if (!checkUnique ($sql, $result)) { return null; }
+	if (!checkExists ($sql, $result)) { return null; }
+
+	$element = $result->fetch_assoc();
+
+	$elements = array();
+
+	if ($element['type'] == 'situation')
+	{
+		// Get data corresponding to the possible transitions
+		$sql = "SELECT e.id_element, e.type, w.id_from, w.id_to, w.name, w.start, w.end, w.choice, w.text, w.type AS mod_type, w.date AS mod_date, m.name AS mod_name
+				FROM element e
+					INNER JOIN writing w ON w.id_element = e.id_element
+					INNER JOIN member m ON m.id_member = w.id_member
+				WHERE e.id_narrative = " . $story['id_narrative'] . " AND e.type = 'transition' AND w.id_from = " . $story['id_current'] . "
+	AND w.date = (SELECT MAX(x.date) FROM writing x WHERE w.id_element = x.id_element AND x.date <= '" . $story['date'] . "')
+	AND w.type IN ('create', 'modify')";
+		$result = execSQL ($sql);
+
+		while ($row = $result->fetch_assoc()) { $elements[$row['id_element']] = $row; }
+
+		return array ("elements" => $elements);
+	}
+
+	if ($element['type'] == 'transition')
+	{
+		// Get data corresponding to the next situation
+		$sql = "SELECT e.id_element, e.type, w.id_from, w.id_to, w.name, w.start, w.end, w.choice, w.text, w.type AS mod_type, w.date AS mod_date, m.name AS mod_name
+				FROM element e
+					INNER JOIN writing w ON w.id_element = e.id_element
+					INNER JOIN member m ON m.id_member = w.id_member
+				WHERE e.id_element = " . $element['id_to'] . "
+	AND w.date = (SELECT MAX(x.date) FROM writing x WHERE w.id_element = x.id_element AND x.date <= '" . $story['date'] . "')
+	AND w.type IN ('create', 'modify')";
+		$result = execSQL ($sql);
+
+		$row = $result->fetch_assoc();
+		$elements[$row['id_element']] = $row;
+
+		return array ("elements" => $elements);
+	}
+}
+
+
 /*
  * Get current situation name of a given story.
  * The database has first to be connected.
@@ -461,6 +538,17 @@ function getStoryCurrent ($id_story)
 }
 
 
+/*
+ * Add element to the path of a given story.
+ * The database has first to be connected.
+ */
+function addStoryElement ($id_story, $id_element)
+{
+	$sql = "UPDATE story SET path = IF (path IS NULL, id_current, path + CAST(';' AS CHAR(1)) + CAST(id_current AS CHAR(64))), id_current = $id_element
+	WHERE id_story = $id_story";
+	execSQL ($sql);
+}
+
 
 /*
  * Get text and transitions of a given situation (XML-formatted).
@@ -470,7 +558,7 @@ function getSituationXML ($id_narrative, $id_element)
 {
 	// Get text of current situation
 	$sql = "SELECT w.text FROM element e
-				INNER JOIN writing w ON e.id_element = w.id_element
+	INNER JOIN writing w ON e.id_element = w.id_element
 			WHERE e.id_narrative = '$id_narrative' AND e.type = 'situation' AND e.id_element = '$id_element'
 				AND w.date = (SELECT MAX(x.date) FROM writing x WHERE w.id_element = x.id_element)";
 	$result = execSQL ($sql);

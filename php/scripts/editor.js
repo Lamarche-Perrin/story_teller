@@ -22,7 +22,7 @@ var error_no_start = "Il n'y a pas de situation initiale.";
 
 /* Get narrative data */
 $.ajax({
-	type: 'GET',
+	type: 'POST',
 	url: 'scripts/get_narrative_data.php',
 	success: function (d)
 	{
@@ -35,7 +35,7 @@ $.ajax({
 var jsongraph;
 $.ajax({
 	async: false,
-	type: 'GET',
+	type: 'POST',
 	url: 'scripts/get_graph_data.php',
 	success: function (d) { jsongraph = JSON.parse (d); }
 });
@@ -44,7 +44,7 @@ $.ajax({
 var style;
 $.ajax({
 	async: false,
-	type: 'GET',
+	type: 'POST',
 	url: 'css/cytograph.css',
 	success: function (d) { style = d; }
 });
@@ -299,24 +299,30 @@ function getLinkElement (id)
 {
 	var element = cytograph.getElementById (id);
 
-	var reference = null;
-	if (element.data('type') == 'situation') { reference = '[' + getSpanName(id) + ']'; }
-	else if (element.data('type') == 'transition')
-	{
-		var source_id = element.data('source');
-		var target_id = element.data('target');
-		reference = '[' + getSpanName(source_id) + ' -> ' + getSpanName(target_id) + '</span>]';
-	}
-
 	var link_element = $('<span>')
 		.addClass ('link_element element_'+id)
-		.append (reference)
 		.click (function () { toggleElement (id); })
 		.on ('mouseenter', {}, function () { enterElement (id, true); })
 		.on ('mouseleave', {}, function () { leaveElement (id, true); });
 	link_element.bind('destroyed', function() { leaveElement (id, true); })
 	
-		.on ('remove', {}, function () { alert('a'); leaveElement (id, true); });
+	if (element.data('type') == 'situation')
+	{
+		link_element
+			.append ('[')
+			.append (getSpanName (id))
+			.append (']');
+	}
+
+	else if (element.data('type') == 'transition')
+	{
+		link_element
+			.append ('[')
+			.append (getSpanName (element.data('source')).addClass ('name_source'))
+			.append (' -> ')
+			.append (getSpanName (element.data('target')).addClass ('name_target'))
+			.append (']');
+	}
 
 	if (element.hasClass('overed')) { link_element.addClass('overed'); }
 	if (element.hasClass('selected')) { link_element.addClass('selected'); }
@@ -327,7 +333,9 @@ function getLinkElement (id)
 
 function getSpanName (id)
 {
-	return '<span class="name_' + id + '">' + cytograph.getElementById(id).data('name') + '</span>';
+	return $('<span>')
+		.addClass('name_'+id)
+		.append(cytograph.getElementById(id).data('name'));
 }
 
 
@@ -663,6 +671,7 @@ function checkForm (id)
 	var element = cytograph.getElementById (id);
 	var modified = false;
 	var error = false;
+	var important_change = false;
 	var form = $('#form_'+id);
 
 	/* Check new */
@@ -722,9 +731,13 @@ function checkForm (id)
 
 		if (source != element.data('source'))
 		{
+			important_change = true;
 			var oldSource = element.source().id();
 			var target = element.target().id();
-			
+
+			/* Update names in other places */
+			$('.element_'+id+' .name_source.name_'+oldSource).replaceWith(getSpanName(source).addClass('name_source'));
+
 			/* Suppress target in egograph of old source */
 			var egoOldSource = egograph[oldSource];
 			
@@ -805,8 +818,12 @@ function checkForm (id)
 
 		if (target != element.data('target'))
 		{
+			important_change = true;
 			var oldTarget = element.target().id();
 			var source = element.source().id();
+			
+			/* Update names in other places */
+			$('.element_'+id+' .name_target.name_'+oldTarget).replaceWith(getSpanName(target).addClass('name_target'));
 			
 			/* Suppress source in egograph of old target */
 			var egoOldTarget = egograph[oldTarget];
@@ -936,6 +953,9 @@ function checkForm (id)
 
 		if (end != element.data('end'))
 		{
+			important_change = true;
+			element.data('end',end);
+			
 			/* Modified */
 			if (element.data('end') != element.data('save').end) { end_object.addClass('modified'); modified = true; }
 			else { end_object.removeClass('modified'); }
@@ -1020,6 +1040,32 @@ function checkForm (id)
 	{
 		form.find('.save_button').attr('disabled',true);
 		form.find('.reset_button').attr('disabled',false);
+	}
+
+	/* Rewind story if significant change in the narrative structure */
+	if (important_change)
+	{
+		if (element.data('type') == 'situation')
+		{
+			var previous_situation = $('#table_story .story_row_'+id+':first');
+			if (previous_situation.length > 0)
+			{
+				var previous_id = previous_situation.attr('data-id');
+				previous_situation.nextAll().addBack().remove();
+				readElement(previous_id);
+			}
+		}
+
+		else if (element.data('type') == 'transition')
+		{
+			var previous_situation = $('#table_story .story_row_'+id+':first').prev('.story_row');
+			if (previous_situation.length > 0)
+			{
+				var previous_id = previous_situation.attr('data-id');
+				previous_situation.nextAll().addBack().remove();
+				readElement(previous_id);
+			}
+		}
 	}
 
 	if (error) { return 'error'; }
@@ -1147,6 +1193,7 @@ function readElement (id)
 	var element = cytograph.getElementById (id);
 
 	var div_row = $('<tbody>')
+		.attr('data-id',id)
 		.addClass ('story_row story_row_'+id);
 	$('#table_story').append(div_row);
 
