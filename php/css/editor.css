@@ -65,6 +65,12 @@
 	overflow: hidden;
 }
 
+.story_col2
+{
+	text-align: justify;
+	padding: 10px;
+}
+
 .form_object
 {
 	border-style: none;
@@ -77,11 +83,17 @@
 	border-color: red;	
 }
 
+.form_error
+{
+	color: red;
+	font-weight: bold;
+}
+
+
 .link_element
 {
 	color: blue;
 	cursor: pointer;
-	cursor: hand;
 	padding-left: 10px;
 	padding-right: 10px;
 }

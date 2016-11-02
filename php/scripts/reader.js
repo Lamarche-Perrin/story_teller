@@ -77,8 +77,11 @@ $.ajax({
 
 
 /* Read story */
+var delay = null;
 var element = null;
 var next_elements = null;
+var locked_elements = null;
+
 var text_array = null;
 var step_array = null;
 
@@ -100,6 +103,7 @@ function initReading (element)
 				var data = JSON.parse (d);
 				element = data.element;
 				next_elements = data.next_elements;
+				locked_elements = data.locked_elements;
 			}
 		});
 	}
@@ -115,15 +119,10 @@ function finishedReading () { return step_array >= text_array.length; }
 
 function pursueReading (stop)
 {
+	delay = 0;
 	var text = text_array[step_array];
 
-	if (text != '')
-	{
-		var paragraph = $('<div>')
-			.addClass('story_paragraph')
-			.append(text);
-		printText (paragraph);
-	}
+	if (text != '') { printText (text, stop); }
 	step_array++;
 
 	if (stop)
@@ -140,36 +139,74 @@ function pursueReading (stop)
 					.click (function () { $('#div_next_buttons').remove(); pursueReading (true); })
 			);
 
-			printText (div_next_buttons);
+			printButton (div_next_buttons, stop);
 		}
 
 		/* Add "next element" button else */
-		else {
-			var div_next_buttons = $('<div>').attr ('id', 'div_next_buttons')
-			
-			$.each (next_elements, function (id, element)
-					{
-						var choice = 'Continuer';
-						if ("choice" in element && element.choice !== null && element.choice != '') { choice = element.choice; }
-
-						div_next_buttons.append(
-							$('<button>')
-								.attr ('type', 'button')
-								.append (choice)
-								.click (function ()
-										{
-											$('#div_next_buttons').remove();
-											setCurrentReading(id);
-											initReading(null);
-										})
-						);
-					}
-				   );
-
-			printText (div_next_buttons);
-		}
-		
+		else { addTransitionButtons (stop); }
 	}
+}
+
+
+function addTransitionButtons (stop)
+{
+	var div_next_buttons = $('<div>').attr ('id', 'div_next_buttons')
+
+	if (locked_elements)
+	{
+		var search_input = $('<input>')
+			.attr ('name', 'search_input');
+		
+		div_next_buttons.append (search_input);
+
+		var search_button = $('<button>')
+			.attr ('type', 'button')
+			.append ('Chercher')
+			.click (function ()
+					{
+						var unlock = search_input.val();
+
+						// Try to get new element
+						$.ajax({
+							async: false,
+							type: 'POST',
+							url: 'scripts/get_story_locked_element.php',
+							data: JSON.stringify ({unlock: unlock}),
+							success: function (d)
+							{
+								var data = JSON.parse (d);
+								$.each (data.next_elements, function (id, element) { next_elements[element.id_element] = element; });
+							}
+						});
+
+						$('#div_next_buttons').remove();
+						delay = 0;
+						addTransitionButtons(false);
+					});
+		
+		div_next_buttons.append (search_button);
+	}
+	
+	$.each (next_elements, function (id, element)
+			{
+				var choice = 'Continuer';
+				if ("choice" in element && element.choice !== null && element.choice != '') { choice = element.choice; }
+
+				var choice_button = $('<button>')
+					.attr ('type', 'button')
+					.append (choice)
+					.click (function ()
+							{
+								$('#div_next_buttons').remove();
+								setCurrentReading(id);
+								initReading(null);
+							})
+				
+				div_next_buttons.append (choice_button);
+			}
+		   );
+
+	printButton (div_next_buttons, stop);
 }
 
 function setCurrentReading (id)
@@ -183,26 +220,86 @@ function setCurrentReading (id)
 }
 
 
-function printText (text)
+function printText (text, stop)
 {
-	var text2 = text.clone(true);
+	var paragraph = $('<div>')
+		.addClass('story_paragraph');
+	
 	var div_text = $('.b-page-'+(current_page+2)+' .div_text');
-	div_text.append (text);
+	div_text.append (paragraph);
 
-	if (div_text.outerHeight() > 550)
+	var words = text.split(' ');
+
+	for (var i = 0; i < words.length; i++)
 	{
-		div_text.children().last().remove();
-		current_page++;
-		if (current_page > page_number)
+		if (div_text.outerHeight() > 550)
 		{
-			div_book.booklet ('add', (page_number++)+2, '<div class="div_text"></div>');
-			div_book.booklet ('add', (page_number++)+2, '<div class="div_text"></div>');
+			paragraph.children('.word').last().css('opacity',0);
+			current_page++;
+			if (i > 0) { i--; }
+			
+			if (current_page > page_number)
+			{
+				div_book.booklet ('add', (page_number++)+2, '<div class="div_text"></div>');
+				div_book.booklet ('add', (page_number++)+2, '<div class="div_text"></div>');
+			}
+
+			paragraph = $('<div>')
+				.addClass('story_paragraph');
+			
+			div_text = $('.b-page-'+(current_page+2)+' .div_text');
+			div_text.append (paragraph);
 		}
+
+		paragraph.append (" ");
 		
-		printText (text2);
+		var span_word = $('<span>')
+			.addClass ('word')
+			.append (words[i]);
+		if (stop) { span_word.css ('color', 'white'); }
+		paragraph.append (span_word);
+
+		if (stop)
+		{
+			delay += 10;
+			span_word.delay(delay).animate({color: 'black'}, 1000);
+		}
 	}
 }
 
+
+
+function printButton (button, stop)
+{
+	if (stop) { delay += 500; }
+	var button2 = button.clone(true);
+	var div_text = $('.b-page-'+(current_page+2)+' .div_text');
+	div_text.delay(delay).queue (
+		function (next)
+		{
+			var div_text = $(this);
+			div_text.append(button);
+			next();
+			
+			if (div_text.outerHeight() > 500)
+			{
+				div_text.children().last().remove();
+				current_page++;
+				if (current_page > page_number)
+				{
+					div_book.booklet ('add', (page_number++)+2, '<div class="div_text"></div>');
+					div_book.booklet ('add', (page_number++)+2, '<div class="div_text"></div>');
+				}
+				
+				div_text = $('.b-page-'+(current_page+2)+' .div_text');
+				div_text.append(button2);
+			}
+		});
+}
+
+
+
+/* Navigating among pages */
 
 function goToPage (num) { div_book.booklet ('gotopage', num+2); }
 
@@ -214,151 +311,3 @@ shortcut.add ("ctrl+enter",
 				  if (current_displayed != current_page) { goToPage (current_page); }
 			  }
 			 );
-
-
-	// var textArray = text.split("[break]");
-
-	// if (textArray[step] != "NULL")
-	// {
-	// 	//document.getElementById("book").innerHTML += textArray[step] + "<BR>\n<BR>\n";
-
-	// 	var currentText = document.getElementById("page"+pageNb).innerHTML;
-	// 	document.getElementById("page"+pageNb).innerHTML += textArray[step] + "<BR>\n<BR>\n";
-	// 	var pageHeight = document.getElementById("page"+pageNb).offsetHeight;
-	// 	if (pageHeight > 550)
-	// 	{
-	// 		document.getElementById("page"+pageNb).innerHTML = currentText;
-			
-	// 		pageNb = pageNb+1;
-	// 		if (pageNb % 2 == 0) { nextPage = true; }
-	// 		$("#div_book").booklet("add",pageNb,"<div id=\"page" + pageNb + "\" align=\"justify\">" + textArray[step] +  "<BR>\n<BR>\n" + "</div>");
-	// 	}
-	// 	//alert(numberOfLines);
-	// 	//$("#div_book").booklet("option","width",1000);
-	// }
-
-
-
-// var xml;
-// var pageNb = 3;
-// var closedBook = true;
-// var nextPage = false;
-// var nextButton = "";
-
-// function next (id_current)
-// {
-// 	var xhttp = new XMLHttpRequest();
-// 	xhttp.onreadystatechange = function ()
-// 	{
-// 		if (xhttp.readyState == 4 && xhttp.status == 200)
-// 		{
-// 			xml = xhttp.responseXML;
-// 			print(0);
-// 		}
-// 	};
-
-// 	xhttp.open ("POST", "scripts/get_next_situation.php", true);
-// 	xhttp.setRequestHeader ("Content-type", "application/x-www-form-urlencoded");
-
-// 	if (id_current != null) { xhttp.send("id_current="+id_current); }
-// 	else { xhttp.send (); }
-// }
-
-// function turnPage ()
-// {			 
-// 	nextPage = false;
-// 	closedBook = false;
-// 	document.getElementById("page").innerHTML = nextButton;
-// 	document.getElementById("button").focus();
-// 	$("#div_book").booklet("next");
-// }
-
-// function print (step)
-// {
-// 	var text = xml.getElementsByTagName("TEXT")[0].childNodes[0].nodeValue;
-
-// 	var textArray = text.split("[break]");
-
-// 	if (textArray[step] != "NULL")
-// 	{
-// 		//document.getElementById("book").innerHTML += textArray[step] + "<BR>\n<BR>\n";
-
-// 		var currentText = document.getElementById("page"+pageNb).innerHTML;
-// 		document.getElementById("page"+pageNb).innerHTML += textArray[step] + "<BR>\n<BR>\n";
-// 		var pageHeight = document.getElementById("page"+pageNb).offsetHeight;
-// 		if (pageHeight > 550)
-// 		{
-// 			document.getElementById("page"+pageNb).innerHTML = currentText;
-			
-// 			pageNb = pageNb+1;
-// 			if (pageNb % 2 == 0) { nextPage = true; }
-// 			$("#div_book").booklet("add",pageNb,"<div id=\"page" + pageNb + "\" align=\"justify\">" + textArray[step] +  "<BR>\n<BR>\n" + "</div>");
-// 		}
-// 		//alert(numberOfLines);
-// 		//$("#div_book").booklet("option","width",1000);
-// 	}
-
-// 	var button = "";
-// 	step = step+1;
-// 	if (step < textArray.length)
-// 	{
-// 		button = "<button id=\"button\" type=\"button\" onClick=\"print("+step+")\">Continuer</button>";
-// 	}
-
-// 	else {
-// 		var transitions = xml.getElementsByTagName("TRANSITION");
-// 		for (var i = 0; i < transitions.length; i++)
-// 		{
-// 			var id_to = transitions[i].getElementsByTagName("ID_TO")[0].childNodes[0].nodeValue;
-
-// 			var choice = "Continuer";
-// 			if (transitions[i].getElementsByTagName("CHOICE").length != 0)
-// 			{ choice = transitions[i].getElementsByTagName("CHOICE")[0].childNodes[0].nodeValue; }
-// 			button += "<button id=\"button\" type=\"button\" onClick=\"next('"+id_to+"')\">"+choice+"</button>";
-// 		}
-// 	}
-	
-// 	//if (closedBook)
-// 	//{
-// 	//	 nextButton = button;
-// 	//	 document.getElementById("page").innerHTML = "<button id=\"button\" type=\"button\" onClick=\"turnPage()\">Ouvrir</button>";
-// 	//}
-	
-
-// 	//else
-// 	if (nextPage)
-// 	{
-// 		nextButton = button;
-// 		document.getElementById("page").innerHTML = "<button id=\"button\" type=\"button\" onClick=\"turnPage()\">Tourner la page</button>";
-// 	}
-
-// 	else { document.getElementById("page").innerHTML = button; }
-
-// 	document.getElementById("button").focus();
-// }
-
-// </script>
-
-// 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.0/jquery.min.js"></script>
-// 	<script>window.jQuery || document.write('<script src="booklet/jquery-2.1.0.min.js"><\/script>')</script>
-// 	<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.10.4/jquery-ui.min.js"></script>
-// 	<script>window.jQuery.ui || document.write('<script src="booklet/jquery-ui-1.10.4.min.js"><\/script>')</script>
-// 	<script src="booklet/jquery.easing.1.3.js"></script>
-// 	<script src="booklet/jquery.booklet.latest.js"></script>
-
-// 	<script>
-// 	$(function () {
-// 		$("#div_book").booklet();
-// 		$("#div_book").booklet({ closed: true, autoCenter: true, covers: true, pagePadding: 30, width:800, height:600,
-// 							 tabs: true, nextControlText: "Suivant", previousControlText: "Précédent", nextControlTitle: "Page suivante",
-// 							 previousControlTitle: "Page précédente", shadows: true, speed: 1500});
-
-// 		if (closedBook)
-// 		{
-// 			nextButton = "<button id=\"button\" type=\"button\" onClick=\"next(null)\">Commencer</button>";
-// 			document.getElementById("page").innerHTML = "<button id=\"button\" type=\"button\" onClick=\"turnPage()\">Ouvrir</button>";
-// 			document.getElementById("button").focus();
-// 		}
-// 		else { next(null); }
-		
-// 	});

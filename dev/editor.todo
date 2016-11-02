@@ -1,0 +1,20 @@
+
+
+- Ne pas afficher alerte de suppression quand l'élément est vide et non sauvegardée
+
+- Revoir l'ordre des boutons d'ajout de situation / transition
+
+- Enlever situation initiale
+
+- Remplacer "null le null par null" par "Situation / Transition en cours de création"
+
+- Formater date de manière relative
+
+- Conserver la taille de la boîte d'édition de texte, pour chaque formulaire indépendamment
+
+- Transformer deux sauts de lignes en un nouveau paragraphe
+
+(- Passer transitions vides dans le lecteur intégré)
+
+- Ajouter BBCode : [i] [b] [u]
+

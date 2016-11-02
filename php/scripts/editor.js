@@ -13,10 +13,12 @@ var reset_message = "Supprimer les modifications ?"
 var delete_situation_message = "Supprimer cette situation ainsi que les éventuelles transitions associées ?"
 var delete_transition_message = "Supprimer cette transition ?"
 var error_form = "Erreurs dans le formulaire : impossible d'enregistrer."
+var error_forms = "Certains éléments n'ont pas pu être enregistrés (erreurs possibles dans les formulaires)."
 var error_empty_name = "Entrez un nom pour cette situation.";
 var error_taken_name = "Ce nom de situation est déjà pris.";
 var error_taken_start = "Il existe une autre situation initiale.";
 var error_no_start = "Il n'y a pas de situation initiale.";
+var error_unlock_format = "Format attendu : \"mot\" \"autre mot\" \"et cætera\"";
 
 (function($){$.event.special.destroyed={remove:function(o){if(o.handler){o.handler()}}}})(jQuery)
 
@@ -143,28 +145,76 @@ cytograph.elements().each (
 var new_situation_button = $('<button>')
 	.attr ('id', 'new_situation_button')
 	.attr ('type', 'button')
-	.append ('Ajouter situation')
+	.append ('Ajouter situation (isolée)')
 	.click (function () { newForm ('situation', false); });
 
-$('#div_buttons').append (new_situation_button);
+$('#div_buttons')
+	.append (new_situation_button)
+	.append ('<br>');
 
 var new_transition_button = $('<button>')
 	.attr ('id', 'new_transition_button')
 	.attr ('type', 'button')
 	.attr ('disabled', true)
-	.append ('Ajouter transition')
+	.append ('Ajouter transition (sur situation)')
 	.click ({}, function () { newForm ('transition', false); });
 
-$('#div_buttons').append (new_transition_button);
+$('#div_buttons')
+	.append (new_transition_button)
+	.append ('<br>');
+
+var new_transtition_and_situation_button = $('<button>')
+	.attr ('id', 'new_transition_and_situation_button')
+	.attr ('type', 'button')
+	.attr ('disabled', true)
+	.append ('Ajouter situation (sur situation)')
+	.click ({}, function ()
+			{
+				newForm ('transition', false);
+				newForm ('situation', true);
+			});
+
+$('#div_buttons')
+	.append (new_transtition_and_situation_button)
+	.append ('<br>');
 
 var new_end_situation_button = $('<button>')
 	.attr ('id', 'new_end_situation_button')
 	.attr ('type', 'button')
 	.attr ('disabled', true)
-	.append ('Ajouter situation finale')
+	.append ('Ajouter situation (sur transition)')
 	.click ({}, function () { newForm ('situation', true); });
 
-$('#div_buttons').append (new_end_situation_button);
+$('#div_buttons')
+	.append (new_end_situation_button)
+	.append ('<br>');
+
+var save_all_button = $('<button>')
+	.attr ('id', 'save_all_button')
+	.attr ('type', 'button')
+	.append ('Enregistrer tout')
+	.click ({},
+			function ()
+			{
+				var error = false;
+
+				cytograph.elements().each (
+					function (i, element)
+					{
+						var id = element.id();
+						var check = checkForm (id);
+						if (check == 'error') { error = true; }
+						else if (check == 'modified') { saveForm (id); }
+					}
+				);
+
+				if (error) { alert (error_forms); }
+			}
+		   );
+
+$('#div_buttons')
+	.append (save_all_button)
+	.append ('<br>');
 
 var read_narrative_button = $('<button>')
 	.attr ('id', 'read_narrative_button')
@@ -180,7 +230,9 @@ var read_narrative_button = $('<button>')
 			}
 		   );
 
-$('#div_buttons').append (read_narrative_button);
+$('#div_buttons')
+	.append (read_narrative_button)
+	.append ('<br>');
 
 
 
@@ -263,13 +315,15 @@ function selectElement (id)
 	/* Enable or disable edit buttons */
 	if (element.data('type') == 'situation')
 	{
-		$('#new_transition_button').attr('disabled',false);
+		$('#new_transition_button').attr('disabled',false);	
+		$('#new_transition_and_situation_button').attr('disabled',false);
 		$('#new_end_situation_button').attr('disabled',true);
 	}
 	
 	else if (element.data('type') == 'transition')
 	{
 		$('#new_transition_button').attr('disabled',true);
+		$('#new_transition_and_situation_button').attr('disabled',true);
 		$('#new_end_situation_button').attr('disabled',false);
 	}
 
@@ -290,6 +344,7 @@ function unselectElement (id)
 	if (element.data('type') == 'situation')
 	{
 		$('#new_transition_button').attr('disabled',true);
+		$('#new_transition_and_situation_button').attr('disabled',true);
 		$('#new_end_situation_button').attr('disabled',true);
 	}
 }
@@ -341,9 +396,18 @@ function getSpanName (id)
 
 function formatText (text)
 {
-	return text.replace (/\[break\]/g,'<br><br>[break]<br><br>');
+	if (text == '') { text = '<i>[pas de texte]</i>'; }
+	return text.replace (/\[break\]/g,'<br><br><i>[break]</i><br><br>');
 }
 
+
+function formatUnlock (unlock)
+{
+	var unlock_array = unlock.match(/\w+|"[^"]+"/g);
+	var i = unlock_array.length;
+	while (i--) { unlock_array[i] = unlock_array[i].replace(/"/g,""); }
+	return '<i>[révélé par : "' + unlock_array.join('", "') + '"]</i>';
+}
 
 /* FORM FUNCTIONS */
 
@@ -408,6 +472,7 @@ function newForm (type, endSituation)
 				source: situation.id(),
 				target: situation.id(),
 				choice: "",
+				unlock: "",
 				text: "",
 				mod_type: "new",
 				mod_date: null,
@@ -418,6 +483,7 @@ function newForm (type, endSituation)
 		element.data.save.source = null;
 		element.data.save.target = null;
 		element.data.save.choice = null;
+		element.data.save.unlock = null;
 		element.data.save.text = null;
 	}
 
@@ -562,6 +628,18 @@ function getForm (id)
 		form.append (getFormInput ('Choix proposé', choice_object))
 	}
 
+	/* unlock */
+	if (element.data('type') == 'transition')
+	{
+		var unlock_object = $('<input>')
+			.attr ('name', 'unlock')
+			.attr ('type', 'text')
+			.attr ('value', element.data('unlock'))
+			.on ("input", {}, function () { checkForm (id); } );
+		
+		form.append (getFormInput ('Mots-clés pour débloquer', unlock_object))
+	}
+
 	/* text */
 	var text_object = $('<textarea>')
 		.attr ('name', 'text')
@@ -582,35 +660,39 @@ function getForm (id)
 		.addClass ('save_button')
 		.attr ('type', 'button')
 		.attr ('disabled', true)
-		.append ("Enregistrer (Ctrl-Return)")
+		.append ("Enregistrer modifications (Ctrl+S)")
 		.click ({}, function () { saveForm (id); } );
 
-	form.append (saveButton);
+	form.append (saveButton)
+		.append ('<br>');
 
 	var resetButton = $('<button>')
 		.addClass ('reset_button')
 		.attr ('type', 'button')
 		.attr ('disabled', true)
-		.append ("Annuler")
+		.append ("Annuler modifications (Ctrl+Backspace)")
 		.click ({}, function () { safeResetForm (id); } );
 
-	form.append (resetButton);
+	form.append (resetButton)
+		.append ('<br>');
 
 	var deleteButton = $('<button>')
 		.addClass ('delete_button')
 		.attr ('type', 'button')
-		.append ("Supprimer")
+		.append ("Supprimer " + element.data('type') + " (Ctrl+Delete)")
 		.click ({}, function () { safeDeleteForm (id); } );
 
-	form.append (deleteButton);
-
+	form.append (deleteButton)
+		.append ('<br>');
+	
 	var readButton = $('<button>')
 		.addClass ('read_button')
 		.attr ('type', 'button')
-		.append ("Lire")
+		.append ('Lire ' + element.data('type') + " (Ctrl+Return)")
 		.click ({}, function () { resetStory (); readElement (id); } );
 
-	form.append (readButton);
+	form.append (readButton)
+		.append ('<br>');
 
 	return form;
 }
@@ -688,6 +770,8 @@ function checkForm (id)
 
 		if (name != element.data('name'))
 		{
+			name_object.removeClass('error');
+			
 			/* Update element in graph */
 			element.data('name',name);
 			for (var i in egograph) { egograph[i].getElementById(id).data('name',name); }
@@ -700,24 +784,39 @@ function checkForm (id)
 			$('.name_'+id).text (name);
 
 			/* Modified */
-			if (element.data('name') != element.data('save').name) { name_object.addClass('modified'); modified = true; }
+			if (element.data('name') != element.data('save').name)
+			{
+				name_object.addClass('modified');
+				modified = true;
+			}
 			else { name_object.removeClass('modified'); }
 
 			/* Empty name */
-			if (element.data('name') == '') { name_error.text (error_empty_name); error = true; }
+			if (element.data('name') == '')
+			{
+				name_error.text (error_empty_name);
+				name_object.addClass('error');
+				error = true;
+			}
 
 			/* Taken name */
 			cytograph.nodes().each (
 				function (i, element_bis)
 				{
 					if ($('#form_'+element_bis.id()).find('[name="name"]').val() == element.data('name') && element_bis.id() != id)
-					{ name_error.text (error_taken_name); error = true; }
+					{
+						name_error.text (error_taken_name);
+						name_object.addClass('error');
+						error = true;
+					}
 				}
 			);
 		}
 
 		if (name_object.hasClass('modified')) { modified = true; }
 		else if (element.data('mod_type') == 'new') { name_object.addClass('modified'); modified = true; }
+
+		if (name_object.hasClass('error')) { error = true; }
 	}
 
 	/* Check source */
@@ -731,6 +830,8 @@ function checkForm (id)
 
 		if (source != element.data('source'))
 		{
+			source_object.removeClass('error');
+
 			important_change = true;
 			var oldSource = element.source().id();
 			var target = element.target().id();
@@ -805,6 +906,8 @@ function checkForm (id)
 
 		if (source_object.hasClass('modified')) { modified = true; }
 		else if (element.data('mod_type') == 'new') { source_object.addClass('modified'); modified = true; }
+
+		if (source_object.hasClass('error')) { error = true; }
 	}
 
 	/* Check target */
@@ -818,6 +921,8 @@ function checkForm (id)
 
 		if (target != element.data('target'))
 		{
+			target_object.removeClass('error');
+
 			important_change = true;
 			var oldTarget = element.target().id();
 			var source = element.source().id();
@@ -892,6 +997,8 @@ function checkForm (id)
 
 		if (target_object.hasClass('modified')) { modified = true; }
 		else if (element.data('mod_type') == 'new') { target_object.addClass('modified'); modified = true; }
+
+		if (target_object.hasClass('error')) { error = true; }
 	}
 
 	/* Check start */
@@ -905,6 +1012,7 @@ function checkForm (id)
 
 		if (start != element.data('start'))
  		{
+			start_object.removeClass('error');
 			element.data('start',start);
 			
 			/* Modified */
@@ -922,7 +1030,12 @@ function checkForm (id)
 					}
 				);
 
-				if (noStart) { start_error.text (error_no_start); error = true; }
+				if (noStart)
+				{
+					start_error.text (error_no_start);
+					start_object.addClass('error');
+					error = true;
+				}
 			}
 
 			/* Taken start */
@@ -932,7 +1045,11 @@ function checkForm (id)
 					function (i, element_bis)
 					{
 						if (element_bis.data('start') == 1 && element_bis.id() != id)
-						{ start_error.text (error_taken_start); error = true; }
+						{
+							start_error.text (error_taken_start);
+							start_object.addClass('error');
+							error = true;
+						}
 					}
 				);
 			}
@@ -940,6 +1057,8 @@ function checkForm (id)
 
 		if (start_object.hasClass('modified')) { modified = true; }
 		else if (element.data('mod_type') == 'new') { start_object.addClass('modified'); modified = true; }
+
+		if (start_object.hasClass('error')) { error = true; }
 	}
 
 	/* Check end */
@@ -953,6 +1072,7 @@ function checkForm (id)
 
 		if (end != element.data('end'))
 		{
+			end_object.removeClass('error');
 			important_change = true;
 			element.data('end',end);
 			
@@ -963,6 +1083,8 @@ function checkForm (id)
 
 		if (end_object.hasClass('modified')) { modified = true; }
 		else if (element.data('mod_type') == 'new') { end_object.addClass('modified'); modified = true; }
+
+		if (end_object.hasClass('error')) { error = true; }
 	}
 
 	/* Check choice */
@@ -976,6 +1098,7 @@ function checkForm (id)
 
 		if (choice != element.data('choice'))
 		{
+			choice_object.removeClass('error');
 			element.data('choice',choice);
 
 			/* Update choice in other places */
@@ -990,6 +1113,56 @@ function checkForm (id)
 
 		if (choice_object.hasClass('modified')) { modified = true; }
 		else if (element.data('mod_type') == 'new') { choice_object.addClass('modified'); modified = true; }
+
+		if (choice_object.hasClass('error')) { error = true; }
+	}
+	
+	/* Check unlock */
+	if (element.data('type') == 'transition')
+	{
+		var unlock_field = form.find('[name="unlock"]');
+		var unlock_object = unlock_field.closest('.form_object');
+		var unlock_error = unlock_object.closest('.form_input').find('.form_error');
+		var unlock = unlock_field.val();
+		unlock_error.text('');
+
+		if (unlock != element.data('unlock'))
+		{
+			unlock_object.removeClass('error');
+			element.data('unlock',unlock);
+
+			/* Check format */
+			var local_error = false;
+			var unlock_str = ' ' + unlock + ' ';
+			var unlock_array = unlock_str.split('"');
+
+			if ((unlock_array.length-1) % 2 != 0) { local_error = true; }
+			else {
+				for (var i = 0; i < unlock_array.length && !local_error; i+=2)
+				{ local_error = (unlock_array[i].replace(/\s+/g, '').length > 0); }
+			}
+			
+			if (local_error)
+			{
+				error = true;
+				unlock_object.addClass('error');			
+				unlock_error.text (error_unlock_format);
+			}
+
+			/* Update unlock in other places */
+			var unlock_str = unlock;
+			if (unlock_str != '') { unlock_str = formatUnlock (unlock_str); }
+			$('.unlock_'+id).html (unlock_str);
+
+			/* Modified */
+			if (element.data('unlock') != element.data('save').unlock) { unlock_object.addClass('modified'); modified = true; }
+			else { unlock_object.removeClass('modified'); }
+		}
+
+		if (unlock_object.hasClass('modified')) { modified = true; }
+		else if (element.data('mod_type') == 'new') { unlock_object.addClass('modified'); modified = true; }
+
+		if (unlock_object.hasClass('error')) { error = true; }
 	}
 	
 	/* Check text */
@@ -1003,6 +1176,7 @@ function checkForm (id)
 
 		if (text != element.data('text'))
 		{			
+			text_object.removeClass('error');
 			element.data('text',text);
 
 			/* Update text in other places */
@@ -1016,6 +1190,8 @@ function checkForm (id)
 
 		if (text_object.hasClass('modified')) { modified = true; }
 		else if (element.data('mod_type') == 'new') { text_object.addClass('modified'); modified = true; }
+
+		if (text_object.hasClass('error')) { error = true; }
 	}
 
 	/* Apply changes */
@@ -1038,8 +1214,13 @@ function checkForm (id)
 
 	if (error)
 	{
+		element.addClass('error');
 		form.find('.save_button').attr('disabled',true);
 		form.find('.reset_button').attr('disabled',false);
+	}
+
+	else {
+		element.removeClass('error');		
 	}
 
 	/* Rewind story if significant change in the narrative structure */
@@ -1088,6 +1269,8 @@ function safeResetForm (id)
 
 function resetForm (id)
 {
+	var visible = $('#form_'+id).is(":visible");
+	
 	var element = cytograph.getElementById (id);
 	element.removeClass('modified');
 
@@ -1096,11 +1279,12 @@ function resetForm (id)
 
 	element.data(data);
 	element.data('save',data);
-	$('#form_'+id).remove();			 
+	$('#form_'+id).remove();
 
-	var form = getForm(id);
+	var form = getForm(id).hide();
 	$('#div_form').append (form);
-	$('#form_'+id).show ();
+
+	if (visible) { $('#form_'+id).show (); }
 }
 
 
@@ -1251,11 +1435,7 @@ function readElement (id)
 				readElement (element.target().id());
 			});
 
-		var choice_span = $('<span>')
-			.addClass ('choice_'+element.target().id());
-
 		next_col1.append ($('<ul>').append ($('<li>') .append (story_list_element)));
-		next_col2.append (choice_span);
 	}
 
 	/* If situation, add transition list */
@@ -1285,6 +1465,8 @@ function readElement (id)
 					}
 				);
 
+				next_col1.append ($('<ul>').append ($('<li>').append (story_list_element)));
+
 				var choice = element_bis.data('choice');
 				if (choice == '') { choice = 'Continuer'; }
 
@@ -1292,8 +1474,19 @@ function readElement (id)
 					.addClass ('choice_'+element_bis.id())
 					.append(choice);
 
-				next_col1.append ($('<ul>').append ($('<li>').append (story_list_element)));
 				next_col2.append (choice_span);
+
+				var unlock = element_bis.data('unlock');
+				if (unlock != '')
+				{
+					var unlock_span = $('<span>')
+						.addClass ('unlock_'+element_bis.id())
+						.append (formatUnlock (unlock));
+					
+					next_col2
+						.append ('<br>')
+						.append (unlock_span);
+				}
 			}
 		);
 	}
@@ -1305,13 +1498,39 @@ function readElement (id)
 
 
 /* Shortcuts */
-shortcut.add ("ctrl+enter",
+shortcut.add ("Ctrl+S",
 			  function ()
 			  {
+				  if (displayed_id === null) return;
+				  
 				  var check = checkForm (displayed_id);
-				  if (check == 'error') { alert(error_form); }
+				  if (check == 'error') { alert (error_form); }
 				  if (check == 'modified') { saveForm (displayed_id); }
 			  }
 			 );
 
+shortcut.add ("Ctrl+Backspace",
+			  function ()
+			  {
+				  if (displayed_id === null) return;
+				  safeResetForm (displayed_id);
+			  }
+			 );
+
+shortcut.add ("Ctrl+Delete",
+			  function ()
+			  {
+				  if (displayed_id === null) return;
+				  safeDeleteForm (displayed_id);
+			  }
+			 );
+
+shortcut.add ("Ctrl+Return",
+			  function ()
+			  {
+				  if (displayed_id === null) return;
+				  resetStory ();
+				  readElement (displayed_id);
+			  }
+			 );
 

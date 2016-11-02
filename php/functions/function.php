@@ -1,7 +1,9 @@
 <?php
 
+include("sql_function.php");
+
 $GLOBALS['sql_connection'] = null; // sql connection
-$GLOBALS['verbose_sql'] = true; // Set to true to print sql requests.
+$GLOBALS['verbose_sql'] = false; // Set to true to print sql requests.
 $GLOBALS['no_verbose'] = false; // Set to true to forbid any verbose.
 
 
@@ -35,18 +37,6 @@ function checkUnique ($sql, $result)
 	return true;
 }
 
-
-/*
- * Initiate connection to the "bibliotheque" database.
- * Don't forget to close the database after usage (see closeConnection).
- */
-function openConnection ()
-{
-	$GLOBALS['sql_connection'] = new mysqli ("localhost", "root", "orodove", "bibliotheque");
-	if ($GLOBALS['sql_connection']->connect_error) { die ("Connection failed: " . $GLOBALS['sql_connection']->connect_error); }
-	$GLOBALS['sql_connection']->query("SET NAMES UTF8");
-	if ($GLOBALS['verbose_sql'] && !$GLOBALS['no_verbose']) { echo "<B>Connection opened</B><BR>\n"; }
-}
 
 /*
  * Close connection previously opened by openConnection.

@@ -4,9 +4,13 @@ include("functions/function.php");
 
 session_start();
 
-if (isset($_GET) && isset($_GET['id_narrative'])) { $_SESSION['id_narrative'] = $_GET['id_narrative']; }
-
 openConnection();
+
+if (isset($_GET))
+{
+	if (isset($_GET['id_narrative'])) { $_SESSION['id_narrative'] = $_GET['id_narrative']; }
+	if (isset($_GET['new_story'])) { newStory ($_SESSION['id_member'], $_SESSION['id_narrative']); }
+}
 
 $_SESSION['id_story'] = getMostRecentStory ($_SESSION['id_member'], $_SESSION['id_narrative']);
 if (is_null($_SESSION['id_story'])) { $_SESSION['id_story'] = newStory ($_SESSION['id_member'], $_SESSION['id_narrative']); }
@@ -28,6 +32,7 @@ closeConnection();
 
 		<script type="text/javascript" src="lib/shortcut.js"></script>
 		<script type="text/javascript" src="lib/jquery-3.1.1.js"></script>
+		<script type="text/javascript" src="lib/jquery-ui-1.12.1/jquery-ui.js"></script>
 		<script type="text/javascript" src="lib/CSSJSON-master/cssjson.js"></script>
 
 		<!-- <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.0/jquery.min.js"></script>

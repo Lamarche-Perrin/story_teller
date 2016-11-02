@@ -26,9 +26,9 @@ closeConnection();
 			<?php
 			foreach ($datas as $data)
 			{
-				echo "<li><a href=\"reader.php?id_narrative=".$data['id_narrative']."\"><b>" . $data['title'] . "</a></b> (" . formatDate($data['date']);
+				echo "<li><b>" . $data['title'] . "</b> (" . formatDate($data['date']);
 				foreach ($data['authors'] as $author) { echo ", " . $author['name']; }
-				echo ")</li>";
+				echo ") -> <a href=\"reader.php?id_narrative=".$data['id_narrative']."\">continuer</a>, <a href=\"reader.php?id_narrative=".$data['id_narrative']."&new_story\">recommencer</a></li>";
 			}
 			?>
 		</ul>
