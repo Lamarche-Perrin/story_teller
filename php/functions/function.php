@@ -354,7 +354,7 @@ function newStory ($id_member, $id_narrative)
 {
 	$sql = "SELECT e.id_element FROM element e
 				INNER JOIN writing w ON w.id_element = e.id_element
-			WHERE e.id_narrative = '$id_narrative' AND e.type = 'situation' AND w.start = 1
+			WHERE e.id_narrative = '$id_narrative' AND e.type = 'situation' AND w.name = 'start'
 				AND w.date = (SELECT MAX(x.date) FROM writing x WHERE w.id_element = x.id_element)
 				AND w.type IN ('create', 'modify')";
 	$result = execSQL ($sql);
@@ -365,7 +365,7 @@ function newStory ($id_member, $id_narrative)
 	$row = $result->fetch_assoc();
 	$id_current = $row['id_element'];
 
-	$sql = "INSERT INTO story (id_member, id_narrative, id_current) VALUES ('$id_member', '$id_narrative', '$id_current')";
+	$sql = "INSERT INTO story (id_member, id_narrative, id_current, step_current) VALUES ('$id_member', '$id_narrative', '$id_current', '0')";
 	execSQL ($sql);
 
 	return getIdSQL();

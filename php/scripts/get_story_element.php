@@ -10,7 +10,7 @@ openConnection();
 $id_story = $_SESSION['id_story'];
 
 // Get story data
-$sql = "SELECT id_narrative, id_current, date FROM story WHERE id_story = $id_story";
+$sql = "SELECT id_narrative, id_current, step_current, date FROM story WHERE id_story = $id_story";
 $result = execSQL ($sql);
 
 $row = $result->fetch_assoc();
@@ -64,7 +64,7 @@ if ($element['type'] == 'transition')
 	$next_elements[$row['id_element']] = $row;
 }
 
-$data = array ("element" => $element, "next_elements" => $next_elements, "locked_elements" => $locked_elements);
+$data = array ("element" => $element, "step_current" => $step_current, "next_elements" => $next_elements, "locked_elements" => $locked_elements);
 
 closeConnection();
 

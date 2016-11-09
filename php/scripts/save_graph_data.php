@@ -21,7 +21,7 @@ if ($json['type'] == 'situation')
 
 	// Save data
 	$sql = "INSERT INTO writing (id_member, id_element, type, name, start, end, text)
-				VALUES ('$id_member', '$id_element', '$type', '$name', '$start', '$end', '$text')";
+				VALUES ('$id_member', '$id_element', '$type', '$name', NULL, '$end', '$text')";
 	execSQL ($sql);
 
 	// Get result

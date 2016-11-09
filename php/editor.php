@@ -44,7 +44,7 @@ if (isset($_GET) && isset($_GET['id_narrative'])) { $_SESSION['id_narrative'] = 
 
 				<div id="div_editor">
 					<div id="div_form"></div>
-					<div id="div_egograph"></div>
+					<!-- <div id="div_egograph"></div> -->
 				</div>
 
 				<div id="div_reader">

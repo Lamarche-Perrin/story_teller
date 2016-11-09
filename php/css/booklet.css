@@ -3,8 +3,8 @@ booklet {
 	autoCenter: true;
 	covers: true;
 	pagePadding: 30;
-	width: 800;
-	height: 600;
+	width: 70%;
+	height: 90%;
 	tabs: true;
 	nextControlText: "Suivant";
 	previousControlText: "Précédent";

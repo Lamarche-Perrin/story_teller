@@ -2,7 +2,7 @@
 // var current_page = null;
 // var current_id = null;
 // var current_text_array = null;
-// var current_step_array = null;
+// var step_current = null;
 
 
 /* Get css style */
@@ -79,11 +79,12 @@ $.ajax({
 /* Read story */
 var delay = null;
 var element = null;
+var step_current = null;
 var next_elements = null;
 var locked_elements = null;
 
 var text_array = null;
-var step_array = null;
+var step = null;
 
 initReading (null);
 
@@ -102,6 +103,7 @@ function initReading (element)
 			{
 				var data = JSON.parse (d);
 				element = data.element;
+				step_current = data.step_current;
 				next_elements = data.next_elements;
 				locked_elements = data.locked_elements;
 			}
@@ -109,21 +111,33 @@ function initReading (element)
 	}
 
 	text_array = element.text.split("[break]");
-	//if (current_text_array == '') { current_text_array = []; }
-	step_array = 0;
+	if (stop && text_array.length == 1 && text_array[0] == '' && Object.keys(next_elements).length == 1 && !locked_elements)
+	{
+		$.each (next_elements, function (id, element)
+				{
+					setCurrentReading(id);
+					initReading(null);
+				}
+			   );
+	}
 
-	pursueReading (stop);
+	else {
+		step = 0;
+
+		for (var s = 0; s < step_current; s++) { pursueReading (false); }
+		pursueReading (stop);
+	}
 }
 
-function finishedReading () { return step_array >= text_array.length; }
+function finishedReading () { return step >= text_array.length; }
 
 function pursueReading (stop)
 {
 	delay = 0;
-	var text = text_array[step_array];
+	var text = text_array[step];
+	step++;
 
 	if (text != '') { printText (text, stop); }
-	step_array++;
 
 	if (stop)
 	{
@@ -136,7 +150,14 @@ function pursueReading (stop)
 				$('<button>')
 					.attr ('type', 'button')
 					.append ('Continuer')
-					.click (function () { $('#div_next_buttons').remove(); pursueReading (true); })
+					.click (
+						function ()
+						{
+							setCurrentStep(step);
+							$('#div_next_buttons').remove();
+							pursueReading (true);
+						}
+					)
 			);
 
 			printButton (div_next_buttons, stop);
@@ -207,6 +228,16 @@ function addTransitionButtons (stop)
 		   );
 
 	printButton (div_next_buttons, stop);
+}
+
+function setCurrentStep (step)
+{
+	$.ajax({
+		async: false,
+		url: 'scripts/set_story_current.php',
+		type: 'POST',
+		data: JSON.stringify ({step_current: step})
+	});
 }
 
 function setCurrentReading (id)

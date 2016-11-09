@@ -1,20 +1,25 @@
 
+* Ne pas afficher alerte de suppression quand l'élément est vide et non sauvegardée
 
-- Ne pas afficher alerte de suppression quand l'élément est vide et non sauvegardée
+* Revoir l'ordre des boutons d'ajout de situation / transition
 
-- Revoir l'ordre des boutons d'ajout de situation / transition
+* Enlever situation initiale
 
-- Enlever situation initiale
-
-- Remplacer "null le null par null" par "Situation / Transition en cours de création"
+* Remplacer "null le null par null" par "Situation / Transition en cours de création"
 
 - Formater date de manière relative
 
-- Conserver la taille de la boîte d'édition de texte, pour chaque formulaire indépendamment
+(- Conserver la taille de la boîte d'édition de texte, pour chaque formulaire indépendamment)
 
-- Transformer deux sauts de lignes en un nouveau paragraphe
+* Transformer deux sauts de lignes en un nouveau paragraphe
+
+* Mots clés : pas de casse
 
 (- Passer transitions vides dans le lecteur intégré)
 
-- Ajouter BBCode : [i] [b] [u]
+* Ajouter BBCode : [i] [b] [u]
+
+* Ajouter situation ou transition sur situation courante (et non start)
+
+- Raccoursis pour nouvelles situations / transitions
 

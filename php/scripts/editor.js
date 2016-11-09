@@ -17,8 +17,8 @@ var error_forms = "Certains éléments n'ont pas pu être enregistrés (erreurs 
 var error_empty_name = "Entrez un nom pour cette situation.";
 var error_taken_name = "Ce nom de situation est déjà pris.";
 var error_taken_start = "Il existe une autre situation initiale.";
-var error_no_start = "Il n'y a pas de situation initiale.";
-var error_unlock_format = "Format attendu : \"mot\" \"autre mot\" \"et cætera\"";
+var error_no_start = "Il n'y a pas de situation initiale dans cette narration.";
+var error_unlock_format = "Format attendu : \"mot\" \"autre mot\" \"et cætera\" (tout en minuscule)";
 
 (function($){$.event.special.destroyed={remove:function(o){if(o.handler){o.handler()}}}})(jQuery)
 
@@ -64,7 +64,7 @@ var cytograph = cytoscape (
 	}
 );
 
-start_id = cytograph.nodes('[start="1"]').id();
+start_id = cytograph.nodes('[name="start"]').id();
 
 setupGraph (0, cytograph);
 
@@ -80,55 +80,55 @@ function setupGraph (id, graph)
 
 
 /* Create cytograph */
-var egograph = new Object();
-cytograph.elements().each ( function (i, element) { addEgograph (element.id()); });
+// var egograph = new Object();
+// cytograph.elements().each ( function (i, element) { addEgograph (element.id()); });
 
-function addEgograph (id)
-{
-	var element = cytograph.getElementById (id);
+// function addEgograph (id)
+// {
+// 	var element = cytograph.getElementById (id);
 	
-	var div_egograph = $('<div>')
-		.attr ('id', 'egograph_'+id)
-		.addClass ('egograph');
+// 	var div_egograph = $('<div>')
+// 		.attr ('id', 'egograph_'+id)
+// 		.addClass ('egograph');
 	
-	$('#div_egograph').append(div_egograph);
+// 	$('#div_egograph').append(div_egograph);
 
-	var egoelements = [];
+// 	var egoelements = [];
 
-	if (element.data('type') == 'situation')
-	{
-		element.closedNeighborhood().each (
-			function (j, element_bis)
-			{
-				if (element_bis.isNode())
-					egoelements.push ({ data: { id: element_bis.id(), name: element_bis.data('name') } });
+// 	if (element.data('type') == 'situation')
+// 	{
+// 		element.closedNeighborhood().each (
+// 			function (j, element_bis)
+// 			{
+// 				if (element_bis.isNode())
+// 					egoelements.push ({ data: { id: element_bis.id(), name: element_bis.data('name') } });
 
-				if (element_bis.isEdge())
-					egoelements.push ({ data: { id: element_bis.id(), source: element_bis.data('source'), target: element_bis.data('target') } });
-			}
-		);
-	}
+// 				if (element_bis.isEdge())
+// 					egoelements.push ({ data: { id: element_bis.id(), source: element_bis.data('source'), target: element_bis.data('target') } });
+// 			}
+// 		);
+// 	}
 
-	else if (element.data('type') == 'transition')
-	{
-		egoelements.push ({ data: { id: element.source().id(), name: element.source().data('name') } });
-		egoelements.push ({ data: { id: element.target().id(), name: element.target().data('name') } });
-		egoelements.push ({ data: { id: element.id(), source: element.data('source'), target: element.data('target') } });
-	}
+// 	else if (element.data('type') == 'transition')
+// 	{
+// 		egoelements.push ({ data: { id: element.source().id(), name: element.source().data('name') } });
+// 		egoelements.push ({ data: { id: element.target().id(), name: element.target().data('name') } });
+// 		egoelements.push ({ data: { id: element.id(), source: element.data('source'), target: element.data('target') } });
+// 	}
 
-	egograph[id] = cytoscape (
-		{
-			container: $('#egograph_'+id),
-			elements: egoelements,
-			style: style,
-			layout: colayout
-		}
-	);
+// 	egograph[id] = cytoscape (
+// 		{
+// 			container: $('#egograph_'+id),
+// 			elements: egoelements,
+// 			style: style,
+// 			layout: colayout
+// 		}
+// 	);
 
-	setupGraph (id, egograph[id]);
+// 	setupGraph (id, egograph[id]);
 
-	div_egograph.hide();
-}
+// 	div_egograph.hide();
+// }
 
 
 
@@ -142,27 +142,6 @@ cytograph.elements().each (
 );
 
 /* Add buttons */
-var new_situation_button = $('<button>')
-	.attr ('id', 'new_situation_button')
-	.attr ('type', 'button')
-	.append ('Ajouter situation (isolée)')
-	.click (function () { newForm ('situation', false); });
-
-$('#div_buttons')
-	.append (new_situation_button)
-	.append ('<br>');
-
-var new_transition_button = $('<button>')
-	.attr ('id', 'new_transition_button')
-	.attr ('type', 'button')
-	.attr ('disabled', true)
-	.append ('Ajouter transition (sur situation)')
-	.click ({}, function () { newForm ('transition', false); });
-
-$('#div_buttons')
-	.append (new_transition_button)
-	.append ('<br>');
-
 var new_transtition_and_situation_button = $('<button>')
 	.attr ('id', 'new_transition_and_situation_button')
 	.attr ('type', 'button')
@@ -176,6 +155,27 @@ var new_transtition_and_situation_button = $('<button>')
 
 $('#div_buttons')
 	.append (new_transtition_and_situation_button)
+	.append ('<br>');
+
+var new_transition_button = $('<button>')
+	.attr ('id', 'new_transition_button')
+	.attr ('type', 'button')
+	.attr ('disabled', true)
+	.append ('Ajouter transition (sur situation)')
+	.click ({}, function () { newForm ('transition', false); });
+
+$('#div_buttons')
+	.append (new_transition_button)
+	.append ('<br>');
+
+var new_situation_button = $('<button>')
+	.attr ('id', 'new_situation_button')
+	.attr ('type', 'button')
+	.append ('Ajouter situation (isolée)')
+	.click (function () { newForm ('situation', false); });
+
+$('#div_buttons')
+	.append (new_situation_button)
 	.append ('<br>');
 
 var new_end_situation_button = $('<button>')
@@ -244,13 +244,13 @@ cytograph.on ('tapdragover', '*', {}, function (event) { enterElement (event.cyT
 cytograph.on ('tapdragout', '*', {}, function (event) { leaveElement (event.cyTarget.id(), true); });
 $('#div_graph').on ('mouseleave', function (event) { if (overed_id !== null) { leaveElement (overed_id); } });
 
-for (var i in egograph)
-{
-	egograph[i].on ('tap', '*', {}, function (event) { toggleElement (event.cyTarget.id()); });
-	egograph[i].on ('tapdragover', '*', {}, function (event) { enterElement (event.cyTarget.id(), false); });
-	egograph[i].on ('tapdragout', '*', {}, function (event) { leaveElement (event.cyTarget.id(), false); });
-	$('#egograph_'+i).on ('mouseleave', function (event) { if (overed_id !== null) { leaveElement (overed_id); } });
-}
+// for (var i in egograph)
+// {
+// 	egograph[i].on ('tap', '*', {}, function (event) { toggleElement (event.cyTarget.id()); });
+// 	egograph[i].on ('tapdragover', '*', {}, function (event) { enterElement (event.cyTarget.id(), false); });
+// 	egograph[i].on ('tapdragout', '*', {}, function (event) { leaveElement (event.cyTarget.id(), false); });
+// 	$('#egograph_'+i).on ('mouseleave', function (event) { if (overed_id !== null) { leaveElement (overed_id); } });
+// }
 
 function enterElement (id, main)
 {
@@ -259,10 +259,10 @@ function enterElement (id, main)
 	/* Make all corresponding objects overed */
 	cytograph.getElementById(id).addClass('overed');
 	$('.element_'+id).addClass('overed');
-	for (var i in egograph)
-	{
-		egograph[i].getElementById(id).addClass('overed');
-	}
+	// for (var i in egograph)
+	// {
+	// 	egograph[i].getElementById(id).addClass('overed');
+	// }
 
 	/* Display Form */
 	if (selected_id !== null) { hideForm (selected_id, main); }
@@ -276,10 +276,10 @@ function leaveElement (id, main)
 	/* Make all corresponding objects unovered */
 	cytograph.getElementById(id).removeClass('overed');
 	$('.element_'+id).removeClass('overed');
-	for (var i in egograph)
-	{
-		egograph[i].getElementById(id).removeClass('overed');
-	}
+	// for (var i in egograph)
+	// {
+	// 	egograph[i].getElementById(id).removeClass('overed');
+	// }
 
 	/* Hide Form */
 	hideForm (id, main);
@@ -306,11 +306,11 @@ function selectElement (id)
 
 	element.addClass('selected');
 	$('.element_'+id).addClass('selected');
-	for (var i in egograph)
-	{
-		egograph[i].$('.selected').removeClass('selected');
-		egograph[i].getElementById(id).addClass('selected');
-	}
+	// for (var i in egograph)
+	// {
+	// 	egograph[i].$('.selected').removeClass('selected');
+	// 	egograph[i].getElementById(id).addClass('selected');
+	// }
 
 	/* Enable or disable edit buttons */
 	if (element.data('type') == 'situation')
@@ -338,7 +338,7 @@ function unselectElement (id)
 
 	/* Make corresponding objects unselected */	
 	element.removeClass('selected');
-	for (var i in egograph) { egograph[i].$('.selected').removeClass('selected'); }
+	// for (var i in egograph) { egograph[i].$('.selected').removeClass('selected'); }
 
 	$('.element_'+id).removeClass('selected');
 	if (element.data('type') == 'situation')
@@ -397,7 +397,23 @@ function getSpanName (id)
 function formatText (text)
 {
 	if (text == '') { text = '<i>[pas de texte]</i>'; }
-	return text.replace (/\[break\]/g,'<br><br><i>[break]</i><br><br>');
+	text = text.replace (/\[break\]/g,'<br><br><i>[break]</i><br><br>');
+	text = text.replace (/(?:\r\n(\r\n)+|\r\r+|\n\n+)/g,'<br><br>');
+	
+	format_search = [
+			/\[b\](.*?)\[\/b\]/ig,
+			/\[i\](.*?)\[\/i\]/ig,
+			/\[u\](.*?)\[\/u\]/ig
+	];
+
+	format_replace = [
+		'<strong>$1</strong>',
+		'<em>$1</em>',
+		'<span style="text-decoration: underline;">$1</span>'
+	];
+
+	for (var i = 0; i < format_search.length; i++) { text = text.replace (format_search[i], format_replace[i]); }
+	return text;
 }
 
 
@@ -445,10 +461,9 @@ function newForm (type, endSituation)
 			}
 		}
 		element.data.save = JSON.parse(JSON.stringify(element.data));
-		element.data.save.name = null;
-		element.data.save.start = null;
-		element.data.save.end = null;
-		element.data.save.text = null;
+		// element.data.save.start = null;
+		// element.data.save.end = null;
+		// element.data.save.text = null;
 
 		/* Add options in lists */
 		var option_object = $('<option>')
@@ -480,15 +495,15 @@ function newForm (type, endSituation)
 			}
 		}
 		element.data.save = JSON.parse(JSON.stringify(element.data));
-		element.data.save.source = null;
-		element.data.save.target = null;
-		element.data.save.choice = null;
-		element.data.save.unlock = null;
-		element.data.save.text = null;
+		// element.data.save.source = null;
+		// element.data.save.target = null;
+		// element.data.save.choice = null;
+		// element.data.save.unlock = null;
+		// element.data.save.text = null;
 	}
 
 	element = cytograph.add(element);
-	addEgograph (id);
+	// addEgograph (id);
 	
 	if (type == 'situation' && endSituation && selected_id !== null)
 	{
@@ -516,6 +531,7 @@ function getForm (id)
 
 	/* id */
 	var id_object = $('<input>')
+		.addClass ('input_id')
 		.attr ('name', 'id')
 		.attr ('type', 'text')
 		.attr ('disabled', '')
@@ -525,10 +541,11 @@ function getForm (id)
 
 	/* type */
 	var type_object = $('<input>')
+		.addClass ('input_type')
 		.attr ('name', 'type')
 		.attr ('type', 'text')
 		.attr ('disabled', '')
-		.attr ('value', element.data('type'));
+		.attr ('value', element.data('save').type);
 	
 	form.append (getFormInput ('Type', type_object).hide());
 
@@ -536,9 +553,10 @@ function getForm (id)
 	if (element.data('type') == 'situation')
 	{
 		var name_object = $('<input>')
+			.addClass ('input_name')
 			.attr ('name', 'name')
 			.attr ('type', 'text')
-			.attr ('value', element.data('name'))
+			.attr ('value', element.data('save').name)
 			.on ("input", {}, function () { checkForm (id); } );
 		
 		form.append (getFormInput ('Nom de la situation', name_object));
@@ -548,6 +566,7 @@ function getForm (id)
 	if (element.data('type') == 'transition')
 	{
 		var source_object = $('<select>')
+			.addClass ('input_source')
 			.attr ('name', 'source')
 			.on ("input", {}, function () { checkForm (id); } );
 
@@ -558,7 +577,7 @@ function getForm (id)
 					.attr ('value', element_bis.id())
 					.text (element_bis.data('name')); // COULD BE PROBLEMATIC IF NOT ALL SITUATIONS IN DATA?
 				
-				if (element_bis.id() == element.data('source')) { option_object.attr ('selected', 'selected'); }
+				if (element_bis.id() == element.data('save').source) { option_object.attr ('selected', 'selected'); }
 				
 				source_object.append (option_object);
 			}
@@ -571,6 +590,7 @@ function getForm (id)
 	if (element.data('type') == 'transition')
 	{
 		var target_object = $('<select>')
+			.addClass ('input_target')
 			.attr ('name', 'target')
 			.on ("input", {}, function () { checkForm (id); } );
 
@@ -581,7 +601,7 @@ function getForm (id)
 					.attr ('value', element_bis.id())
 					.text (element_bis.data('name')); // COULD BE PROBLEMATIC IF NOT ALL SITUATIONS IN DATA?
 				
-				if (element_bis.id() == element.data('target')) { option_object.attr ('selected', 'selected'); }
+				if (element_bis.id() == element.data('save').target) { option_object.attr ('selected', 'selected'); }
 				
 				target_object.append (option_object);
 			}
@@ -590,28 +610,16 @@ function getForm (id)
 		form.append (getFormInput ('Situation d\'arrivée', target_object));
 	}
 
-	/* start */
-	if (element.data('type') == 'situation')
-	{
-		var start_object = $('<input>')
-			.attr ('name', 'start')
-			.attr ('type', 'checkbox')
-			.on ("input", {}, function () { checkForm (id); } );
-
-		if (element.data('start') == 1) { start_object.attr ('checked', ''); }
-		
-		form.append (getFormInput ('Situation initiale', start_object));
-	}
-
 	/* end */
 	if (element.data('type') == 'situation')
 	{
 		var end_object = $('<input>')
+			.addClass ('input_end')
 			.attr ('name', 'end')
 			.attr ('type', 'checkbox')
 			.on ("input", {}, function () { checkForm (id); } );
 
-		if (element.data('end') == 1) { end_object.attr ('checked', ''); }
+		if (element.data('save').end == 1) { end_object.attr ('checked', ''); }
 		
 		form.append (getFormInput ('Situation finale', end_object));
 	}
@@ -620,9 +628,10 @@ function getForm (id)
 	if (element.data('type') == 'transition')
 	{
 		var choice_object = $('<input>')
+			.addClass ('input_choice')
 			.attr ('name', 'choice')
 			.attr ('type', 'text')
-			.attr ('value', element.data('choice'))
+			.attr ('value', element.data('save').choice)
 			.on ("input", {}, function () { checkForm (id); } );
 		
 		form.append (getFormInput ('Choix proposé', choice_object))
@@ -632,9 +641,10 @@ function getForm (id)
 	if (element.data('type') == 'transition')
 	{
 		var unlock_object = $('<input>')
+			.addClass ('input_unlock')
 			.attr ('name', 'unlock')
 			.attr ('type', 'text')
-			.attr ('value', element.data('unlock'))
+			.attr ('value', element.data('save').unlock)
 			.on ("input", {}, function () { checkForm (id); } );
 		
 		form.append (getFormInput ('Mots-clés pour débloquer', unlock_object))
@@ -642,18 +652,22 @@ function getForm (id)
 
 	/* text */
 	var text_object = $('<textarea>')
+		.addClass ('input_text')
 		.attr ('name', 'text')
-		.attr ({rows: 10, cols: 50})
-		.append (element.data('text'))
+		.append (element.data('save').text)
 		.on ("input", {}, function () { checkForm (id); } );
 	
 	form.append (getFormInput ('Texte', text_object))
 
 	/* mod */
 	var mod_str = null;
-	if (element.data('mod_type') == 'create') { mod_str = 'créé'; }
-	if (element.data('mod_type') == 'modify') { mod_str = 'dernière modification'; }
-	form.append (mod_str + ' le ' + element.data('mod_date') + ' par ' + element.data('mod_name') + '<br>');
+	if (element.data('mod_type') == 'new')
+	{ form.append (element.data('type') + ' non enregistrée<br>'); }
+	else {
+		if (element.data('mod_type') == 'create') { mod_str = 'créé'; }
+		if (element.data('mod_type') == 'modify') { mod_str = 'dernière modification'; }
+		form.append (mod_str + ' le ' + element.data('mod_date') + ' par ' + element.data('mod_name') + '<br>');
+	}
 
 	/* buttons */
 	var saveButton = $('<button>')
@@ -722,11 +736,11 @@ function displayForm (id, main)
 	displayed_id = id;
 	$('#form_'+id).show();
 
-	if (main)
-	{
-		$('#egograph_'+id).show();
-		egograph[id].fit(egograph[id].$(),graphPadding);
-	}
+	// if (main)
+	// {
+	// 	$('#egograph_'+id).show();
+	// 	egograph[id].fit(egograph[id].$(),graphPadding);
+	// }
 	
 	/* Give focus to end of text field */
 	// if (element.data('type') == 'situation')
@@ -744,7 +758,7 @@ function hideForm (id, main)
 	var element = cytograph.getElementById (id);
 	displayed_id = null;
 	$('#form_'+id).hide();
-	if (main) { $('#egograph_'+id).hide(); }
+	// if (main) { $('#egograph_'+id).hide(); }
 }
 
 
@@ -774,7 +788,7 @@ function checkForm (id)
 			
 			/* Update element in graph */
 			element.data('name',name);
-			for (var i in egograph) { egograph[i].getElementById(id).data('name',name); }
+			// for (var i in egograph) { egograph[i].getElementById(id).data('name',name); }
 
 			/* Update options in list */
 			$('select[name="source"] option[value="'+id+'"]').text(name);
@@ -811,6 +825,21 @@ function checkForm (id)
 					}
 				}
 			);
+
+			/* No start */
+			if (element.data('name') != 'start')
+			{
+				var noStart = true;
+				cytograph.nodes().each (function (i, element_bis) { if (element_bis.data('name') == 'start') { noStart = false; } });
+
+				if (noStart)
+				{
+					name_error.text (error_no_start);
+					name_object.addClass('error');
+					error = true;
+				}
+			}
+			else { start_id = id; }
 		}
 
 		if (name_object.hasClass('modified')) { modified = true; }
@@ -840,61 +869,61 @@ function checkForm (id)
 			$('.element_'+id+' .name_source.name_'+oldSource).replaceWith(getSpanName(source).addClass('name_source'));
 
 			/* Suppress target in egograph of old source */
-			var egoOldSource = egograph[oldSource];
+			// var egoOldSource = egograph[oldSource];
 			
-			egoOldSource.getElementById(id).remove();
+			// egoOldSource.getElementById(id).remove();
 			
-			if (target != oldSource && !egoOldSource.getElementById(target).allAreNeighbors(egoOldSource.getElementById(oldSource)))
-			{ egoOldSource.getElementById(target).remove(); }
+			// if (target != oldSource && !egoOldSource.getElementById(target).allAreNeighbors(egoOldSource.getElementById(oldSource)))
+			// { egoOldSource.getElementById(target).remove(); }
 
 			/* Change source in egograph of edge */
-			var egoedge = egograph[id];
+			// var egoedge = egograph[id];
 
-			if (egoedge.getElementById(source).empty())
-			{
-				egoedge.add({ data: {id: source, name: cytograph.getElementById(source).data('name')}});
-				egoedge.getElementById(source).classes(cytograph.getElementById(source).json().classes);
-			}
+			// if (egoedge.getElementById(source).empty())
+			// {
+			// 	egoedge.add({ data: {id: source, name: cytograph.getElementById(source).data('name')}});
+			// 	egoedge.getElementById(source).classes(cytograph.getElementById(source).json().classes);
+			// }
 
-			egoedge.getElementById(id).move({source: source});
+			// egoedge.getElementById(id).move({source: source});
 
-			if (target != oldSource)
-			{ egoedge.getElementById(oldSource).remove(); }
+			// if (target != oldSource)
+			// { egoedge.getElementById(oldSource).remove(); }
 			
 			/* Add source in egograph of target */
-			var egotarget = egograph[target];
+			// var egotarget = egograph[target];
 			
-			if (egotarget.getElementById(source).empty())
-			{
-				egotarget.add({ data: {id: source, name: cytograph.getElementById(source).data('name') }});
-				egoedge.getElementById(source).classes(cytograph.getElementById(source).json().classes);
-			}
+			// if (egotarget.getElementById(source).empty())
+			// {
+			// 	egotarget.add({ data: {id: source, name: cytograph.getElementById(source).data('name') }});
+			// 	egoedge.getElementById(source).classes(cytograph.getElementById(source).json().classes);
+			// }
 
-			if (egotarget.getElementById(id).empty())
-			{
-				egotarget.add({ data: {id: id, source: source, target: target }});
-				egoedge.getElementById(id).classes(cytograph.getElementById(id).json().classes);
-			}
-			else { egotarget.getElementById(id).move({source: source}); }
+			// if (egotarget.getElementById(id).empty())
+			// {
+			// 	egotarget.add({ data: {id: id, source: source, target: target }});
+			// 	egoedge.getElementById(id).classes(cytograph.getElementById(id).json().classes);
+			// }
+			// else { egotarget.getElementById(id).move({source: source}); }
 			
-			if (oldSource != target && !egotarget.getElementById(oldSource).allAreNeighbors(egotarget.getElementById(target)))
-			{ egotarget.getElementById(oldSource).remove(); }
+			// if (oldSource != target && !egotarget.getElementById(oldSource).allAreNeighbors(egotarget.getElementById(target)))
+			// { egotarget.getElementById(oldSource).remove(); }
 
 			/* Add target in egograph of new source */
-			var egosource = egograph[source];
+			// var egosource = egograph[source];
 			
-			if (egosource.getElementById(target).empty())
-			{
-				egosource.add({ data: {id: target, name: cytograph.getElementById(target).data('name') }});
-				egoedge.getElementById(target).classes(cytograph.getElementById(target).json().classes);
-			}
+			// if (egosource.getElementById(target).empty())
+			// {
+			// 	egosource.add({ data: {id: target, name: cytograph.getElementById(target).data('name') }});
+			// 	egoedge.getElementById(target).classes(cytograph.getElementById(target).json().classes);
+			// }
 
-			if (egosource.getElementById(id).empty())
-			{
-				egosource.add({ data: {id: id, source: source, target: target }});
-				egoedge.getElementById(id).classes(cytograph.getElementById(id).json().classes);
-			}
-			else { egosource.getElementById(id).move({source: source}); }
+			// if (egosource.getElementById(id).empty())
+			// {
+			// 	egosource.add({ data: {id: id, source: source, target: target }});
+			// 	egoedge.getElementById(id).classes(cytograph.getElementById(id).json().classes);
+			// }
+			// else { egosource.getElementById(id).move({source: source}); }
 			
 			/* Modify global graph */
 			element = element.move({source: source});
@@ -931,61 +960,61 @@ function checkForm (id)
 			$('.element_'+id+' .name_target.name_'+oldTarget).replaceWith(getSpanName(target).addClass('name_target'));
 			
 			/* Suppress source in egograph of old target */
-			var egoOldTarget = egograph[oldTarget];
+			// var egoOldTarget = egograph[oldTarget];
 			
-			egoOldTarget.getElementById(id).remove();
+			// egoOldTarget.getElementById(id).remove();
 			
-			if (source != oldTarget && !egoOldTarget.getElementById(source).allAreNeighbors(egoOldTarget.getElementById(oldTarget)))
-			{ egoOldTarget.getElementById(source).remove(); }
+			// if (source != oldTarget && !egoOldTarget.getElementById(source).allAreNeighbors(egoOldTarget.getElementById(oldTarget)))
+			// { egoOldTarget.getElementById(source).remove(); }
 
 			/* Change target in egograph of edge */
-			var egoedge = egograph[id];
+			// var egoedge = egograph[id];
 
-			if (egoedge.getElementById(target).empty())
-			{
-				egoedge.add({ data: {id: target, name: cytograph.getElementById(target).data('name')}});
-				egoedge.getElementById(target).classes(cytograph.getElementById(target).json().classes);
-			}
+			// if (egoedge.getElementById(target).empty())
+			// {
+			// 	egoedge.add({ data: {id: target, name: cytograph.getElementById(target).data('name')}});
+			// 	egoedge.getElementById(target).classes(cytograph.getElementById(target).json().classes);
+			// }
 
-			egoedge.getElementById(id).move({target: target});
+			// egoedge.getElementById(id).move({target: target});
 
-			if (source != oldTarget)
-			{ egoedge.getElementById(oldTarget).remove(); }
+			// if (source != oldTarget)
+			// { egoedge.getElementById(oldTarget).remove(); }
 			
 			/* Add target in egograph of source */
-			var egosource = egograph[source];
+			// var egosource = egograph[source];
 			
-			if (egosource.getElementById(target).empty())
-			{
-				egosource.add({ data: {id: target, name: cytograph.getElementById(target).data('name') }});
-				egoedge.getElementById(target).classes(cytograph.getElementById(target).json().classes);
-			}
+			// if (egosource.getElementById(target).empty())
+			// {
+			// 	egosource.add({ data: {id: target, name: cytograph.getElementById(target).data('name') }});
+			// 	egoedge.getElementById(target).classes(cytograph.getElementById(target).json().classes);
+			// }
 
-			if (egosource.getElementById(id).empty())
-			{
-				egosource.add({ data: {id: id, target: target, source: source }});
-				egoedge.getElementById(id).classes(cytograph.getElementById(id).json().classes);
-			}
-			else { egosource.getElementById(id).move({target: target}); }
+			// if (egosource.getElementById(id).empty())
+			// {
+			// 	egosource.add({ data: {id: id, target: target, source: source }});
+			// 	egoedge.getElementById(id).classes(cytograph.getElementById(id).json().classes);
+			// }
+			// else { egosource.getElementById(id).move({target: target}); }
 			
-			if (oldTarget != source && !egosource.getElementById(oldTarget).allAreNeighbors(egosource.getElementById(source)))
-			{ egosource.getElementById(oldTarget).remove(); }
+			// if (oldTarget != source && !egosource.getElementById(oldTarget).allAreNeighbors(egosource.getElementById(source)))
+			// { egosource.getElementById(oldTarget).remove(); }
 
 			/* Add source in egograph of new target */
-			var egotarget = egograph[target];
+			// var egotarget = egograph[target];
 			
-			if (egotarget.getElementById(source).empty())
-			{
-				egotarget.add({ data: {id: source, name: cytograph.getElementById(source).data('name') }});
-				egoedge.getElementById(source).classes(cytograph.getElementById(source).json().classes);
-			}
+			// if (egotarget.getElementById(source).empty())
+			// {
+			// 	egotarget.add({ data: {id: source, name: cytograph.getElementById(source).data('name') }});
+			// 	egoedge.getElementById(source).classes(cytograph.getElementById(source).json().classes);
+			// }
 
-			if (egotarget.getElementById(id).empty())
-			{
-				egotarget.add({ data: {id: id, target: target, source: source }});
-				egoedge.getElementById(id).classes(cytograph.getElementById(id).json().classes);
-			}
-			else { egotarget.getElementById(id).move({target: target}); }
+			// if (egotarget.getElementById(id).empty())
+			// {
+			// 	egotarget.add({ data: {id: id, target: target, source: source }});
+			// 	egoedge.getElementById(id).classes(cytograph.getElementById(id).json().classes);
+			// }
+			// else { egotarget.getElementById(id).move({target: target}); }
 			
 			/* Modify global graph */
 			element = element.move({target: target});
@@ -999,66 +1028,6 @@ function checkForm (id)
 		else if (element.data('mod_type') == 'new') { target_object.addClass('modified'); modified = true; }
 
 		if (target_object.hasClass('error')) { error = true; }
-	}
-
-	/* Check start */
-	if (element.data('type') == 'situation')
-	{
-		var start_field = form.find('[name="start"]');
-		var start_object = start_field.closest('.form_object');
-		var start_error = start_object.closest('.form_input').find('.form_error');
-		var start = start_field.is(':checked') ? 1 : 0;
-		start_error.text('');
-
-		if (start != element.data('start'))
- 		{
-			start_object.removeClass('error');
-			element.data('start',start);
-			
-			/* Modified */
-			if (element.data('start') != element.data('save').start) { start_object.addClass('modified'); modified = true; }
-			else { start_object.removeClass('modified'); }
-
-			/* No start */
-			if (element.data('start') == 0)
-			{
-				var noStart = true;
-				cytograph.nodes().each (
-					function (i, element_bis)
-					{
-						if (element_bis.data('start') == 1) { noStart = false; }
-					}
-				);
-
-				if (noStart)
-				{
-					start_error.text (error_no_start);
-					start_object.addClass('error');
-					error = true;
-				}
-			}
-
-			/* Taken start */
-			if (element.data('start') == 1)
-			{
-				cytograph.nodes().each (
-					function (i, element_bis)
-					{
-						if (element_bis.data('start') == 1 && element_bis.id() != id)
-						{
-							start_error.text (error_taken_start);
-							start_object.addClass('error');
-							error = true;
-						}
-					}
-				);
-			}
-		}
-
-		if (start_object.hasClass('modified')) { modified = true; }
-		else if (element.data('mod_type') == 'new') { start_object.addClass('modified'); modified = true; }
-
-		if (start_object.hasClass('error')) { error = true; }
 	}
 
 	/* Check end */
@@ -1137,6 +1106,7 @@ function checkForm (id)
 			var unlock_array = unlock_str.split('"');
 
 			if ((unlock_array.length-1) % 2 != 0) { local_error = true; }
+			else if (/[A-Z]/.test(unlock)) { local_error = true; }
 			else {
 				for (var i = 0; i < unlock_array.length && !local_error; i+=2)
 				{ local_error = (unlock_array[i].replace(/\s+/g, '').length > 0); }
@@ -1198,7 +1168,7 @@ function checkForm (id)
 	if (modified)
 	{
 		element.addClass('modified');
-		for (var i in egograph) { egograph[i].getElementById(id).addClass('modified'); }
+		// for (var i in egograph) { egograph[i].getElementById(id).addClass('modified'); }
 		
 		form.find('.save_button').attr('disabled',false);
 		form.find('.reset_button').attr('disabled',false);
@@ -1206,7 +1176,7 @@ function checkForm (id)
 	
 	else {
 		element.removeClass('modified');
-		for (var i in egograph) { egograph[i].getElementById(id).removeClass('modified'); }
+		// for (var i in egograph) { egograph[i].getElementById(id).removeClass('modified'); }
 		
 		form.find('.save_button').attr('disabled',true);
 		form.find('.reset_button').attr('disabled',true);
@@ -1274,17 +1244,18 @@ function resetForm (id)
 	var element = cytograph.getElementById (id);
 	element.removeClass('modified');
 
+	$('#form_'+id).remove();
+	var form = getForm(id).hide();
+	$('#div_form').append (form);
+	checkForm(id);
+
+	if (visible) { $('#form_'+id).show (); }
+
 	var data = element.data('save');
 	if (element.data('type') == 'transition') { element = element.move({source: data.source, target: data.target}); }
 
 	element.data(data);
 	element.data('save',data);
-	$('#form_'+id).remove();
-
-	var form = getForm(id).hide();
-	$('#div_form').append (form);
-
-	if (visible) { $('#form_'+id).show (); }
 }
 
 
@@ -1292,10 +1263,11 @@ function safeDeleteForm (id)
 {
 	var element = cytograph.getElementById (id);
 	var message = null;
+
 	if (element.data('type') == 'situation') { message = delete_situation_message; }
 	else if (element.data('type') == 'transition') { message = delete_transition_message; }
 
-	if (window.confirm (message))
+	if (element.data('mod_type') == 'new' || window.confirm (message))
 	{
 		deleteForm (id);
 		return true;
@@ -1316,13 +1288,16 @@ function deleteForm (id)
 	}
 	
 	/* Delete in database */
-	$.ajax({
-		async: false,
-		url: 'scripts/delete_graph_data.php',
-		type: 'POST',
-		data: JSON.stringify ({id: id}),
-		success: function (d) {}
-	});
+	if (element.data('mod_type') != 'new')
+	{
+		$.ajax({
+			async: false,
+			url: 'scripts/delete_graph_data.php',
+			type: 'POST',
+			data: JSON.stringify ({id: id}),
+			success: function (d) {}
+		});
+	}
 
 	/* Remove form */
 	$('#form_'+id).remove();
@@ -1491,7 +1466,7 @@ function readElement (id)
 		);
 	}
 
-	$('#div_story').stop().animate({scrollTop: $('#div_story')[0].scrollHeight}, 1500);
+	$('#div_reader').stop().animate({scrollTop: $('#div_reader')[0].scrollHeight}, 1500);
 }
 
 
